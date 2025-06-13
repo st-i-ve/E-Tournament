@@ -1,11 +1,15 @@
 import { Tabs } from 'expo-router';
 import {
-  Chrome as Home,
   User,
   Trophy,
   Calendar,
   History,
   FolderClock,
+  MousePointer2,
+  UserRound,
+  CalendarClock,
+  CalendarCheck,
+  CalendarCheck2,
 } from 'lucide-react-native';
 
 export default function TabLayout() {
@@ -37,16 +41,20 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <Home color={color} {...iconStyle} />,
+          tabBarIcon: ({ color }) => (
+            <MousePointer2 color={color} {...iconStyle} />
+          ),
         }}
       />
+
       <Tabs.Screen
-        name="profile"
+        name="fixtures"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <User color={color} {...iconStyle} />,
+          title: 'Fixtures',
+          tabBarIcon: ({ color }) => <CalendarClock color={color} {...iconStyle} />,
         }}
       />
+
       <Tabs.Screen
         name="leaderboard"
         options={{
@@ -55,19 +63,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="calendar"
+        name="fulltime"
         options={{
-          title: 'Calendar',
-          tabBarIcon: ({ color }) => <Calendar color={color} {...iconStyle} />,
+          title: 'Fulltime',
+          tabBarIcon: ({ color }) => (
+            <CalendarCheck color={color} {...iconStyle} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="history"
+        name="profile"
         options={{
-          title: 'History',
-          tabBarIcon: ({ color }) => (
-            <FolderClock color={color} {...iconStyle} />
-          ),
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <UserRound color={color} {...iconStyle} />,
         }}
       />
     </Tabs>
