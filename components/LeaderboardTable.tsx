@@ -32,50 +32,30 @@ export default function LeaderboardTable({ teams }: LeaderboardTableProps) {
 
   return (
     <View style={styles.container}>
-      {/* Fixed Header */}
-      <View style={styles.headerContainer}>
-        <View style={styles.fixedHeader}>
-          <Text style={[styles.headerCell, styles.posColumn]}>Pos</Text>
-          <Text style={[styles.headerCell, styles.clubColumn]}>Club</Text>
-        </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.scrollableHeader}
-        >
-          <View style={styles.scrollableHeaderContent}>
-            <Text style={[styles.headerCell, styles.statColumn]}>MP</Text>
-            <Text style={[styles.headerCell, styles.statColumn]}>W</Text>
-            <Text style={[styles.headerCell, styles.statColumn]}>D</Text>
-            <Text style={[styles.headerCell, styles.statColumn]}>L</Text>
-            <Text style={[styles.headerCell, styles.statColumn]}>Pts</Text>
-            <Text style={[styles.headerCell, styles.statColumn]}>GD</Text>
-            <Text style={[styles.headerCell, styles.formColumn]}>Last 5</Text>
+      <View style={styles.tableWrapper}>
+        {/* TABLE 1 - Fixed Columns (Position & Club) */}
+        <View style={styles.fixedTable}>
+          {/* Fixed Header */}
+          <View style={styles.fixedHeader}>
+            <Text style={[styles.headerCell, styles.posColumn]}>Pos</Text>
+            <Text style={[styles.headerCell, styles.clubColumn]}>Club</Text>
           </View>
-        </ScrollView>
-      </View>
 
-      {/* Table Body */}
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {teams.map((team, index) => {
-          const goalDiff = getGoalDifference(team);
-          const formData = getFormData();
-
-          return (
-            <MotiView
-              key={team.name}
-              from={{ opacity: 0, translateX: -10 }}
-              animate={{ opacity: 1, translateX: 0 }}
-              transition={{ delay: index * 50 }}
-            >
-              <View
-                style={[
-                  styles.rowContainer,
-                  team.isCurrentUser && styles.currentUserRow,
-                ]}
+          {/* Fixed Rows */}
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {teams.map((team, index) => (
+              <MotiView
+                key={`fixed-${team.name}`}
+                from={{ opacity: 0, translateX: -10 }}
+                animate={{ opacity: 1, translateX: 0 }}
+                transition={{ delay: index * 50 }}
               >
-                {/* Fixed Left Columns */}
-                <View style={styles.fixedColumns}>
+                <View
+                  style={[
+                    styles.fixedRow,
+                    team.isCurrentUser && styles.currentUserRow,
+                  ]}
+                >
                   <View style={[styles.dataCell, styles.posColumn]}>
                     <Text style={styles.positionText}>{team.rank}</Text>
                   </View>
@@ -97,82 +77,117 @@ export default function LeaderboardTable({ teams }: LeaderboardTableProps) {
                     </View>
                   </View>
                 </View>
+              </MotiView>
+            ))}
+          </ScrollView>
+        </View>
 
-                {/* Scrollable Right Columns */}
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={styles.scrollableContent}
-                >
-                  <View style={styles.scrollableRow}>
-                    <View style={[styles.dataCell, styles.statColumn]}>
-                      <Text style={styles.dataText}>{team.played}</Text>
-                    </View>
-                    <View style={[styles.dataCell, styles.statColumn]}>
-                      <Text style={[styles.dataText, styles.winsText]}>
-                        {team.wins}
-                      </Text>
-                    </View>
-                    <View style={[styles.dataCell, styles.statColumn]}>
-                      <Text style={[styles.dataText, styles.drawsText]}>
-                        {team.draws}
-                      </Text>
-                    </View>
-                    <View style={[styles.dataCell, styles.statColumn]}>
-                      <Text style={[styles.dataText, styles.lossesText]}>
-                        {team.losses}
-                      </Text>
-                    </View>
-                    <View style={[styles.dataCell, styles.statColumn]}>
-                      <Text style={[styles.dataText, styles.pointsText]}>
-                        {team.points}
-                      </Text>
-                    </View>
-                    <View style={[styles.dataCell, styles.statColumn]}>
-                      <Text
-                        style={[
-                          styles.dataText,
-                          goalDiff > 0
-                            ? styles.positiveGD
-                            : goalDiff < 0
-                            ? styles.negativeGD
-                            : styles.neutralGD,
-                        ]}
-                      >
-                        {goalDiff > 0 ? '+' : ''}
-                        {goalDiff}
-                      </Text>
-                    </View>
-                    <View style={[styles.dataCell, styles.formColumn]}>
-                      <View style={styles.formContainer}>
-                        {formData.map((result, idx) => (
-                          <View
-                            key={idx}
-                            style={[
-                              styles.formDot,
-                              result === 'W' && styles.winDot,
-                              result === 'L' && styles.lossDot,
-                              result === 'D' && styles.drawDot,
-                            ]}
-                          >
-                            <Text style={styles.formText}>
-                              {result === 'W'
-                                ? '✓'
-                                : result === 'L'
-                                ? '✗'
-                                : '−'}
-                            </Text>
-                          </View>
-                        ))}
+        {/* TABLE 2 - Scrollable Columns (Stats) */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.scrollableTable}
+        >
+          <View style={styles.scrollableTableContent}>
+            {/* Scrollable Header */}
+            <View style={styles.scrollableHeader}>
+              <Text style={[styles.headerCell, styles.statColumn]}>MP</Text>
+              <Text style={[styles.headerCell, styles.statColumn]}>W</Text>
+              <Text style={[styles.headerCell, styles.statColumn]}>D</Text>
+              <Text style={[styles.headerCell, styles.statColumn]}>L</Text>
+              <Text style={[styles.headerCell, styles.statColumn]}>Pts</Text>
+              <Text style={[styles.headerCell, styles.statColumn]}>GD</Text>
+              <Text style={[styles.headerCell, styles.formColumn]}>Last 5</Text>
+            </View>
+
+            {/* Scrollable Rows */}
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {teams.map((team, index) => {
+                const goalDiff = getGoalDifference(team);
+                const formData = getFormData();
+
+                return (
+                  <MotiView
+                    key={`scrollable-${team.name}`}
+                    from={{ opacity: 0, translateX: 10 }}
+                    animate={{ opacity: 1, translateX: 0 }}
+                    transition={{ delay: index * 50 }}
+                  >
+                    <View
+                      style={[
+                        styles.scrollableRow,
+                        team.isCurrentUser && styles.currentUserScrollableRow,
+                      ]}
+                    >
+                      <View style={[styles.dataCell, styles.statColumn]}>
+                        <Text style={styles.dataText}>{team.played}</Text>
+                      </View>
+                      <View style={[styles.dataCell, styles.statColumn]}>
+                        <Text style={[styles.dataText, styles.winsText]}>
+                          {team.wins}
+                        </Text>
+                      </View>
+                      <View style={[styles.dataCell, styles.statColumn]}>
+                        <Text style={[styles.dataText, styles.drawsText]}>
+                          {team.draws}
+                        </Text>
+                      </View>
+                      <View style={[styles.dataCell, styles.statColumn]}>
+                        <Text style={[styles.dataText, styles.lossesText]}>
+                          {team.losses}
+                        </Text>
+                      </View>
+                      <View style={[styles.dataCell, styles.statColumn]}>
+                        <Text style={[styles.dataText, styles.pointsText]}>
+                          {team.points}
+                        </Text>
+                      </View>
+                      <View style={[styles.dataCell, styles.statColumn]}>
+                        <Text
+                          style={[
+                            styles.dataText,
+                            goalDiff > 0
+                              ? styles.positiveGD
+                              : goalDiff < 0
+                              ? styles.negativeGD
+                              : styles.neutralGD,
+                          ]}
+                        >
+                          {goalDiff > 0 ? '+' : ''}
+                          {goalDiff}
+                        </Text>
+                      </View>
+                      <View style={[styles.dataCell, styles.formColumn]}>
+                        <View style={styles.formContainer}>
+                          {formData.map((result, idx) => (
+                            <View
+                              key={idx}
+                              style={[
+                                styles.formDot,
+                                result === 'W' && styles.winDot,
+                                result === 'L' && styles.lossDot,
+                                result === 'D' && styles.drawDot,
+                              ]}
+                            >
+                              <Text style={styles.formText}>
+                                {result === 'W'
+                                  ? '✓'
+                                  : result === 'L'
+                                  ? '✗'
+                                  : '−'}
+                              </Text>
+                            </View>
+                          ))}
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </ScrollView>
-              </View>
-            </MotiView>
-          );
-        })}
-      </ScrollView>
+                  </MotiView>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -185,24 +200,21 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
   },
-  headerContainer: {
+  tableWrapper: {
+    flexDirection: 'row',
+  },
+
+  // TABLE 1 - Fixed columns
+  fixedTable: {
+    backgroundColor: '#1a1a1a',
+  },
+  fixedHeader: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#333333',
     backgroundColor: '#2a2a2a',
   },
-  fixedHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#2a2a2a',
-  },
-  scrollableHeader: {
-    flex: 1,
-  },
-  scrollableHeaderContent: {
-    flexDirection: 'row',
-    paddingRight: 16,
-  },
-  rowContainer: {
+  fixedRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#333333',
@@ -213,17 +225,31 @@ const styles = StyleSheet.create({
     borderLeftWidth: 3,
     borderLeftColor: '#00FF88',
   },
-  fixedColumns: {
-    flexDirection: 'row',
-    backgroundColor: '#1a1a1a',
-  },
-  scrollableContent: {
+
+  // TABLE 2 - Scrollable columns
+  scrollableTable: {
     flex: 1,
+  },
+  scrollableTableContent: {
+    paddingRight: 16,
+  },
+  scrollableHeader: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#333333',
+    backgroundColor: '#2a2a2a',
   },
   scrollableRow: {
     flexDirection: 'row',
-    paddingRight: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333333',
+    minHeight: 60,
   },
+  currentUserScrollableRow: {
+    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+  },
+
+  // Common styles
   headerCell: {
     fontSize: 12,
     fontWeight: '600',
