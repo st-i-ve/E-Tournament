@@ -1,3 +1,4 @@
+import { AnimatedTabIcon } from '@/components/AnimatedTabIcon';
 import { Tabs } from 'expo-router';
 import {
   User,
@@ -41,8 +42,10 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <MousePointer2 color={color} {...iconStyle} />
+          tabBarIcon: ({ color, focused }) => (
+            <AnimatedTabIcon focused={focused}>
+              <MousePointer2 color={color} {...iconStyle} />
+            </AnimatedTabIcon>
           ),
         }}
       />
@@ -51,7 +54,11 @@ export default function TabLayout() {
         name="fixtures"
         options={{
           title: 'Fixtures',
-          tabBarIcon: ({ color }) => <CalendarClock color={color} {...iconStyle} />,
+          tabBarIcon: ({ color, focused }) => (
+            <AnimatedTabIcon focused={focused}>
+              <CalendarClock color={color} {...iconStyle} />
+            </AnimatedTabIcon>
+          ),
         }}
       />
 
@@ -59,15 +66,21 @@ export default function TabLayout() {
         name="leaderboard"
         options={{
           title: 'Leaderboard',
-          tabBarIcon: ({ color }) => <Trophy color={color} {...iconStyle} />,
+          tabBarIcon: ({ color, focused }) => (
+            <AnimatedTabIcon focused={focused}>
+              <Trophy color={color} {...iconStyle} />
+            </AnimatedTabIcon>
+          ),
         }}
       />
       <Tabs.Screen
         name="fulltime"
         options={{
           title: 'Fulltime',
-          tabBarIcon: ({ color }) => (
-            <CalendarCheck color={color} {...iconStyle} />
+          tabBarIcon: ({ color, focused }) => (
+            <AnimatedTabIcon focused={focused}>
+              <CalendarCheck color={color} {...iconStyle} />
+            </AnimatedTabIcon>
           ),
         }}
       />
@@ -75,7 +88,11 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <UserRound color={color} {...iconStyle} />,
+          tabBarIcon: ({ color, focused }) => (
+            <AnimatedTabIcon focused={focused}>
+              <UserRound color={color} {...iconStyle} />
+            </AnimatedTabIcon>
+          ),
         }}
       />
     </Tabs>
