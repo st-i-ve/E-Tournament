@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { Plus, Trophy, Users, Calendar, Target, Star } from 'lucide-react';
+
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { currentUser, mockTournaments, recentMatches } from '@/data/enhancedMockData';
-import { Separator } from '@/components/ui/separator';
-import TournamentCard from '@/components/TournamentCard';
-import QuickActionButton from '@/components/QuickActionButton';
-import RecentMatchCard from '@/components/RecentMatchCard';
-import CreateTournamentModal from '@/components/CreateTournamentModal';
-import JoinTournamentModal from '@/components/JoinTournamentModal';
-import DecryptedText from '@/components/DecryptedText';
-import MinimalTournamentCard from '@/components/MinimalTournamentCard';
+import { Separator } from '@/components/NewComponents/ui/separator';
+import TournamentCard from '@/components/NewComponents/TournamentCard';
+import QuickActionButton from '@/components/NewComponents/QuickActionButton';
+import RecentMatchCard from '@/components/NewComponents/RecentMatchCard';
+import CreateTournamentModal from '@/components/NewComponents/CreateTournamentModal';
+import JoinTournamentModal from '@/components/NewComponents/JoinTournamentModal';
+import DecryptedText from '@/components/NewComponents/DecryptedText';
+import MinimalTournamentCard from '@/components/NewComponents/MinimalTournamentCard';
+import { Calendar, Plus, Star, Target, Trophy, Users } from 'lucide-react-native';
 
 const HomePage = () => {
   const navigate = useNavigate();
