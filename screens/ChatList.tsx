@@ -1,5 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { MessageCircle, Users, Clock } from 'lucide-react-native';
 
 // Mock chat list data
@@ -34,110 +41,213 @@ const mockChats = [
 ];
 
 const ChatListPage = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
   const handleChatClick = (chatId: string) => {
-    navigate('/chat');
+    navigation.navigate('Chat');
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Geometric background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Triangles */}
-        <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
-        <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-
-        {/* Circles */}
-        <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
-        <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-
-        {/* Rectangles */}
-        <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
-        <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-
-        {/* Crossing lines */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-      </div>
-
+    <View style={styles.container}>
       {/* Header */}
-      <div className="relative z-10 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 flex-shrink-0 relative">
-            <div className="absolute top-0 left-0 w-10 h-10 border-2 border-green-400 rounded-full shadow-lg shadow-green-400/20"></div>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-white to-green-400 bg-clip-text text-transparent">
-              Team Chats
-            </h1>
-            <p className="text-sm text-gray-400">
-              Stay connected with your teams
-            </p>
-          </div>
-        </div>
-      </div>
+      <View style={styles.header}>
+        <View style={styles.avatarContainer}>
+          <View style={styles.avatar}>
+            <MessageCircle color="#4ade80" size={20} />
+          </View>
+        </View>
+
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>Team Chats</Text>
+          <Text style={styles.headerSubtitle}>
+            Stay connected with your teams
+          </Text>
+        </View>
+      </View>
 
       {/* Chat List */}
-      <div className="relative z-10 px-6 space-y-1">
+      <ScrollView style={styles.chatList}>
         {mockChats.map((chat) => (
-          <div key={chat.id}>
-            <button
-              onClick={() => handleChatClick(chat.id)}
-              className="w-full p-4 text-left hover:bg-gray-800/30 transition-colors rounded-xl group"
+          <View key={chat.id} style={styles.chatItemContainer}>
+            <TouchableOpacity
+              onPress={() => handleChatClick(chat.id)}
+              style={styles.chatButton}
             >
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <div className="w-12 h-12 border-2 border-green-400/50 rounded-full flex items-center justify-center bg-gray-900/50">
-                    <MessageCircle className="h-5 w-5 text-green-400" />
-                  </div>
+              <View style={styles.chatContent}>
+                <View style={styles.chatIconContainer}>
+                  <View style={styles.chatIcon}>
+                    <MessageCircle color="#4ade80" size={20} />
+                  </View>
                   {chat.unreadCount > 0 && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                      <span className="text-xs text-white font-medium">
-                        {chat.unreadCount}
-                      </span>
-                    </div>
+                    <View style={styles.unreadBadge}>
+                      <Text style={styles.unreadCount}>{chat.unreadCount}</Text>
+                    </View>
                   )}
-                </div>
+                </View>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-medium text-white truncate group-hover:text-green-400 transition-colors">
+                <View style={styles.chatDetails}>
+                  <View style={styles.chatHeader}>
+                    <Text style={styles.chatName} numberOfLines={1}>
                       {chat.name}
-                    </h3>
-                    <span className="text-xs text-gray-500">
-                      {chat.lastMessageTime}
-                    </span>
-                  </div>
+                    </Text>
+                    <Text style={styles.chatTime}>{chat.lastMessageTime}</Text>
+                  </View>
 
-                  <p className="text-sm text-gray-400 truncate mb-1">
+                  <Text style={styles.lastMessage} numberOfLines={1}>
                     {chat.lastMessage}
-                  </p>
+                  </Text>
 
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <Users className="h-3 w-3" />
-                    <span>{chat.participants} members</span>
-                    <span className="px-2 py-0.5 bg-gray-800/50 rounded-full text-xs">
-                      {chat.type}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </button>
+                  <View style={styles.chatFooter}>
+                    <Users color="#6b7280" size={12} />
+                    <Text style={styles.participantsCount}>
+                      {chat.participants} members
+                    </Text>
+                    <Text style={styles.chatType}>{chat.type}</Text>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
 
             {/* Separator */}
-            <div className="h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent my-2"></div>
-          </div>
+            <View style={styles.separator} />
+          </View>
         ))}
-      </div>
-
-      {/* Bottom spacing */}
-      <div className="h-20"></div>
-    </div>
+      </ScrollView>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  header: {
+    padding: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    marginRight: 12,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: 'rgba(74, 222, 128, 0.5)',
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: 'rgba(74, 222, 128, 0.2)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 8,
+    shadowOpacity: 1,
+  },
+  headerTextContainer: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#9ca3af',
+  },
+  chatList: {
+    paddingHorizontal: 24,
+  },
+  chatItemContainer: {
+    marginBottom: 8,
+  },
+  chatButton: {
+    width: '100%',
+    padding: 16,
+  },
+  chatContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  chatIconContainer: {
+    position: 'relative',
+    marginRight: 16,
+  },
+  chatIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: 'rgba(74, 222, 128, 0.5)',
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  unreadBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 20,
+    height: 20,
+    backgroundColor: '#22c55e',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  unreadCount: {
+    fontSize: 10,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  chatDetails: {
+    flex: 1,
+    minWidth: 0,
+  },
+  chatHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  chatName: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: 'white',
+    flex: 1,
+    marginRight: 8,
+  },
+  chatTime: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  lastMessage: {
+    fontSize: 14,
+    color: '#9ca3af',
+    marginBottom: 4,
+  },
+  chatFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  participantsCount: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  chatType: {
+    fontSize: 12,
+    color: '#6b7280',
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: 'rgba(74, 222, 128, 0.2)',
+    marginVertical: 8,
+  },
+});
 
 export default ChatListPage;

@@ -1,76 +1,157 @@
 import React from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 import { Calendar } from 'lucide-react-native';
-import { Button } from '@/components/ui/button';
-import MinimalCalendar from '@/components/MinimalCalendar';
-import { useNavigate } from 'react-router-dom';
+import MinimalCalendar from '../components/MinimalCalendar'; // Adjust path as needed
 
 const FixturesPage = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 pb-24 h-screen flex flex-col bg-black relative overflow-hidden">
-      {/* Subtle geometric background shapes */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Triangles */}
-        <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
-        <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-
-        {/* Circles */}
-        <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
-        <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-
-        {/* Rectangles */}
-        <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
-        <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-
-        {/* Crossing lines */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-      </div>
-
+    <View style={styles.container}>
       {/* Header */}
-      <div className="mb-6 relative z-10">
-        <div className="flex items-start gap-4 mb-1 ml-2">
-          <div className="w-6 h-6 mt-1 flex-shrink-0 relative">
-            <div className="w-6 h-6 border-2 border-green-400 rounded-full relative">
-              <div className="absolute top-1/2 left-1/2 w-8 h-0.5 bg-green-400 transform -translate-x-1/2 -translate-y-0.5 rotate-45"></div>
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-white to-green-400 bg-clip-text text-transparent leading-tight">
-              Fixtures
-            </h1>
-            <p className="text-xs text-gray-500 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_2s_ease-in-out_infinite]">
-              Your upcoming matches and tournament schedule
-            </p>
-          </div>
-        </div>
-      </div>
+      <View style={styles.header}>
+        <View style={styles.headerIconContainer}>
+          <View style={styles.headerIcon}>
+            <View style={styles.headerIconLine} />
+          </View>
+        </View>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.title}>Fixtures</Text>
+          <Text style={styles.subtitle}>
+            Your upcoming matches and tournament schedule
+          </Text>
+        </View>
+      </View>
 
-      {/* Calendar View - Reduced height and added margins */}
-      <div className="flex-1 max-h-[45vh] mx-[2%] relative z-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-white flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-green-500" />
-            Calendar View
-          </h2>
-          <Button
-            onClick={() => navigate('/schedule')}
-            className="relative overflow-hidden bg-green-600 text-white border border-green-500 hover:border-green-400 hover:bg-green-500 px-4 py-2 text-sm group transition-all duration-300"
+      {/* Calendar View */}
+      <View style={styles.calendarContainer}>
+        <View style={styles.calendarHeader}>
+          <View style={styles.calendarTitleContainer}>
+            <Calendar color="#4ade80" size={16} />
+            <Text style={styles.calendarTitle}>Calendar View</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.viewAllButton}
+            onPress={() => navigation.navigate('Schedule')}
           >
-            <span className="relative z-10">View All Games</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-400/30 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-          </Button>
-        </div>
-        <div className="h-full">
+            <Text style={styles.viewAllButtonText}>View All Games</Text>
+            <View style={styles.buttonHighlight} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.calendarWrapper}>
           <MinimalCalendar />
-        </div>
-      </div>
-    </div>
+        </View>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+    paddingHorizontal: 8,
+    paddingTop: 16,
+    paddingBottom: 96,
+  },
+  header: {
+    marginBottom: 24,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  headerIconContainer: {
+    width: 24,
+    height: 24,
+    marginTop: 4,
+    marginRight: 16,
+  },
+  headerIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#4ade80',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  headerIconLine: {
+    position: 'absolute',
+    width: 32,
+    height: 2,
+    backgroundColor: '#4ade80',
+    transform: [{ rotate: '45deg' }],
+  },
+  headerTextContainer: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'transparent',
+    backgroundImage: 'linear-gradient(to right, white, #4ade80)',
+    backgroundClip: 'text',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  calendarContainer: {
+    flex: 1,
+    maxHeight: '45%',
+    marginHorizontal: '4%',
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  calendarTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  calendarTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
+  },
+  viewAllButton: {
+    backgroundColor: '#16a34a',
+    borderWidth: 1,
+    borderColor: '#22c55e',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  viewAllButtonText: {
+    color: 'white',
+    fontSize: 14,
+    position: 'relative',
+    zIndex: 10,
+  },
+  buttonHighlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(74, 222, 128, 0.3)',
+    transform: [{ skewX: '-12deg' }, { translateX: -100 }],
+  },
+  calendarWrapper: {
+    flex: 1,
+  },
+});
 
 export default FixturesPage;
