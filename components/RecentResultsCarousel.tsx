@@ -239,4 +239,4 @@ const styles = StyleSheet.create({
   onPress={(result) =>
     navigation.navigate('MatchDetails', { matchId: result.id })
   }
-/>; */}
+wwwww/>; */}

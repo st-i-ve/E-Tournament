@@ -1,53 +1,66 @@
 import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Calendar, MapPin, Home, Clock, Check, X } from 'lucide-react-native';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Match } from '@/data/enhancedMockData';
+
+interface Match {
+  id: string;
+  homeTeam: string;
+  awayTeam: string;
+  status: 'upcoming' | 'completed';
+  scheduledDate: string;
+  homeScore?: number;
+  awayScore?: number;
+  matchday?: number;
+}
 
 interface RecentMatchCardProps {
   match: Match;
   userTeam: string;
+  onPress?: () => void;
 }
 
-const RecentMatchCard = ({ match, userTeam }: RecentMatchCardProps) => {
+const RecentMatchCard = ({
+  match,
+  userTeam,
+  onPress,
+}: RecentMatchCardProps) => {
   const isHomeTeam = match.homeTeam === userTeam;
   const isWin =
     match.status === 'completed' &&
-    ((isHomeTeam && match.homeScore > match.awayScore) ||
-      (!isHomeTeam && match.awayScore > match.homeScore));
+    ((isHomeTeam && match.homeScore! > match.awayScore!) ||
+      (!isHomeTeam && match.awayScore! > match.homeScore!));
   const isDraw =
     match.status === 'completed' && match.homeScore === match.awayScore;
 
   const getResultColor = () => {
-    if (match.status === 'upcoming')
-      return 'bg-gray-800/30 hover:bg-gray-800/50';
-    if (isWin) return 'bg-green-900/20 hover:bg-green-900/30';
-    if (isDraw) return 'bg-orange-900/20 hover:bg-orange-900/30';
-    return 'bg-red-900/20 hover:bg-red-900/30';
+    if (match.status === 'upcoming') return styles.upcomingCard;
+    if (isWin) return styles.winCard;
+    if (isDraw) return styles.drawCard;
+    return styles.lossCard;
   };
 
   const getResultBadge = () => {
     if (match.status === 'upcoming')
       return {
         text: 'UPCOMING',
-        color: 'bg-gray-500/20 text-gray-400',
+        style: styles.upcomingBadge,
         icon: Clock,
       };
     if (isWin)
       return {
         text: 'WIN',
-        color: 'bg-green-500/20 text-green-400',
+        style: styles.winBadge,
         icon: Check,
       };
     if (isDraw)
       return {
         text: 'DRAW',
-        color: 'bg-orange-500/20 text-orange-400',
+        style: styles.drawBadge,
         icon: null,
       };
     return {
       text: 'LOSS',
-      color: 'bg-red-500/20 text-red-400',
+      style: styles.lossBadge,
       icon: X,
     };
   };
@@ -55,79 +68,197 @@ const RecentMatchCard = ({ match, userTeam }: RecentMatchCardProps) => {
   const result = getResultBadge();
   const ResultIcon = result.icon;
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  };
+
   return (
-    <div
-      className={`${getResultColor()} rounded-xl p-4 transition-all duration-200 border border-gray-800/50 hover:border-gray-700/50`}
+    <TouchableOpacity
+      style={[styles.card, getResultColor()]}
+      onPress={onPress}
+      activeOpacity={0.8}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 text-sm">
-              <span
-                className={`truncate ${
-                  match.homeTeam === userTeam
-                    ? 'font-semibold text-green-400'
-                    : 'text-gray-300'
-                }`}
-              >
-                {match.homeTeam}
-              </span>
-              <span className="text-gray-500">vs</span>
-              <span
-                className={`truncate ${
-                  match.awayTeam === userTeam
-                    ? 'font-semibold text-green-400'
-                    : 'text-gray-300'
-                }`}
-              >
-                {match.awayTeam}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
-              <Calendar className="h-3 w-3" />
-              <span>
-                {new Date(match.scheduledDate).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                })}
-              </span>
-            </div>
-          </div>
-        </div>
+      <View style={styles.header}>
+        <View style={styles.teamsContainer}>
+          <View style={styles.teamRow}>
+            <Text
+              style={[
+                styles.teamName,
+                match.homeTeam === userTeam && styles.userTeam,
+              ]}
+              numberOfLines={1}
+            >
+              {match.homeTeam}
+            </Text>
+            <Text style={styles.vsText}>vs</Text>
+            <Text
+              style={[
+                styles.teamName,
+                match.awayTeam === userTeam && styles.userTeam,
+              ]}
+              numberOfLines={1}
+            >
+              {match.awayTeam}
+            </Text>
+          </View>
+          <View style={styles.dateRow}>
+            <Calendar size={12} color="#9CA3AF" />
+            <Text style={styles.dateText}>
+              {formatDate(match.scheduledDate)}
+            </Text>
+          </View>
+        </View>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <Badge
-            variant="outline"
-            className={`text-xs border-0 ${result.color} flex items-center gap-1`}
-          >
-            {ResultIcon && <ResultIcon className="h-3 w-3" />}
+        <View style={[styles.badge, result.style]}>
+          {ResultIcon && <ResultIcon size={12} color={result.style.color} />}
+          <Text style={[styles.badgeText, { color: result.style.color }]}>
             {result.text}
-          </Badge>
-        </div>
-      </div>
+          </Text>
+        </View>
+      </View>
 
-      <div className="flex items-center justify-between text-xs">
-        <div className="flex items-center gap-4">
-          {match.status === 'completed' ? (
-            <div className="text-lg font-bold text-white">
-              {match.homeScore} - {match.awayScore}
-            </div>
-          ) : (
-            <div className="text-sm text-gray-400">
-              {new Date(match.scheduledDate).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-              })}
-            </div>
-          )}
-        </div>
+      <View style={styles.footer}>
+        {match.status === 'completed' ? (
+          <Text style={styles.scoreText}>
+            {match.homeScore} - {match.awayScore}
+          </Text>
+        ) : (
+          <Text style={styles.timeText}>{formatTime(match.scheduledDate)}</Text>
+        )}
 
         {match.matchday && (
-          <span className="text-gray-500">MD {match.matchday}</span>
+          <Text style={styles.matchdayText}>MD {match.matchday}</Text>
         )}
-      </div>
-    </div>
+      </View>
+    </TouchableOpacity>
   );
 };
 
+const styles = StyleSheet.create({
+  card: {
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  upcomingCard: {
+    backgroundColor: 'rgba(31, 41, 55, 0.3)',
+    borderColor: 'rgba(55, 65, 81, 0.5)',
+  },
+  winCard: {
+    backgroundColor: 'rgba(5, 150, 105, 0.2)',
+    borderColor: 'rgba(5, 150, 105, 0.3)',
+  },
+  drawCard: {
+    backgroundColor: 'rgba(194, 65, 12, 0.2)',
+    borderColor: 'rgba(194, 65, 12, 0.3)',
+  },
+  lossCard: {
+    backgroundColor: 'rgba(220, 38, 38, 0.2)',
+    borderColor: 'rgba(220, 38, 38, 0.3)',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  teamsContainer: {
+    flex: 1,
+    minWidth: 0,
+  },
+  teamRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  teamName: {
+    fontSize: 14,
+    color: '#E5E7EB',
+    flexShrink: 1,
+  },
+  userTeam: {
+    fontWeight: '600',
+    color: '#34D399',
+  },
+  vsText: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  dateText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  upcomingBadge: {
+    backgroundColor: 'rgba(107, 114, 128, 0.2)',
+    color: '#9CA3AF',
+  },
+  winBadge: {
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    color: '#34D399',
+  },
+  drawBadge: {
+    backgroundColor: 'rgba(249, 115, 22, 0.2)',
+    color: '#F97316',
+  },
+  lossBadge: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    color: '#EF4444',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  scoreText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  timeText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+  },
+  matchdayText: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+});
+
 export default RecentMatchCard;
+{/* <RecentMatchCard
+  match={match}
+  userTeam={userTeam}
+  onPress={() => navigation.navigate('MatchDetails', { matchId: match.id })}
+/>; */}
