@@ -1,5 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+} from 'react-native';
+import {
   Clock,
   Trophy,
   Calendar,
@@ -8,15 +17,10 @@ import {
   Circle,
   X,
 } from 'lucide-react-native';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { useNavigation } from '@react-navigation/native';
+import MatchCard from '@/components/MatchCard';
+import MatchInfoModal from '@/components/MatchInfoModal';
+import DetailedMatchCard from '@/components/DetailedMatchCard';
 import {
   currentUser,
   mockMatches,
@@ -24,15 +28,12 @@ import {
   Match,
 } from '@/data/enhancedMockData';
 import { detailedMatches } from '@/data/matchStats';
-import MatchCard from '@/components/MatchCard';
-import MatchInfoModal from '@/components/MatchInfoModal';
-import DetailedMatchCard from '@/components/DetailedMatchCard';
-import { useNavigate } from 'react-router-dom';
 
 const SchedulePage = () => {
   const [selectedTournament, setSelectedTournament] = useState<string>('all');
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const navigate = useNavigate();
+  const [showTournamentSelect, setShowTournamentSelect] = useState(false);
+  const navigation = useNavigation();
 
   // Get all user's matches (both upcoming and completed)
   const upcomingMatches = mockMatches.filter(
@@ -86,7 +87,7 @@ const SchedulePage = () => {
       )
         return;
 
-      const date = new Date(match.timestamp); // Fixed: use timestamp instead of scheduled_date
+      const date = new Date(match.timestamp);
       const monthKey = date.toLocaleDateString('en-US', {
         month: 'long',
         year: 'numeric',
@@ -108,167 +109,168 @@ const SchedulePage = () => {
   }, [selectedTournament, upcomingMatches, completedMatches]);
 
   const handleViewDetails = (match: any) => {
-    navigate(`/match-stats?matchId=${match.match_id}`);
+    navigation.navigate('MatchStats', { matchId: match.match_id });
   };
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 pb-24 h-screen flex flex-col bg-black relative overflow-hidden">
-      {/* Subtle geometric background shapes */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Triangles */}
-        <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
-        <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-
-        {/* Circles */}
-        <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
-        <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-
-        {/* Rectangles */}
-        <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
-        <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-
-        {/* Crossing lines */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-      </div>
+    <View style={styles.container}>
+      {/* Background shapes would be implemented differently in React Native */}
+      {/* You might use absolute positioned Views or a background image */}
 
       {/* Header */}
-      <div className="mb-6 relative z-10">
-        <div className="flex items-start gap-4 mb-1 ml-2">
-          <div className="w-6 h-6 mt-1 flex-shrink-0 relative">
-            <div className="w-6 h-6 border-2 border-green-400 rounded-full relative">
-              <div className="absolute top-1/2 left-1/2 w-8 h-0.5 bg-green-400 transform -translate-x-1/2 -translate-y-0.5 rotate-45"></div>
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-white to-green-400 bg-clip-text text-transparent leading-tight">
-              Schedule
-            </h1>
-            <p className="text-xs text-gray-500 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_2s_ease-in-out_infinite]">
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <View style={styles.headerIcon}>
+            <View style={styles.circleIcon}>
+              <View style={styles.crossLine} />
+            </View>
+          </View>
+          <View style={styles.headerText}>
+            <Text style={styles.title}>Schedule</Text>
+            <Text style={styles.subtitle}>
               All your matches - upcoming and completed
-            </p>
-          </div>
-        </div>
+            </Text>
+          </View>
+        </View>
 
-        <div className="flex items-center justify-between mb-4 mt-4">
-          <Button
-            onClick={() => navigate('/fixtures')}
-            className="relative overflow-hidden bg-gray-800 text-white border border-gray-700 hover:border-gray-600 hover:bg-gray-700 px-4 py-2 text-sm group transition-all duration-300"
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.navigate('Fixtures')}
           >
-            <span className="relative z-10">Back to Fixtures</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-600/30 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-          </Button>
-        </div>
+            <Text style={styles.backButtonText}>Back to Fixtures</Text>
+            <View style={styles.buttonOverlay} />
+          </TouchableOpacity>
+        </View>
 
         {/* Legend */}
-        <div className="flex items-center gap-6 mb-4">
-          <div className="flex items-center gap-2">
-            <Circle className="h-4 w-4 text-blue-400" />
-            <span className="text-sm text-gray-400">Upcoming</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-green-400" />
-            <span className="text-sm text-gray-400">Completed</span>
-          </div>
-        </div>
-      </div>
+        <View style={styles.legend}>
+          <View style={styles.legendItem}>
+            <Circle size={16} color="#60a5fa" />
+            <Text style={styles.legendText}>Upcoming</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <CheckCircle2 size={16} color="#34d399" />
+            <Text style={styles.legendText}>Completed</Text>
+          </View>
+        </View>
+      </View>
 
       {/* Filters */}
-      <div className="mb-8 relative z-10">
-        <div className="flex items-center gap-3">
-          <Filter className="h-4 w-4 text-gray-400" />
-          <Select
-            value={selectedTournament}
-            onValueChange={setSelectedTournament}
+      <View style={styles.filters}>
+        <View style={styles.filterContent}>
+          <Filter size={16} color="#9ca3af" />
+          <TouchableOpacity
+            style={styles.selectTrigger}
+            onPress={() => setShowTournamentSelect(true)}
           >
-            <SelectTrigger className="w-48 bg-gray-900/50 border-0 text-white rounded-xl">
-              <SelectValue placeholder="Filter by tournament" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#1C1C1E] border-gray-700 rounded-xl">
-              <SelectItem
-                value="all"
-                className="text-white hover:bg-gray-800 rounded-lg"
+            <Text style={styles.selectValue}>
+              {selectedTournament === 'all'
+                ? 'All Tournaments'
+                : userTournaments.find((t) => t.id === selectedTournament)
+                    ?.name}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Tournament selection modal */}
+        <Modal
+          visible={showTournamentSelect}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Pressable
+                style={styles.modalClose}
+                onPress={() => setShowTournamentSelect(false)}
               >
-                All Tournaments
-              </SelectItem>
+                <X size={24} color="#fff" />
+              </Pressable>
+              <Text style={styles.modalTitle}>Select Tournament</Text>
+              <TouchableOpacity
+                style={styles.selectItem}
+                onPress={() => {
+                  setSelectedTournament('all');
+                  setShowTournamentSelect(false);
+                }}
+              >
+                <Text style={styles.selectItemText}>All Tournaments</Text>
+              </TouchableOpacity>
               {userTournaments.map((tournament) => (
-                <SelectItem
+                <TouchableOpacity
                   key={tournament.id}
-                  value={tournament.id}
-                  className="text-white hover:bg-gray-800 rounded-lg"
+                  style={styles.selectItem}
+                  onPress={() => {
+                    setSelectedTournament(tournament.id);
+                    setShowTournamentSelect(false);
+                  }}
                 >
-                  {tournament.name}
-                </SelectItem>
+                  <Text style={styles.selectItemText}>{tournament.name}</Text>
+                </TouchableOpacity>
               ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+            </View>
+          </View>
+        </Modal>
+      </View>
 
       {/* Grouped Matches */}
-      <div className="space-y-8 relative z-10 overflow-y-auto flex-1">
+      <ScrollView style={styles.matchesContainer}>
         {Object.entries(groupedMatches).map(([month, matches]) => (
-          <div key={month} className="space-y-4">
-            <h2 className="text-xl font-semibold text-white flex items-center gap-3">
-              <Trophy className="h-5 w-5 text-green-500" />
-              {month}
-            </h2>
+          <View key={month} style={styles.monthGroup}>
+            <View style={styles.monthHeader}>
+              <Trophy size={20} color="#34d399" />
+              <Text style={styles.monthTitle}>{month}</Text>
+            </View>
 
-            <div className="space-y-4">
+            <View style={styles.matchesList}>
               {/* Upcoming matches */}
               {matches.upcoming.map((match, index) => (
-                <div
-                  key={`upcoming-${index}`}
-                  className="flex items-start gap-3"
-                >
-                  <Circle className="h-4 w-4 text-blue-400 mt-4 flex-shrink-0" />
-                  <div className="flex-1">
+                <View key={`upcoming-${index}`} style={styles.matchItem}>
+                  <Circle size={16} color="#60a5fa" style={styles.matchIcon} />
+                  <View style={styles.matchCard}>
                     <MatchCard
                       match={match}
                       userTeam={currentUser.teamName}
                       onInfoClick={setSelectedMatch}
                     />
-                  </div>
-                </div>
+                  </View>
+                </View>
               ))}
 
               {/* Completed matches */}
               {matches.completed.map((match, index) => (
-                <div
-                  key={`completed-${index}`}
-                  className="flex items-start gap-3"
-                >
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mt-4 flex-shrink-0" />
-                  <div className="flex-1">
+                <View key={`completed-${index}`} style={styles.matchItem}>
+                  <CheckCircle2
+                    size={16}
+                    color="#34d399"
+                    style={styles.matchIcon}
+                  />
+                  <View style={styles.matchCard}>
                     <DetailedMatchCard
                       match={match}
                       userTeam={currentUser.teamName}
                       onViewDetails={handleViewDetails}
                     />
-                  </div>
-                </div>
+                  </View>
+                </View>
               ))}
-            </div>
-          </div>
+            </View>
+          </View>
         ))}
 
         {Object.keys(groupedMatches).length === 0 && (
-          <div className="text-center py-16">
-            <Calendar className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-400 mb-2">
-              No matches found
-            </h3>
-            <p className="text-sm text-gray-500">
+          <View style={styles.emptyState}>
+            <Calendar size={64} color="#6b7280" />
+            <Text style={styles.emptyTitle}>No matches found</Text>
+            <Text style={styles.emptyText}>
               {selectedTournament === 'all'
                 ? 'Join a tournament to start playing matches'
                 : 'No matches found in the selected tournament'}
-            </p>
-          </div>
+            </Text>
+          </View>
         )}
-      </div>
+      </ScrollView>
 
       {/* Match Info Modal */}
       <MatchInfoModal
@@ -277,8 +279,207 @@ const SchedulePage = () => {
         isOpen={!!selectedMatch}
         onClose={() => setSelectedMatch(null)}
       />
-    </div>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    padding: 16,
+    paddingBottom: 80,
+  },
+  header: {
+    marginBottom: 24,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+    marginBottom: 8,
+    marginLeft: 8,
+  },
+  headerIcon: {
+    width: 24,
+    height: 24,
+    marginTop: 4,
+    flexShrink: 0,
+    position: 'relative',
+  },
+  circleIcon: {
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderColor: 'rgba(74, 222, 128, 0.4)',
+    borderRadius: 12,
+    position: 'relative',
+  },
+  crossLine: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: 32,
+    height: 2,
+    backgroundColor: 'rgba(74, 222, 128, 0.4)',
+    transform: [{ translateX: -16 }, { translateY: -1 }, { rotate: '45deg' }],
+  },
+  headerText: {
+    flexDirection: 'column',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    lineHeight: 24,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    marginTop: 16,
+  },
+  backButton: {
+    position: 'relative',
+    overflow: 'hidden',
+    backgroundColor: '#1f2937',
+    borderWidth: 1,
+    borderColor: '#374151',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    position: 'relative',
+    zIndex: 10,
+  },
+  buttonOverlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: 'rgba(75, 85, 99, 0.3)',
+    transform: [{ skewX: '-12deg' }, { translateX: -400 }],
+  },
+  legend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 24,
+    marginBottom: 16,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  legendText: {
+    fontSize: 14,
+    color: '#9ca3af',
+  },
+  filters: {
+    marginBottom: 32,
+  },
+  filterContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  selectTrigger: {
+    width: 192,
+    backgroundColor: 'rgba(28, 28, 30, 0.5)',
+    borderWidth: 0,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  selectValue: {
+    color: '#fff',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#1c1c1e',
+    borderRadius: 12,
+    padding: 16,
+    width: '80%',
+    maxHeight: '60%',
+  },
+  modalClose: {
+    alignSelf: 'flex-end',
+    marginBottom: 8,
+  },
+  modalTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  selectItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  selectItemText: {
+    color: '#fff',
+  },
+  matchesContainer: {
+    flex: 1,
+  },
+  monthGroup: {
+    marginBottom: 32,
+  },
+  monthHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  monthTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  matchesList: {
+    gap: 16,
+  },
+  matchItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  matchIcon: {
+    marginTop: 16,
+    flexShrink: 0,
+  },
+  matchCard: {
+    flex: 1,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 64,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#9ca3af',
+    marginBottom: 8,
+    marginTop: 16,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+});
 
 export default SchedulePage;

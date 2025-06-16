@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import {
   ArrowLeft,
   Palette,
   Bell,
@@ -7,13 +15,11 @@ import {
   User,
   Globe,
 } from 'lucide-react-native';
-import { Button } from '@/components/ui/button';
+import { useNavigation } from '@react-navigation/native';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { useNavigate } from 'react-router-dom';
 
 const SettingsPage = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const [selectedTheme, setSelectedTheme] = useState('forest');
   const [notifications, setNotifications] = useState(true);
   const [matchReminders, setMatchReminders] = useState(true);
@@ -22,215 +28,345 @@ const SettingsPage = () => {
     {
       id: 'green',
       name: 'Emerald Green',
-      color: 'bg-green-500',
+      color: '#10b981',
       available: true,
     },
     {
       id: 'forest',
       name: 'Forest Green',
-      color: 'bg-green-700',
+      color: '#047857',
       available: true,
     },
-    { id: 'mint', name: 'Mint Green', color: 'bg-green-300', available: true },
+    { id: 'mint', name: 'Mint Green', color: '#6ee7b7', available: true },
     {
       id: 'blue',
       name: 'Ocean Blue',
-      color: 'bg-blue-500',
+      color: '#3b82f6',
       available: false,
       comingSoon: true,
     },
     {
       id: 'purple',
       name: 'Royal Purple',
-      color: 'bg-purple-500',
+      color: '#8b5cf6',
       available: false,
       comingSoon: true,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Geometric background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Triangles */}
-        <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
-        <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-
-        {/* Circles */}
-        <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
-        <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-
-        {/* Rectangles */}
-        <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
-        <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-
-        {/* Crossing lines */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-      </div>
-
+    <View style={styles.container}>
       {/* Header */}
-      <div className="sticky top-0 bg-black/95 backdrop-blur-sm border-b border-green-500/20 z-10">
-        <div className="flex items-center gap-3 p-4">
-          <Button
-            onClick={() => navigate('/profile')}
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-full hover:bg-gray-800/50"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-lg font-medium">Settings</h1>
-        </div>
-      </div>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <ArrowLeft size={20} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Settings</Text>
+      </View>
 
-      <div className="p-4 space-y-6 relative z-10">
+      <ScrollView style={styles.content}>
         {/* Theme Selection */}
-        <div className="animate-fade-in">
-          <div className="flex items-center gap-3 mb-4">
-            <Palette className="h-4 w-4 text-green-400" />
-            <div>
-              <h2 className="text-sm font-medium text-white">
-                Theme Selection
-              </h2>
-              <p className="text-xs text-gray-400">
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Palette size={16} color="#34d399" />
+            <View style={styles.sectionHeaderText}>
+              <Text style={styles.sectionTitle}>Theme Selection</Text>
+              <Text style={styles.sectionSubtitle}>
                 Customize your app appearance
-              </p>
-            </div>
-          </div>
+              </Text>
+            </View>
+          </View>
 
-          <div className="space-y-2">
+          <View style={styles.themeOptions}>
             {themeOptions.map((theme) => (
-              <button
+              <TouchableWithoutFeedback
                 key={theme.id}
-                onClick={() => theme.available && setSelectedTheme(theme.id)}
+                onPress={() => theme.available && setSelectedTheme(theme.id)}
                 disabled={!theme.available}
-                className={`w-full flex items-center justify-between py-3 px-1 transition-all duration-200 ${
-                  selectedTheme === theme.id && theme.available
-                    ? 'text-green-400'
-                    : 'text-gray-300 hover:text-white'
-                } ${
-                  !theme.available
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'cursor-pointer'
-                }`}
               >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-4 h-4 rounded-full ${theme.color} ${
-                      !theme.available ? 'opacity-50' : ''
-                    }`}
-                  />
-                  <div className="text-left">
-                    <span className="text-sm font-medium">{theme.name}</span>
-                    {theme.comingSoon && (
-                      <div className="text-xs text-gray-500">Coming Soon</div>
-                    )}
-                  </div>
-                </div>
-                {selectedTheme === theme.id && theme.available && (
-                  <div className="w-2 h-2 bg-green-400 rounded-full" />
-                )}
-              </button>
+                <View
+                  style={[
+                    styles.themeOption,
+                    selectedTheme === theme.id && theme.available
+                      ? styles.themeOptionSelected
+                      : null,
+                    !theme.available ? styles.themeOptionDisabled : null,
+                  ]}
+                >
+                  <View style={styles.themeOptionContent}>
+                    <View
+                      style={[
+                        styles.themeColor,
+                        { backgroundColor: theme.color },
+                        !theme.available ? { opacity: 0.5 } : null,
+                      ]}
+                    />
+                    <View>
+                      <Text
+                        style={[
+                          styles.themeName,
+                          selectedTheme === theme.id && theme.available
+                            ? { color: '#34d399' }
+                            : { color: '#d1d5db' },
+                        ]}
+                      >
+                        {theme.name}
+                      </Text>
+                      {theme.comingSoon && (
+                        <Text style={styles.comingSoon}>Coming Soon</Text>
+                      )}
+                    </View>
+                  </View>
+                  {selectedTheme === theme.id && theme.available && (
+                    <View style={styles.selectedIndicator} />
+                  )}
+                </View>
+              </TouchableWithoutFeedback>
             ))}
-          </div>
-        </div>
+          </View>
+        </View>
 
-        {/* Line separator */}
-        <div className="h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
+        {/* Separator */}
+        <View style={styles.separator} />
 
         {/* Notifications */}
-        <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <div className="flex items-center gap-3 mb-4">
-            <Bell className="h-4 w-4 text-blue-400" />
-            <div>
-              <h2 className="text-sm font-medium text-white">Notifications</h2>
-              <p className="text-xs text-gray-400">
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Bell size={16} color="#60a5fa" />
+            <View style={styles.sectionHeaderText}>
+              <Text style={styles.sectionTitle}>Notifications</Text>
+              <Text style={styles.sectionSubtitle}>
                 Manage your notification preferences
-              </p>
-            </div>
-          </div>
+              </Text>
+            </View>
+          </View>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <h3 className="text-sm font-medium text-white">
-                  Push Notifications
-                </h3>
-                <p className="text-xs text-gray-400">
+          <View style={styles.notificationOptions}>
+            <View style={styles.notificationOption}>
+              <View>
+                <Text style={styles.notificationTitle}>Push Notifications</Text>
+                <Text style={styles.notificationSubtitle}>
                   Get notified about match updates and results
-                </p>
-              </div>
+                </Text>
+              </View>
               <Switch
-                checked={notifications}
-                onCheckedChange={setNotifications}
-                className="data-[state=checked]:bg-green-500"
+                value={notifications}
+                onValueChange={setNotifications}
+                activeColor="#34d399"
               />
-            </div>
+            </View>
 
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <h3 className="text-sm font-medium text-white">
-                  Match Reminders
-                </h3>
-                <p className="text-xs text-gray-400">
+            <View style={styles.notificationOption}>
+              <View>
+                <Text style={styles.notificationTitle}>Match Reminders</Text>
+                <Text style={styles.notificationSubtitle}>
                   Remind me 30 minutes before matches start
-                </p>
-              </div>
+                </Text>
+              </View>
               <Switch
-                checked={matchReminders}
-                onCheckedChange={setMatchReminders}
-                className="data-[state=checked]:bg-green-500"
+                value={matchReminders}
+                onValueChange={setMatchReminders}
+                activeColor="#34d399"
               />
-            </div>
-          </div>
-        </div>
+            </View>
+          </View>
+        </View>
 
-        {/* Line separator */}
-        <div className="h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
+        {/* Separator */}
+        <View style={styles.separator} />
 
         {/* Account */}
-        <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <div className="flex items-center gap-3 mb-4">
-            <User className="h-4 w-4 text-purple-400" />
-            <div>
-              <h2 className="text-sm font-medium text-white">Account</h2>
-              <p className="text-xs text-gray-400">
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <User size={16} color="#a78bfa" />
+            <View style={styles.sectionHeaderText}>
+              <Text style={styles.sectionTitle}>Account</Text>
+              <Text style={styles.sectionSubtitle}>
                 Manage your account settings
-              </p>
-            </div>
-          </div>
+              </Text>
+            </View>
+          </View>
 
-          <div className="space-y-3">
-            <button className="w-full flex items-center justify-between py-3 px-1 text-gray-300 hover:text-white transition-colors duration-200">
-              <div className="flex items-center gap-3">
-                <Shield className="h-4 w-4" />
-                <span className="text-sm">Privacy Settings</span>
-              </div>
-              <span className="text-gray-500 text-sm">→</span>
-            </button>
+          <View style={styles.accountOptions}>
+            <TouchableOpacity style={styles.accountOption}>
+              <View style={styles.accountOptionContent}>
+                <Shield size={16} color="#d1d5db" />
+                <Text style={styles.accountOptionText}>Privacy Settings</Text>
+              </View>
+              <Text style={styles.arrow}>→</Text>
+            </TouchableOpacity>
 
-            <button className="w-full flex items-center justify-between py-3 px-1 text-gray-300 hover:text-white transition-colors duration-200">
-              <div className="flex items-center gap-3">
-                <Globe className="h-4 w-4" />
-                <span className="text-sm">Language</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-500 text-xs">English</span>
-                <span className="text-gray-500 text-sm">→</span>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
+            <TouchableOpacity style={styles.accountOption}>
+              <View style={styles.accountOptionContent}>
+                <Globe size={16} color="#d1d5db" />
+                <Text style={styles.accountOptionText}>Language</Text>
+              </View>
+              <View style={styles.languageOption}>
+                <Text style={styles.languageText}>English</Text>
+                <Text style={styles.arrow}>→</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
 
-      {/* Bottom spacing */}
-      <div className="h-16"></div>
-    </div>
+        {/* Bottom spacing */}
+        <View style={styles.bottomSpacing} />
+      </ScrollView>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(74, 222, 128, 0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+  },
+  backButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#fff',
+  },
+  content: {
+    padding: 16,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  sectionHeaderText: {
+    flex: 1,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#fff',
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  themeOptions: {
+    gap: 8,
+  },
+  themeOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  themeOptionSelected: {
+    // Selected state styling
+  },
+  themeOptionDisabled: {
+    opacity: 0.5,
+  },
+  themeOptionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  themeColor: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+  },
+  themeName: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  comingSoon: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  selectedIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#34d399',
+  },
+  separator: {
+    height: 1,
+    marginVertical: 16,
+    backgroundColor: 'rgba(74, 222, 128, 0.3)',
+  },
+  notificationOptions: {
+    gap: 16,
+  },
+  notificationOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  notificationTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#fff',
+  },
+  notificationSubtitle: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  accountOptions: {
+    gap: 12,
+  },
+  accountOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+  },
+  accountOptionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  accountOptionText: {
+    fontSize: 14,
+    color: '#d1d5db',
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  languageText: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  arrow: {
+    color: '#6b7280',
+    fontSize: 14,
+  },
+  bottomSpacing: {
+    height: 64,
+  },
+});
 
 export default SettingsPage;
