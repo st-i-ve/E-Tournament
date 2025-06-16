@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Calendar } from 'lucide-react-native';
-import { Button } from '@/components/NewComponents/ui/button';
-import MinimalCalendar from '@/components/NewComponents/MinimalCalendar';
+import { Button } from '@/components/ui/button';
+import MinimalCalendar from '@/components/MinimalCalendar';
 import { useNavigate } from 'react-router-dom';
 
 const FixturesPage = () => {
@@ -16,16 +15,16 @@ const FixturesPage = () => {
         <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
         <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
         <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-        
+
         {/* Circles */}
         <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
         <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
         <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-        
+
         {/* Rectangles */}
         <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
         <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-        
+
         {/* Crossing lines */}
         <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
         <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>

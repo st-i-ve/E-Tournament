@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Trophy, Calendar, Filter, Search } from 'lucide-react-native';
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/NewComponents/Header';
-import { Badge } from '@/components/NewComponents/ui/badge';
-import { Input } from '@/components/NewComponents/ui/input';
-import DetailedMatchCard from '@/components/NewComponents/DetailedMatchCard';
+import Header from '@/components/Header';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import DetailedMatchCard from '@/components/DetailedMatchCard';
 import { detailedMatches, DetailedMatch } from '@/data/matchStats';
 import { currentUser } from '@/data/enhancedMockData';
 
@@ -17,32 +16,43 @@ const FulltimePage = () => {
   const userTeam = currentUser.teamName;
 
   // Get unique tournaments for filter
-  const tournaments = Array.from(new Set(detailedMatches.map(match => match.tournament_name).filter(Boolean)));
+  const tournaments = Array.from(
+    new Set(
+      detailedMatches.map((match) => match.tournament_name).filter(Boolean)
+    )
+  );
 
   // Filter matches based on search and tournament filter
-  const filteredMatches = detailedMatches.filter(match => {
-    const matchesSearch = searchTerm === '' || 
+  const filteredMatches = detailedMatches.filter((match) => {
+    const matchesSearch =
+      searchTerm === '' ||
       match.team_home.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       match.team_away.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       match.tournament_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesTournament = filterTournament === 'all' || match.tournament_name === filterTournament;
-    
+
+    const matchesTournament =
+      filterTournament === 'all' || match.tournament_name === filterTournament;
+
     return matchesSearch && matchesTournament;
   });
 
   // Calculate user's record
-  const userMatches = detailedMatches.filter(match => 
-    match.team_home.name === userTeam || match.team_away.name === userTeam
+  const userMatches = detailedMatches.filter(
+    (match) =>
+      match.team_home.name === userTeam || match.team_away.name === userTeam
   );
 
-  const wins = userMatches.filter(match => {
+  const wins = userMatches.filter((match) => {
     const isHome = match.team_home.name === userTeam;
-    return (isHome && match.team_home.score > match.team_away.score) ||
-           (!isHome && match.team_away.score > match.team_home.score);
+    return (
+      (isHome && match.team_home.score > match.team_away.score) ||
+      (!isHome && match.team_away.score > match.team_home.score)
+    );
   }).length;
 
-  const draws = userMatches.filter(match => match.team_home.score === match.team_away.score).length;
+  const draws = userMatches.filter(
+    (match) => match.team_home.score === match.team_away.score
+  ).length;
   const losses = userMatches.length - wins - draws;
 
   const handleViewDetails = (match: DetailedMatch) => {
@@ -52,7 +62,7 @@ const FulltimePage = () => {
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 pb-24">
       <Header />
-      
+
       {/* Page Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-4">
@@ -61,7 +71,9 @@ const FulltimePage = () => {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Match History</h1>
-            <p className="text-gray-400 text-sm">Completed matches and detailed statistics</p>
+            <p className="text-gray-400 text-sm">
+              Completed matches and detailed statistics
+            </p>
           </div>
         </div>
 
@@ -76,7 +88,9 @@ const FulltimePage = () => {
                   <div className="text-xs text-gray-400">Wins</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-yellow-400">{draws}</div>
+                  <div className="text-lg font-bold text-yellow-400">
+                    {draws}
+                  </div>
                   <div className="text-xs text-gray-400">Draws</div>
                 </div>
                 <div className="text-center">
@@ -86,7 +100,9 @@ const FulltimePage = () => {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-white">{userMatches.length}</div>
+              <div className="text-2xl font-bold text-white">
+                {userMatches.length}
+              </div>
               <div className="text-xs text-gray-400">Total Matches</div>
             </div>
           </div>
@@ -111,8 +127,10 @@ const FulltimePage = () => {
               className="bg-gray-800/30 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm"
             >
               <option value="all">All Tournaments</option>
-              {tournaments.map(tournament => (
-                <option key={tournament} value={tournament}>{tournament}</option>
+              {tournaments.map((tournament) => (
+                <option key={tournament} value={tournament}>
+                  {tournament}
+                </option>
               ))}
             </select>
           </div>
@@ -135,7 +153,7 @@ const FulltimePage = () => {
             <Calendar className="h-12 w-12 text-gray-500 mx-auto mb-4" />
             <h3 className="text-white font-medium mb-2">No Matches Found</h3>
             <p className="text-gray-400 text-sm">
-              {searchTerm || filterTournament !== 'all' 
+              {searchTerm || filterTournament !== 'all'
                 ? 'Try adjusting your search or filter criteria'
                 : 'No completed matches available yet'}
             </p>

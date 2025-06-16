@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react-native';
 
 interface CounterProps {
   value: number;

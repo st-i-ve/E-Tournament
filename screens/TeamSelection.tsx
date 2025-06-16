@@ -1,12 +1,16 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/NewComponents/ui/button';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import AnimatedTeamList from '@/components/NewComponents/AnimatedTeamList'; 
+import AnimatedTeamList from '@/components/AnimatedTeamList';
 
 const teams = [
-  { id: 1, name: 'Manchester United', league: 'Premier League', color: '#DA020E' },
+  {
+    id: 1,
+    name: 'Manchester United',
+    league: 'Premier League',
+    color: '#DA020E',
+  },
   { id: 2, name: 'Barcelona', league: 'La Liga', color: '#A50044' },
   { id: 3, name: 'Bayern Munich', league: 'Bundesliga', color: '#DC052D' },
   { id: 4, name: 'Juventus', league: 'Serie A', color: '#000000' },
@@ -17,11 +21,13 @@ const teams = [
 ];
 
 const TeamSelectionPage = () => {
-  const [selectedTeam, setSelectedTeam] = useState<typeof teams[0] | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<(typeof teams)[0] | null>(
+    null
+  );
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
 
-  const handleTeamSelect = (team: typeof teams[0]) => {
+  const handleTeamSelect = (team: (typeof teams)[0]) => {
     setSelectedTeam(team);
   };
 
@@ -30,7 +36,7 @@ const TeamSelectionPage = () => {
       updateUser({
         ...user,
         teamName: selectedTeam.name,
-        teamColor: selectedTeam.color
+        teamColor: selectedTeam.color,
       });
       navigate('/home');
     }
@@ -106,7 +112,7 @@ const TeamSelectionPage = () => {
           </div>
 
           {/* Team List */}
-          <AnimatedTeamList 
+          <AnimatedTeamList
             teams={teams}
             selectedTeam={selectedTeam}
             onTeamSelect={handleTeamSelect}

@@ -1,14 +1,32 @@
-
 import React, { useState, useMemo } from 'react';
-import { Clock, Trophy, Calendar, Filter, CheckCircle2, Circle, X } from 'lucide-react-native';
-import { Badge } from '@/components/NewComponents/ui/badge';
-import { Button } from '@/components/NewComponents/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/NewComponents/ui/select';
-import { currentUser, mockMatches, mockTournaments, Match } from '@/data/enhancedMockData';
+import {
+  Clock,
+  Trophy,
+  Calendar,
+  Filter,
+  CheckCircle2,
+  Circle,
+  X,
+} from 'lucide-react-native';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  currentUser,
+  mockMatches,
+  mockTournaments,
+  Match,
+} from '@/data/enhancedMockData';
 import { detailedMatches } from '@/data/matchStats';
-import MatchCard from '@/components/NewComponents/MatchCard';
-import MatchInfoModal from '@/components/NewComponents/MatchInfoModal';
-import DetailedMatchCard from '@/components/NewComponents/DetailedMatchCard';
+import MatchCard from '@/components/MatchCard';
+import MatchInfoModal from '@/components/MatchInfoModal';
+import DetailedMatchCard from '@/components/DetailedMatchCard';
 import { useNavigate } from 'react-router-dom';
 
 const SchedulePage = () => {
@@ -17,31 +35,43 @@ const SchedulePage = () => {
   const navigate = useNavigate();
 
   // Get all user's matches (both upcoming and completed)
-  const upcomingMatches = mockMatches.filter(match => 
-    (match.homeTeam === currentUser.teamName || match.awayTeam === currentUser.teamName) &&
-    match.status === 'upcoming'
+  const upcomingMatches = mockMatches.filter(
+    (match) =>
+      (match.homeTeam === currentUser.teamName ||
+        match.awayTeam === currentUser.teamName) &&
+      match.status === 'upcoming'
   );
 
-  const completedMatches = detailedMatches.filter(match => 
-    match.team_home.name === currentUser.teamName || match.team_away.name === currentUser.teamName
+  const completedMatches = detailedMatches.filter(
+    (match) =>
+      match.team_home.name === currentUser.teamName ||
+      match.team_away.name === currentUser.teamName
   );
 
   // Get user's tournaments
-  const userTournaments = mockTournaments.filter(t => 
+  const userTournaments = mockTournaments.filter((t) =>
     t.participants.includes(currentUser.id)
   );
 
   // Group matches by month
   const groupedMatches = useMemo(() => {
-    const groups: { [key: string]: { upcoming: Match[], completed: any[] } } = {};
+    const groups: { [key: string]: { upcoming: Match[]; completed: any[] } } =
+      {};
 
     // Process upcoming matches
-    upcomingMatches.forEach(match => {
-      if (selectedTournament !== 'all' && match.tournamentId !== selectedTournament) return;
-      
+    upcomingMatches.forEach((match) => {
+      if (
+        selectedTournament !== 'all' &&
+        match.tournamentId !== selectedTournament
+      )
+        return;
+
       const date = new Date(match.scheduledDate);
-      const monthKey = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      
+      const monthKey = date.toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric',
+      });
+
       if (!groups[monthKey]) {
         groups[monthKey] = { upcoming: [], completed: [] };
       }
@@ -49,12 +79,19 @@ const SchedulePage = () => {
     });
 
     // Process completed matches - use timestamp instead of scheduled_date
-    completedMatches.forEach(match => {
-      if (selectedTournament !== 'all' && match.tournament_name !== selectedTournament) return;
-      
+    completedMatches.forEach((match) => {
+      if (
+        selectedTournament !== 'all' &&
+        match.tournament_name !== selectedTournament
+      )
+        return;
+
       const date = new Date(match.timestamp); // Fixed: use timestamp instead of scheduled_date
-      const monthKey = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      
+      const monthKey = date.toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric',
+      });
+
       if (!groups[monthKey]) {
         groups[monthKey] = { upcoming: [], completed: [] };
       }
@@ -82,16 +119,16 @@ const SchedulePage = () => {
         <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
         <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
         <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-        
+
         {/* Circles */}
         <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
         <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
         <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-        
+
         {/* Rectangles */}
         <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
         <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-        
+
         {/* Crossing lines */}
         <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
         <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
@@ -143,16 +180,26 @@ const SchedulePage = () => {
       <div className="mb-8 relative z-10">
         <div className="flex items-center gap-3">
           <Filter className="h-4 w-4 text-gray-400" />
-          <Select value={selectedTournament} onValueChange={setSelectedTournament}>
+          <Select
+            value={selectedTournament}
+            onValueChange={setSelectedTournament}
+          >
             <SelectTrigger className="w-48 bg-gray-900/50 border-0 text-white rounded-xl">
               <SelectValue placeholder="Filter by tournament" />
             </SelectTrigger>
             <SelectContent className="bg-[#1C1C1E] border-gray-700 rounded-xl">
-              <SelectItem value="all" className="text-white hover:bg-gray-800 rounded-lg">
+              <SelectItem
+                value="all"
+                className="text-white hover:bg-gray-800 rounded-lg"
+              >
                 All Tournaments
               </SelectItem>
               {userTournaments.map((tournament) => (
-                <SelectItem key={tournament.id} value={tournament.id} className="text-white hover:bg-gray-800 rounded-lg">
+                <SelectItem
+                  key={tournament.id}
+                  value={tournament.id}
+                  className="text-white hover:bg-gray-800 rounded-lg"
+                >
                   {tournament.name}
                 </SelectItem>
               ))}
@@ -169,11 +216,14 @@ const SchedulePage = () => {
               <Trophy className="h-5 w-5 text-green-500" />
               {month}
             </h2>
-            
+
             <div className="space-y-4">
               {/* Upcoming matches */}
               {matches.upcoming.map((match, index) => (
-                <div key={`upcoming-${index}`} className="flex items-start gap-3">
+                <div
+                  key={`upcoming-${index}`}
+                  className="flex items-start gap-3"
+                >
                   <Circle className="h-4 w-4 text-blue-400 mt-4 flex-shrink-0" />
                   <div className="flex-1">
                     <MatchCard
@@ -184,10 +234,13 @@ const SchedulePage = () => {
                   </div>
                 </div>
               ))}
-              
+
               {/* Completed matches */}
               {matches.completed.map((match, index) => (
-                <div key={`completed-${index}`} className="flex items-start gap-3">
+                <div
+                  key={`completed-${index}`}
+                  className="flex items-start gap-3"
+                >
                   <CheckCircle2 className="h-4 w-4 text-green-400 mt-4 flex-shrink-0" />
                   <div className="flex-1">
                     <DetailedMatchCard
@@ -205,12 +258,13 @@ const SchedulePage = () => {
         {Object.keys(groupedMatches).length === 0 && (
           <div className="text-center py-16">
             <Calendar className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-400 mb-2">No matches found</h3>
+            <h3 className="text-lg font-semibold text-gray-400 mb-2">
+              No matches found
+            </h3>
             <p className="text-sm text-gray-500">
-              {selectedTournament === 'all' 
+              {selectedTournament === 'all'
                 ? 'Join a tournament to start playing matches'
-                : 'No matches found in the selected tournament'
-              }
+                : 'No matches found in the selected tournament'}
             </p>
           </div>
         )}

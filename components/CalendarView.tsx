@@ -1,185 +1,261 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
-import GlassCard from './GlassCard';
-import { MotiView } from 'moti';
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Home,
+  Users,
+  ChevronLeft,
+  ChevronRight,
+  CalendarDays,
+  List,
+} from 'lucide-react-native';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { currentUser, mockMatches, Match } from '@/data/enhancedMockData';
+import MatchCard from './MatchCard';
+import MatchInfoModal from './MatchInfoModal';
 
-interface CalendarMatch {
-  date: number;
-  opponent: string;
-  isHome: boolean;
-  time: string;
-}
+const CalendarView = () => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 
-interface CalendarViewProps {
-  matches: CalendarMatch[];
-}
+  const userMatches = mockMatches.filter(
+    (match) =>
+      match.homeTeam === currentUser.teamName ||
+      match.awayTeam === currentUser.teamName
+  );
 
-export default function CalendarView({ matches }: CalendarViewProps) {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
 
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-
-  const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
-  const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
-
-  const hasMatch = (date: number) => {
-    return matches.some(match => match.date === date);
-  };
-
-  const getMatch = (date: number) => {
-    return matches.find(match => match.date === date);
-  };
-
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    const newMonth = new Date(currentMonth);
-    if (direction === 'prev') {
-      newMonth.setMonth(newMonth.getMonth() - 1);
-    } else {
-      newMonth.setMonth(newMonth.getMonth() + 1);
-    }
-    setCurrentMonth(newMonth);
-  };
-
-  const renderCalendarDays = () => {
     const days = [];
-    const totalDays = daysInMonth + firstDayOfMonth;
 
-    for (let i = 0; i < totalDays; i++) {
-      if (i < firstDayOfMonth) {
-        days.push(<View key={`empty-${i}`} style={styles.emptyDay} />);
-      } else {
-        const date = i - firstDayOfMonth + 1;
-        const match = getMatch(date);
-        days.push(
-          <TouchableOpacity
-            key={date}
-            style={[
-              styles.day,
-              hasMatch(date) && styles.matchDay
-            ]}
-          >
-            <Text style={[
-              styles.dayText,
-              hasMatch(date) && styles.matchDayText
-            ]}>
-              {date}
-            </Text>
-            {hasMatch(date) && (
-              <View style={styles.matchDot} />
-            )}
-          </TouchableOpacity>
-        );
-      }
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(null);
+    }
+
+    // Add all days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(new Date(year, month, day));
     }
 
     return days;
   };
 
+  const getMatchesForDate = (date: Date) => {
+    return userMatches.filter((match) => {
+      const matchDate = new Date(match.scheduledDate);
+      return matchDate.toDateString() === date.toDateString();
+    });
+  };
+
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(newDate.getMonth() + (direction === 'next' ? 1 : -1));
+    setCurrentDate(newDate);
+  };
+
+  const formatMonth = () => {
+    return currentDate.toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+    });
+  };
+
+  const renderCalendarGrid = () => {
+    const days = getDaysInMonth(currentDate);
+    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    return (
+      <div className="bg-gray-900/40 rounded-2xl p-12 border border-gray-800/50">
+        {/* Week day headers */}
+        <div className="grid grid-cols-7 gap-6 mb-8">
+          {weekDays.map((day) => (
+            <div
+              key={day}
+              className="p-6 text-center text-xl font-semibold text-gray-300 bg-gray-800/30 rounded-lg"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar days */}
+        <div className="grid grid-cols-7 gap-6">
+          {days.map((day, index) => {
+            if (!day) return <div key={index} className="p-6 h-40" />;
+
+            const matches = getMatchesForDate(day);
+            const isToday = day.toDateString() === new Date().toDateString();
+            const isSelected =
+              selectedDate &&
+              day.toDateString() === selectedDate.toDateString();
+            const homeMatches = matches.filter(
+              (m) => m.homeTeam === currentUser.teamName
+            );
+            const awayMatches = matches.filter(
+              (m) => m.awayTeam === currentUser.teamName
+            );
+
+            return (
+              <div
+                key={day.toDateString()}
+                className={`p-6 h-40 border-2 border-gray-700 rounded-xl cursor-pointer transition-all hover:bg-gray-800/70 hover:border-gray-600 ${
+                  isToday
+                    ? 'bg-green-500/15 border-green-500/50'
+                    : 'bg-gray-800/20'
+                } ${isSelected ? 'bg-blue-500/25 border-blue-500/60' : ''}`}
+                onClick={() => setSelectedDate(isSelected ? null : day)}
+              >
+                <div
+                  className={`text-2xl font-bold mb-4 ${
+                    isToday ? 'text-green-400' : 'text-gray-200'
+                  }`}
+                >
+                  {day.getDate()}
+                </div>
+
+                {/* Match indicators */}
+                {matches.length > 0 && (
+                  <div className="flex items-center justify-center gap-3">
+                    {homeMatches.length > 0 && (
+                      <div
+                        className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        title="Home match"
+                      >
+                        <span className="text-xs font-bold text-white">
+                          {homeMatches.length}
+                        </span>
+                      </div>
+                    )}
+                    {awayMatches.length > 0 && (
+                      <div
+                        className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center"
+                        title="Away match"
+                      >
+                        <span className="text-xs font-bold text-white">
+                          {awayMatches.length}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderSelectedDateMatches = () => {
+    if (!selectedDate) return null;
+
+    const matches = getMatchesForDate(selectedDate);
+    if (matches.length === 0) return null;
+
+    return (
+      <div className="mt-8">
+        <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+          <Calendar className="h-5 w-5 text-green-500" />
+          {selectedDate.toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+          })}
+        </h3>
+        <div className="grid gap-4">
+          {matches.map((match, index) => (
+            <MatchCard
+              key={`${match.homeTeam}-${match.awayTeam}-${index}`}
+              match={match}
+              userTeam={currentUser.teamName}
+              onInfoClick={setSelectedMatch}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <GlassCard style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigateMonth('prev')}>
-          <ChevronLeft size={24} color="#00FF88" />
-        </TouchableOpacity>
-        
-        <Text style={styles.monthTitle}>
-          {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-        </Text>
-        
-        <TouchableOpacity onPress={() => navigateMonth('next')}>
-          <ChevronRight size={24} color="#00FF88" />
-        </TouchableOpacity>
-      </View>
+    <div className="space-y-8">
+      {/* Header Controls */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <h2 className="text-3xl font-bold text-white">{formatMonth()}</h2>
+          <div className="flex items-center gap-4 text-base text-gray-400">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-500 rounded-full" />
+              <span>Home</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-blue-500 rounded-full" />
+              <span>Away</span>
+            </div>
+          </div>
+        </div>
 
-      <View style={styles.weekDays}>
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
-          <Text key={index} style={styles.weekDayText}>{day}</Text>
-        ))}
-      </View>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="default"
+            onClick={() => navigateMonth('prev')}
+            className="bg-gray-900/50 border-gray-700 text-gray-300 hover:bg-gray-800 px-4 py-2"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
 
-      <MotiView
-        from={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 300 }}
-        style={styles.calendar}
-      >
-        {renderCalendarDays()}
-      </MotiView>
-    </GlassCard>
+          <Button
+            variant="outline"
+            size="default"
+            onClick={() => setCurrentDate(new Date())}
+            className="bg-gray-900/50 border-gray-700 text-gray-300 hover:bg-gray-800 px-4 py-2"
+          >
+            Today
+          </Button>
+
+          <Button
+            variant="outline"
+            size="default"
+            onClick={() => navigateMonth('next')}
+            className="bg-gray-900/50 border-gray-700 text-gray-300 hover:bg-gray-800 px-4 py-2"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Calendar Grid */}
+      {renderCalendarGrid()}
+
+      {/* Selected Date Matches */}
+      {renderSelectedDateMatches()}
+
+      {/* Legend */}
+      <div className="text-center text-base text-gray-500 mt-8">
+        Click on a date to view matches for that day
+      </div>
+
+      {/* Match Info Modal */}
+      <MatchInfoModal
+        match={selectedMatch}
+        userTeam={currentUser.teamName}
+        isOpen={!!selectedMatch}
+        onClose={() => setSelectedMatch(null)}
+      />
+    </div>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 20,
-    marginVertical: 10,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  monthTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  weekDays: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 10,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  weekDayText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#cccccc',
-    width: 35,
-    textAlign: 'center',
-  },
-  calendar: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  day: {
-    width: '14.28%',
-    aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  emptyDay: {
-    width: '14.28%',
-    aspectRatio: 1,
-  },
-  matchDay: {
-    backgroundColor: 'rgba(0, 255, 136, 0.2)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#00FF88',
-  },
-  dayText: {
-    fontSize: 16,
-    color: '#ffffff',
-    fontWeight: '500',
-  },
-  matchDayText: {
-    color: '#00FF88',
-    fontWeight: 'bold',
-  },
-  matchDot: {
-    position: 'absolute',
-    bottom: 4,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#00FF88',
-  },
-});
+export default CalendarView;

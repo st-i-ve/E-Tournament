@@ -1,23 +1,38 @@
-
 import React, { useState } from 'react';
 import { Triangle, Users, Target, Info } from 'lucide-react-native';
-import { Badge } from '@/components/NewComponents/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/NewComponents/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/NewComponents/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/NewComponents/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { currentUser, mockTournaments } from '@/data/enhancedMockData';
-import LeagueLeaderboardTable from '@/components/NewComponents/LeagueLeaderboardTable';
-import KnockoutBracket from '@/components/NewComponents/KnockoutBracket';
+import LeagueLeaderboardTable from '@/components/LeagueLeaderboardTable';
+import KnockoutBracket from '@/components/KnockoutBracket';
 
 const LeaderboardPage = () => {
-  const [selectedTournament, setSelectedTournament] = useState<string>(mockTournaments[0]?.id || '');
-
-  // Get user's active tournaments for the selector
-  const userTournaments = mockTournaments.filter(t => 
-    t.participants.includes(currentUser.id) && t.status === 'active'
+  const [selectedTournament, setSelectedTournament] = useState<string>(
+    mockTournaments[0]?.id || ''
   );
 
-  const selectedTournamentData = mockTournaments.find(t => t.id === selectedTournament);
+  // Get user's active tournaments for the selector
+  const userTournaments = mockTournaments.filter(
+    (t) => t.participants.includes(currentUser.id) && t.status === 'active'
+  );
+
+  const selectedTournamentData = mockTournaments.find(
+    (t) => t.id === selectedTournament
+  );
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 pb-24 h-screen flex flex-col bg-black relative overflow-hidden">
@@ -27,16 +42,16 @@ const LeaderboardPage = () => {
         <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
         <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
         <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-        
+
         {/* Circles */}
         <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
         <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
         <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-        
+
         {/* Rectangles */}
         <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
         <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-        
+
         {/* Crossing lines */}
         <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
         <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
@@ -61,13 +76,20 @@ const LeaderboardPage = () => {
       {/* Tournament Selector and Legend */}
       <div className="mb-6 flex items-center gap-4 relative z-10">
         <div className="flex-1">
-          <Select value={selectedTournament} onValueChange={setSelectedTournament}>
+          <Select
+            value={selectedTournament}
+            onValueChange={setSelectedTournament}
+          >
             <SelectTrigger className="bg-[#1C1C1E]/50 border-gray-700/50 text-white">
               <SelectValue placeholder="Choose a tournament" />
             </SelectTrigger>
             <SelectContent className="bg-[#1C1C1E] border-gray-700">
               {userTournaments.map((tournament) => (
-                <SelectItem key={tournament.id} value={tournament.id} className="text-white hover:bg-gray-800">
+                <SelectItem
+                  key={tournament.id}
+                  value={tournament.id}
+                  className="text-white hover:bg-gray-800"
+                >
                   <div className="flex items-center gap-2">
                     {tournament.type === 'league' ? (
                       <Users className="h-4 w-4 text-blue-500" />
@@ -81,7 +103,7 @@ const LeaderboardPage = () => {
             </SelectContent>
           </Select>
         </div>
-        
+
         {/* Legend info modal beside dropdown */}
         {selectedTournamentData?.type === 'league' && (
           <Dialog>

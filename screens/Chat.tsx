@@ -1,46 +1,45 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Send } from 'lucide-react-native';
-import { Button } from '@/components/NewComponents/ui/button';
+import { Button } from '@/components/ui/button';
 
 // Mock chat data
 const mockMessages = [
   {
     id: '1',
-    text: 'Hey everyone! Ready for tonight\'s match?',
+    text: "Hey everyone! Ready for tonight's match?",
     sender: 'Phoenix_Rising',
     timestamp: '2:30 PM',
-    isUser: false
+    isUser: false,
   },
   {
     id: '2',
-    text: 'Absolutely! Let\'s dominate the field 🔥',
+    text: "Absolutely! Let's dominate the field 🔥",
     sender: 'You',
     timestamp: '2:32 PM',
-    isUser: true
+    isUser: true,
   },
   {
     id: '3',
     text: 'What formation are we running today?',
     sender: 'Lightning_Striker',
     timestamp: '2:35 PM',
-    isUser: false
+    isUser: false,
   },
   {
     id: '4',
     text: 'Coach mentioned 4-3-3, aggressive attacking',
     sender: 'You',
     timestamp: '2:36 PM',
-    isUser: true
+    isUser: true,
   },
   {
     id: '5',
-    text: 'Perfect! I\'ve been practicing my headers all week',
+    text: "Perfect! I've been practicing my headers all week",
     sender: 'Desert_Eagle',
     timestamp: '2:38 PM',
-    isUser: false
-  }
+    isUser: false,
+  },
 ];
 
 const ChatPage = () => {
@@ -68,16 +67,16 @@ const ChatPage = () => {
         <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
         <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
         <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-        
+
         {/* Circles */}
         <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
         <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
         <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-        
+
         {/* Rectangles */}
         <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
         <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-        
+
         {/* Crossing lines */}
         <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
         <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
@@ -87,9 +86,9 @@ const ChatPage = () => {
       {/* Header */}
       <div className="sticky top-0 bg-black/95 backdrop-blur-sm border-b border-green-500/20 z-10">
         <div className="flex items-center gap-3 p-4">
-          <Button 
+          <Button
             onClick={() => navigate('/')}
-            variant="ghost" 
+            variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full hover:bg-gray-800/50 text-green-400"
           >
@@ -113,19 +112,26 @@ const ChatPage = () => {
       {/* Messages */}
       <div className="flex-1 p-4 space-y-4 overflow-y-auto relative z-10">
         {mockMessages.map((message) => (
-          <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[80%] ${message.isUser ? 'bg-green-600/20 border-green-500/30' : 'bg-gray-800/40 border-gray-700/30'} rounded-2xl px-4 py-3 border backdrop-blur-sm`}>
+          <div
+            key={message.id}
+            className={`flex ${
+              message.isUser ? 'justify-end' : 'justify-start'
+            }`}
+          >
+            <div
+              className={`max-w-[80%] ${
+                message.isUser
+                  ? 'bg-green-600/20 border-green-500/30'
+                  : 'bg-gray-800/40 border-gray-700/30'
+              } rounded-2xl px-4 py-3 border backdrop-blur-sm`}
+            >
               {!message.isUser && (
                 <div className="text-xs text-green-400 mb-1 font-medium">
                   {message.sender}
                 </div>
               )}
-              <div className="text-white text-sm mb-1">
-                {message.text}
-              </div>
-              <div className="text-xs text-gray-500">
-                {message.timestamp}
-              </div>
+              <div className="text-white text-sm mb-1">{message.text}</div>
+              <div className="text-xs text-gray-500">{message.timestamp}</div>
             </div>
           </div>
         ))}

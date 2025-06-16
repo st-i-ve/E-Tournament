@@ -1,7 +1,13 @@
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Calendar, User, Trophy, Gamepad2, MessageCircle } from 'lucide-react';
+import {
+  Home,
+  Calendar,
+  User,
+  Trophy,
+  Gamepad2,
+  MessageCircle,
+} from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +19,13 @@ const navItems = [
   { path: '/fixtures', label: 'Fixtures', icon: Gamepad2 },
   { path: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   { path: '/chat-list', label: 'Team Chat', icon: MessageCircle },
-  { path: '/profile', label: 'Profile', icon: User, hasBadge: true, badgeCount: mockPendingActionsCount },
+  {
+    path: '/profile',
+    label: 'Profile',
+    icon: User,
+    hasBadge: true,
+    badgeCount: mockPendingActionsCount,
+  },
 ];
 
 const BottomNav = () => {
@@ -37,11 +49,13 @@ const BottomNav = () => {
                 <>
                   <div className="relative">
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                    {item.hasBadge && item.badgeCount && item.badgeCount > 0 && (
-                      <Badge className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 bg-red-500 text-white text-[10px] leading-none">
-                        {item.badgeCount}
-                      </Badge>
-                    )}
+                    {item.hasBadge &&
+                      item.badgeCount &&
+                      item.badgeCount > 0 && (
+                        <Badge className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 bg-red-500 text-white text-[10px] leading-none">
+                          {item.badgeCount}
+                        </Badge>
+                      )}
                   </div>
                   <span className="mt-1">{item.label}</span>
                 </>

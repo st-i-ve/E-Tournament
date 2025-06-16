@@ -1,11 +1,17 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, CheckCircle, Clock, AlertCircle, Bell } from 'lucide-react-native';
-import { Badge } from '@/components/NewComponents/ui/badge';
-import { Button } from '@/components/NewComponents/ui/button';
-import ResultSubmissionModal from '@/components/NewComponents/ResultSubmissionModal';
-import ResultVerificationModal from '@/components/NewComponents/ResultVerificationModal'; 
+import {
+  ArrowLeft,
+  Upload,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Bell,
+} from 'lucide-react-native';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import ResultSubmissionModal from '@/components/ResultSubmissionModal';
+import ResultVerificationModal from '@/components/ResultVerificationModal';
 
 // Mock pending actions data
 const mockPendingActions = [
@@ -16,7 +22,7 @@ const mockPendingActions = [
     opponent: 'Phoenix Rising',
     tournament: 'Champions Elite League',
     deadline: '2025-06-16T23:59:59Z',
-    priority: 'high'
+    priority: 'high',
   },
   {
     id: 'action-2',
@@ -26,7 +32,7 @@ const mockPendingActions = [
     tournament: 'Weekend Warriors Cup',
     submittedScore: '2-1',
     deadline: '2025-06-17T23:59:59Z',
-    priority: 'medium'
+    priority: 'medium',
   },
   {
     id: 'action-3',
@@ -35,8 +41,8 @@ const mockPendingActions = [
     opponent: 'Desert Eagles',
     tournament: 'Champions Elite League',
     submittedAt: '2025-06-15T14:30:00Z',
-    priority: 'low'
-  }
+    priority: 'low',
+  },
 ];
 
 const PendingActionsPage = () => {
@@ -59,8 +65,12 @@ const PendingActionsPage = () => {
   };
 
   const getPriorityDot = (priority: string) => {
-    const color = priority === 'high' ? 'bg-red-400' : 
-                 priority === 'medium' ? 'bg-yellow-400' : 'bg-gray-400';
+    const color =
+      priority === 'high'
+        ? 'bg-red-400'
+        : priority === 'medium'
+        ? 'bg-yellow-400'
+        : 'bg-gray-400';
     return <div className={`w-2 h-2 rounded-full ${color}`} />;
   };
 
@@ -80,8 +90,10 @@ const PendingActionsPage = () => {
   const formatDeadline = (deadline: string) => {
     const date = new Date(deadline);
     const now = new Date();
-    const diffHours = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60));
-    
+    const diffHours = Math.ceil(
+      (date.getTime() - now.getTime()) / (1000 * 60 * 60)
+    );
+
     if (diffHours < 24) {
       return `${diffHours}h`;
     } else {
@@ -107,16 +119,16 @@ const PendingActionsPage = () => {
         <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
         <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
         <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-        
+
         {/* Circles */}
         <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
         <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
         <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-        
+
         {/* Rectangles */}
         <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
         <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-        
+
         {/* Crossing lines */}
         <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
         <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
@@ -126,9 +138,9 @@ const PendingActionsPage = () => {
       {/* Header */}
       <div className="sticky top-0 bg-black/95 backdrop-blur-sm border-b border-green-500/20 z-10">
         <div className="flex items-center gap-3 p-4">
-          <Button 
+          <Button
             onClick={() => navigate('/profile')}
-            variant="ghost" 
+            variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full hover:bg-gray-800/50"
           >
@@ -151,7 +163,7 @@ const PendingActionsPage = () => {
           <div className="space-y-1">
             {mockPendingActions.map((action, index) => (
               <div key={action.id}>
-                <div 
+                <div
                   onClick={() => handleActionClick(action)}
                   className="flex items-center gap-3 py-4 px-2 hover:bg-gray-800/30 rounded-lg cursor-pointer transition-colors"
                 >
@@ -166,7 +178,7 @@ const PendingActionsPage = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {action.deadline && (
                       <span className="text-xs text-gray-400">
@@ -176,7 +188,7 @@ const PendingActionsPage = () => {
                     {getPriorityDot(action.priority)}
                   </div>
                 </div>
-                
+
                 {/* Line separator */}
                 {index < mockPendingActions.length - 1 && (
                   <div className="h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent mx-4"></div>
@@ -201,10 +213,10 @@ const PendingActionsPage = () => {
               tournament: selectedAction.tournament,
               homeTeam: 'Your Team',
               awayTeam: selectedAction.opponent,
-              deadline: selectedAction.deadline
+              deadline: selectedAction.deadline,
             }}
           />
-          
+
           <ResultVerificationModal
             isOpen={isVerificationModalOpen}
             onClose={() => {
@@ -219,7 +231,7 @@ const PendingActionsPage = () => {
               awayTeam: selectedAction.opponent,
               deadline: selectedAction.deadline,
               hasScreenshot: true,
-              aiConfidence: 95
+              aiConfidence: 95,
             }}
           />
         </>
