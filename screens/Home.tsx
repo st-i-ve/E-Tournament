@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ImageBackground,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   currentUser,
@@ -25,17 +32,17 @@ import {
 } from 'lucide-react-native';
 
 const HomePage = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const { user, isAuthenticated } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
 
   // If not authenticated, redirect to login
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigation.navigate('Login');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigation]);
 
   const userTournaments = mockTournaments.filter(
     (t) => t.participants.includes(currentUser.id) && t.status === 'active'
@@ -52,11 +59,11 @@ const HomePage = () => {
   };
 
   const handleViewLeaderboards = () => {
-    navigate('/leaderboard');
+    navigation.navigate('Leaderboard');
   };
 
   const handleViewFixtures = () => {
-    navigate('/fixtures');
+    navigation.navigate('Fixtures');
   };
 
   const handleTournamentCreated = (tournamentData: any) => {
@@ -87,146 +94,124 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Subtle geometric background shapes */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <View style={styles.container}>
+      {/* Background shapes */}
+      <View style={styles.backgroundShapes}>
         {/* Triangles */}
-        <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
-        <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
+        <View style={[styles.triangle, styles.triangle1]} />
+        <View style={[styles.triangle, styles.triangle2]} />
+        <View style={[styles.triangle, styles.triangle3]} />
 
         {/* Circles */}
-        <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
-        <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
+        <View style={[styles.circle, styles.circle1]} />
+        <View style={[styles.circle, styles.circle2]} />
+        <View style={[styles.circle, styles.circle3]} />
 
         {/* Rectangles */}
-        <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
-        <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
+        <View style={[styles.rectangle, styles.rectangle1]} />
+        <View style={[styles.rectangle, styles.rectangle2]} />
 
-        {/* Crossing lines */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-      </div>
+        {/* Lines */}
+        <View style={[styles.line, styles.line1]} />
+        <View style={[styles.line, styles.line2]} />
+        <View style={[styles.line, styles.line3]} />
+      </View>
 
-      {/* Full-width Header with Abstract Shapes Background */}
-      <div className="bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden rounded-b-3xl">
-        {/* Abstract geometric background shapes */}
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Floating triangles */}
-          <div className="absolute top-4 left-8 w-16 h-16 border-2 border-green-500/20 transform rotate-45"></div>
-          <div className="absolute top-12 right-12 w-8 h-8 bg-green-500/10 transform rotate-12"></div>
-          <div className="absolute bottom-6 left-20 w-12 h-12 border border-green-400/15 transform rotate-45"></div>
-
-          {/* Floating circles */}
-          <div className="absolute top-8 left-1/2 w-20 h-20 border border-green-500/15 rounded-full"></div>
-          <div className="absolute bottom-4 right-8 w-14 h-14 bg-green-500/5 rounded-full"></div>
-          <div className="absolute top-16 right-1/4 w-6 h-6 bg-green-400/20 rounded-full"></div>
-
-          {/* Abstract lines */}
-          <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-green-500/10 via-transparent to-green-500/10"></div>
-          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/15 to-transparent"></div>
-
-          {/* Polygonal shapes */}
-          <div className="absolute bottom-8 left-1/3 w-10 h-6 bg-green-500/8 transform skew-x-12"></div>
-          <div className="absolute top-6 right-1/3 w-8 h-8 border border-green-400/12 transform rotate-12"></div>
-        </div>
-
-        <div className="relative p-6 pb-8 z-10">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div
-                className="w-16 h-16 rounded-full bg-black border-2 border-green-500 flex items-center justify-center"
-                style={{ backgroundColor: displayUser.teamColor }}
+      {/* Header */}
+      <ImageBackground
+        style={styles.header}
+        source={require('@/assets/images/abstract-bg.png')} // You'll need to create this image
+      >
+        <View style={styles.headerContent}>
+          <View style={styles.userInfoContainer}>
+            <View style={styles.avatarContainer}>
+              <View
+                style={[
+                  styles.avatar,
+                  { backgroundColor: displayUser.teamColor },
+                ]}
               >
-                <span className="text-white font-bold text-xl">F</span>
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                <Star className="w-3 h-3 text-white" fill="currentColor" />
-              </div>
-            </div>
-            <div>
-              <div
-                className="text-xl font-bold text-white font-mono tracking-wider"
-                style={{
-                  fontFamily: 'monospace, "Courier New", courier',
-                }}
-              >
-                <DecryptedText
-                  text="Welcome back,"
-                  className="block"
-                  interval={30}
-                />
-                <DecryptedText
-                  text={user?.username || displayUser.username}
-                  className="block"
-                  interval={30}
-                />
-              </div>
-              <p className="text-green-400 font-medium">
+                <Text style={styles.avatarText}>F</Text>
+              </View>
+              <View style={styles.badge}>
+                <Star size={12} color="white" />
+              </View>
+            </View>
+            <View style={styles.userTextContainer}>
+              <DecryptedText
+                text="Welcome back,"
+                style={styles.welcomeText}
+                interval={30}
+              />
+              <DecryptedText
+                text={user?.username || displayUser.username}
+                style={styles.usernameText}
+                interval={30}
+              />
+              <Text style={styles.teamName}>
                 {user?.teamName || displayUser.teamName}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+              </Text>
+            </View>
+          </View>
+        </View>
+      </ImageBackground>
 
-      <div className="p-4 space-y-6 mt-2 relative z-10">
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.contentContainer}
+      >
         {/* Quick Actions */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="h-4 w-4 text-green-400" />
-            <h2 className="text-sm font-medium text-white">Quick Actions</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Target size={16} color="#4ADE80" />
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+          </View>
+          <View style={styles.quickActionsGrid}>
             <QuickActionButton
               icon={Plus}
               title="Create Tournament"
               description="Start your own league"
-              onClick={handleCreateTournament}
+              onPress={handleCreateTournament}
               variant="primary"
             />
             <QuickActionButton
               icon={Users}
               title="Join Tournament"
               description="Find tournaments"
-              onClick={handleJoinTournament}
+              onPress={handleJoinTournament}
               variant="secondary"
             />
             <QuickActionButton
               icon={Trophy}
               title="Leaderboards"
               description="Check rankings"
-              onClick={handleViewLeaderboards}
+              onPress={handleViewLeaderboards}
               variant="secondary"
             />
             <QuickActionButton
               icon={Calendar}
               title="Fixtures"
               description="View matches"
-              onClick={handleViewFixtures}
+              onPress={handleViewFixtures}
               variant="secondary"
             />
-          </div>
-        </div>
+          </View>
+        </View>
 
-        <Separator className="bg-gray-800/50" />
+        <Separator style={styles.separator} />
 
-        {/* My Tournaments - Minimal */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Trophy className="h-4 w-4 text-green-400" />
-              <h2 className="text-sm font-medium text-white">My Tournaments</h2>
-            </div>
-            <span className="text-xs text-gray-400">
-              {userTournaments.length}/5
-            </span>
-          </div>
+        {/* My Tournaments */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeaderWithCount}>
+            <View style={styles.sectionHeader}>
+              <Trophy size={16} color="#4ADE80" />
+              <Text style={styles.sectionTitle}>My Tournaments</Text>
+            </View>
+            <Text style={styles.countText}>{userTournaments.length}/5</Text>
+          </View>
 
           {userTournaments.length > 0 ? (
-            <div className="space-y-2">
+            <View style={styles.tournamentsList}>
               {userTournaments.map((tournament) => (
                 <MinimalTournamentCard
                   key={tournament.id}
@@ -234,43 +219,41 @@ const HomePage = () => {
                   isAdmin={tournament.adminId === currentUser.id}
                 />
               ))}
-            </div>
+            </View>
           ) : (
-            <div className="text-center py-6">
-              <Target className="h-5 w-5 text-gray-500 mx-auto mb-2" />
-              <h3 className="text-sm font-medium text-white mb-1">
-                No Active Tournaments
-              </h3>
-              <p className="text-xs text-gray-400 mb-3">
+            <View style={styles.emptyState}>
+              <Target size={20} color="#6B7280" style={styles.emptyIcon} />
+              <Text style={styles.emptyTitle}>No Active Tournaments</Text>
+              <Text style={styles.emptyDescription}>
                 Join or create a tournament to start playing
-              </p>
-              <div className="flex gap-2 justify-center">
-                <button
-                  onClick={handleCreateTournament}
-                  className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs rounded-lg transition-colors"
+              </Text>
+              <View style={styles.emptyButtons}>
+                <TouchableOpacity
+                  onPress={handleCreateTournament}
+                  style={styles.primaryButton}
                 >
-                  Create
-                </button>
-                <button
-                  onClick={handleJoinTournament}
-                  className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs rounded-lg transition-colors"
+                  <Text style={styles.buttonText}>Create</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleJoinTournament}
+                  style={styles.secondaryButton}
                 >
-                  Join
-                </button>
-              </div>
-            </div>
+                  <Text style={styles.buttonText}>Join</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           )}
-        </div>
+        </View>
 
-        <Separator className="bg-gray-800/50" />
+        <Separator style={styles.separator} />
 
         {/* Recent Matches */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Calendar className="h-4 w-4 text-green-400" />
-            <h2 className="text-sm font-medium text-white">Recent Matches</h2>
-          </div>
-          <div className="space-y-3">
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Calendar size={16} color="#4ADE80" />
+            <Text style={styles.sectionTitle}>Recent Matches</Text>
+          </View>
+          <View style={styles.matchesList}>
             {userRecentMatches.map((match) => (
               <RecentMatchCard
                 key={match.id}
@@ -278,34 +261,279 @@ const HomePage = () => {
                 userTeam={displayUser.teamName}
               />
             ))}
-          </div>
+          </View>
 
           {userRecentMatches.length === 0 && (
-            <div className="text-center py-8">
-              <Calendar className="h-6 w-6 text-gray-500 mx-auto mb-2" />
-              <p className="text-xs text-gray-400">No recent matches</p>
-            </div>
+            <View style={styles.emptyState}>
+              <Calendar size={24} color="#6B7280" style={styles.emptyIcon} />
+              <Text style={styles.emptyDescription}>No recent matches</Text>
+            </View>
           )}
-        </div>
-      </div>
-
-      {/* Bottom spacing for navigation */}
-      <div className="h-20"></div>
+        </View>
+      </ScrollView>
 
       {/* Modals */}
       <CreateTournamentModal
-        isOpen={isCreateModalOpen}
+        isVisible={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreateTournament={handleTournamentCreated}
       />
 
       <JoinTournamentModal
-        isOpen={isJoinModalOpen}
+        isVisible={isJoinModalOpen}
         onClose={() => setIsJoinModalOpen(false)}
         onJoinTournament={handleTournamentJoined}
       />
-    </div>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  backgroundShapes: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: 'hidden',
+  },
+  triangle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(74, 222, 128, 0.1)',
+    transform: [{ rotate: '45deg' }],
+  },
+  triangle1: {
+    top: 80,
+    left: 40,
+    width: 32,
+    height: 32,
+  },
+  triangle2: {
+    top: '33%',
+    right: 80,
+    width: 24,
+    height: 24,
+    transform: [{ rotate: '12deg' }],
+  },
+  triangle3: {
+    bottom: '25%',
+    left: '25%',
+    width: 40,
+    height: 40,
+  },
+  circle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(74, 222, 128, 0.1)',
+    borderRadius: 9999,
+  },
+  circle1: {
+    top: '25%',
+    left: '33%',
+    width: 48,
+    height: 48,
+  },
+  circle2: {
+    bottom: '33%',
+    right: '25%',
+    width: 32,
+    height: 32,
+  },
+  circle3: {
+    top: '66%',
+    left: 80,
+    width: 24,
+    height: 24,
+  },
+  rectangle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(74, 222, 128, 0.1)',
+  },
+  rectangle1: {
+    top: '50%',
+    right: 40,
+    width: 48,
+    height: 32,
+  },
+  rectangle2: {
+    bottom: 80,
+    left: '50%',
+    width: 32,
+    height: 48,
+  },
+  line: {
+    position: 'absolute',
+    backgroundColor: 'rgba(74, 222, 128, 0.05)',
+  },
+  line1: {
+    top: 0,
+    left: '25%',
+    width: 1,
+    height: '100%',
+  },
+  line2: {
+    top: '33%',
+    left: 0,
+    width: '100%',
+    height: 1,
+  },
+  line3: {
+    top: '66%',
+    left: 0,
+    width: '100%',
+    height: 1,
+  },
+  header: {
+    width: '100%',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    overflow: 'hidden',
+  },
+  headerContent: {
+    padding: 24,
+    paddingBottom: 32,
+  },
+  userInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  avatarContainer: {
+    position: 'relative',
+  },
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 2,
+    borderColor: '#4ADE80',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  badge: {
+    position: 'absolute',
+    bottom: -4,
+    right: -4,
+    width: 20,
+    height: 20,
+    backgroundColor: '#4ADE80',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userTextContainer: {
+    flex: 1,
+  },
+  welcomeText: {
+    fontSize: 16,
+    color: 'white',
+    fontFamily: 'monospace',
+  },
+  usernameText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    fontFamily: 'monospace',
+  },
+  teamName: {
+    color: '#4ADE80',
+    fontWeight: '500',
+  },
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: 16,
+    paddingTop: 8,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  sectionHeaderWithCount: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'white',
+  },
+  countText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  separator: {
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    marginVertical: 24,
+  },
+  tournamentsList: {
+    gap: 8,
+  },
+  matchesList: {
+    gap: 12,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 24,
+  },
+  emptyIcon: {
+    marginBottom: 8,
+  },
+  emptyTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'white',
+    marginBottom: 4,
+  },
+  emptyDescription: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    marginBottom: 12,
+  },
+  emptyButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  primaryButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#16A34A',
+    borderRadius: 8,
+  },
+  secondaryButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#1F2937',
+    borderRadius: 8,
+  },
+  buttonText: {
+    fontSize: 12,
+    color: 'white',
+  },
+});
 
 export default HomePage;
