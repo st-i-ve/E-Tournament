@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react-native-native';
+import { ArrowLeft } from 'lucide-react-native';
 import {
   ChartContainer,
   ChartTooltip,

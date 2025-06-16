@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Triangle, Users, Target, Info } from 'lucide-react-native-native';
+import { Triangle, Users, Target, Info } from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,

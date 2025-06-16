@@ -7,7 +7,7 @@ import {
   Trophy,
   Gamepad2,
   MessageCircle,
-} from 'lucide-react-native-native';
+} from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 

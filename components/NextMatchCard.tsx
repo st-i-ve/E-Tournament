@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
-import { Calendar, Clock, MapPin, Bell } from 'lucide-react-native-native';
+import { Calendar, Clock, MapPin, Bell } from 'lucide-react-native';
 import GlassCard from './GlassCard';
 import { MotiView } from 'moti';
 

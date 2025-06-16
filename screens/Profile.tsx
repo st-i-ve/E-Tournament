@@ -12,7 +12,7 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-} from 'lucide-react-native-native';
+} from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';

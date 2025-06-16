@@ -7,7 +7,7 @@ import {
   Clock,
   AlertCircle,
   Bell,
-} from 'lucide-react-native-native';
+} from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ResultSubmissionModal from '@/components/ResultSubmissionModal';

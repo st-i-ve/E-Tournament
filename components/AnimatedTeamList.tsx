@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Check } from 'lucide-react-native-native';
+import { Check } from 'lucide-react-native';
 
 interface Team {
   id: number;

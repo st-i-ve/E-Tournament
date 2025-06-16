@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trophy, Calendar, Filter, Search } from 'lucide-react-native-native';
+import { Trophy, Calendar, Filter, Search } from 'lucide-react-native';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { Badge } from '@/components/ui/badge';

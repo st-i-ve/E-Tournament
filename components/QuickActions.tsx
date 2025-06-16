@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Trophy, Users, Calendar, Target } from 'lucide-react-native-native';
+import { Trophy, Users, Calendar, Target } from 'lucide-react-native';
 import GlassCard from './GlassCard';
 import { MotiView } from 'moti';
 

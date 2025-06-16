@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react-native-native';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react-native';
 import GlassCard from './GlassCard';
 import { MotiView } from 'moti';
 
