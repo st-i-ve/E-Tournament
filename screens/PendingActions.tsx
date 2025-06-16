@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import {
   ArrowLeft,
   Upload,
@@ -8,10 +16,6 @@ import {
   AlertCircle,
   Bell,
 } from 'lucide-react-native';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import ResultSubmissionModal from '@/components/ResultSubmissionModal';
-import ResultVerificationModal from '@/components/ResultVerificationModal';
 
 // Mock pending actions data
 const mockPendingActions = [
@@ -46,32 +50,33 @@ const mockPendingActions = [
 ];
 
 const PendingActionsPage = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<any>(null);
 
   const getActionIcon = (type: string) => {
+    const size = 16;
     switch (type) {
       case 'submit_result':
-        return <Upload className="h-4 w-4 text-red-400" />;
+        return <Upload size={size} color="#f87171" />;
       case 'verify_result':
-        return <CheckCircle className="h-4 w-4 text-green-400" />;
+        return <CheckCircle size={size} color="#4ade80" />;
       case 'awaiting_verification':
-        return <Clock className="h-4 w-4 text-yellow-400" />;
+        return <Clock size={size} color="#facc15" />;
       default:
-        return <AlertCircle className="h-4 w-4 text-gray-400" />;
+        return <AlertCircle size={size} color="#9ca3af" />;
     }
   };
 
   const getPriorityDot = (priority: string) => {
     const color =
       priority === 'high'
-        ? 'bg-red-400'
+        ? '#f87171'
         : priority === 'medium'
-        ? 'bg-yellow-400'
-        : 'bg-gray-400';
-    return <div className={`w-2 h-2 rounded-full ${color}`} />;
+        ? '#facc15'
+        : '#9ca3af';
+    return <View style={[styles.priorityDot, { backgroundColor: color }]} />;
   };
 
   const getActionText = (action: any) => {
@@ -111,136 +116,292 @@ const PendingActionsPage = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Geometric background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+  const renderBackgroundShapes = () => {
+    return (
+      <View style={styles.backgroundContainer} pointerEvents="none">
         {/* Triangles */}
-        <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
-        <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
+        <View style={[styles.triangle, { top: 80, left: 40 }]} />
+        <View
+          style={[
+            styles.triangle,
+            {
+              top: '33%',
+              right: 80,
+              width: 24,
+              height: 24,
+              transform: [{ rotate: '12deg' }],
+            },
+          ]}
+        />
+        <View
+          style={[
+            styles.triangle,
+            { bottom: '25%', left: '25%', width: 40, height: 40 },
+          ]}
+        />
 
         {/* Circles */}
-        <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
-        <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
+        <View
+          style={[
+            styles.circle,
+            { top: '25%', left: '33%', width: 48, height: 48 },
+          ]}
+        />
+        <View
+          style={[
+            styles.circle,
+            { bottom: '33%', right: '25%', width: 32, height: 32 },
+          ]}
+        />
+        <View
+          style={[
+            styles.circle,
+            { top: '66%', left: 80, width: 24, height: 24 },
+          ]}
+        />
 
         {/* Rectangles */}
-        <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
-        <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
+        <View
+          style={[
+            styles.rectangle,
+            { top: '50%', right: 40, width: 48, height: 32 },
+          ]}
+        />
+        <View
+          style={[
+            styles.rectangle,
+            { bottom: 80, left: '50%', width: 32, height: 48 },
+          ]}
+        />
 
-        {/* Crossing lines */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-      </div>
+        {/* Lines */}
+        <View style={[styles.verticalLine, { left: '25%' }]} />
+        <View style={[styles.horizontalLine, { top: '33%' }]} />
+        <View style={[styles.horizontalLine, { top: '66%' }]} />
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {renderBackgroundShapes()}
 
       {/* Header */}
-      <div className="sticky top-0 bg-black/95 backdrop-blur-sm border-b border-green-500/20 z-10">
-        <div className="flex items-center gap-3 p-4">
-          <Button
-            onClick={() => navigate('/profile')}
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-full hover:bg-gray-800/50"
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
           >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-lg font-medium">Pending Actions</h1>
-          <Badge className="bg-red-500/10 text-red-400 border-red-500/30 text-xs">
-            {mockPendingActions.length}
-          </Badge>
-        </div>
-      </div>
+            <ArrowLeft size={16} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Pending Actions</Text>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{mockPendingActions.length}</Text>
+          </View>
+        </View>
+      </View>
 
-      <div className="p-4 relative z-10">
+      <ScrollView style={styles.content}>
         {mockPendingActions.length === 0 ? (
-          <div className="text-center py-16">
-            <Bell className="h-8 w-8 text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-400 text-sm">All caught up!</p>
-          </div>
+          <View style={styles.emptyState}>
+            <Bell size={32} color="#4b5563" />
+            <Text style={styles.emptyText}>All caught up!</Text>
+          </View>
         ) : (
-          <div className="space-y-1">
+          <View style={styles.actionsList}>
             {mockPendingActions.map((action, index) => (
-              <div key={action.id}>
-                <div
-                  onClick={() => handleActionClick(action)}
-                  className="flex items-center gap-3 py-4 px-2 hover:bg-gray-800/30 rounded-lg cursor-pointer transition-colors"
+              <View key={action.id}>
+                <TouchableWithoutFeedback
+                  onPress={() => handleActionClick(action)}
                 >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    {getActionIcon(action.type)}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-white truncate">
-                        {getActionText(action)}
-                      </p>
-                      <p className="text-xs text-gray-400 truncate">
-                        {action.tournament}
-                      </p>
-                    </div>
-                  </div>
+                  <View style={styles.actionItem}>
+                    <View style={styles.actionContent}>
+                      {getActionIcon(action.type)}
+                      <View style={styles.actionTextContainer}>
+                        <Text style={styles.actionTitle} numberOfLines={1}>
+                          {getActionText(action)}
+                        </Text>
+                        <Text style={styles.actionSubtitle} numberOfLines={1}>
+                          {action.tournament}
+                        </Text>
+                      </View>
+                    </View>
 
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {action.deadline && (
-                      <span className="text-xs text-gray-400">
-                        {formatDeadline(action.deadline)}
-                      </span>
-                    )}
-                    {getPriorityDot(action.priority)}
-                  </div>
-                </div>
+                    <View style={styles.actionMeta}>
+                      {action.deadline && (
+                        <Text style={styles.deadlineText}>
+                          {formatDeadline(action.deadline)}
+                        </Text>
+                      )}
+                      {getPriorityDot(action.priority)}
+                    </View>
+                  </View>
+                </TouchableWithoutFeedback>
 
-                {/* Line separator */}
                 {index < mockPendingActions.length - 1 && (
-                  <div className="h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent mx-4"></div>
+                  <View style={styles.divider} />
                 )}
-              </div>
+              </View>
             ))}
-          </div>
+          </View>
         )}
-      </div>
+      </ScrollView>
 
-      {/* Modals */}
-      {selectedAction && (
-        <>
-          <ResultSubmissionModal
-            isOpen={isSubmissionModalOpen}
-            onClose={() => {
-              setIsSubmissionModalOpen(false);
-              setSelectedAction(null);
-            }}
-            matchData={{
-              opponent: selectedAction.opponent,
-              tournament: selectedAction.tournament,
-              homeTeam: 'Your Team',
-              awayTeam: selectedAction.opponent,
-              deadline: selectedAction.deadline,
-            }}
-          />
-
-          <ResultVerificationModal
-            isOpen={isVerificationModalOpen}
-            onClose={() => {
-              setIsVerificationModalOpen(false);
-              setSelectedAction(null);
-            }}
-            verificationData={{
-              opponent: selectedAction.opponent,
-              tournament: selectedAction.tournament,
-              submittedScore: selectedAction.submittedScore || '0-0',
-              homeTeam: 'Your Team',
-              awayTeam: selectedAction.opponent,
-              deadline: selectedAction.deadline,
-              hasScreenshot: true,
-              aiConfidence: 95,
-            }}
-          />
-        </>
-      )}
-
-      {/* Bottom spacing for navigation */}
-      <div className="h-20"></div>
-    </div>
+      {/* Modals would be implemented here */}
+      {/* You would need to create Modal components similar to your web ones */}
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  backgroundContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: 'hidden',
+  },
+  triangle: {
+    position: 'absolute',
+    width: 32,
+    height: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+    transform: [{ rotate: '45deg' }],
+  },
+  circle: {
+    position: 'absolute',
+    borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+  },
+  rectangle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+  },
+  verticalLine: {
+    position: 'absolute',
+    width: 1,
+    height: '100%',
+    backgroundColor: 'rgba(34, 197, 94, 0.05)',
+  },
+  horizontalLine: {
+    position: 'absolute',
+    width: '100%',
+    height: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.05)',
+  },
+  header: {
+    position: 'relative',
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(34, 197, 94, 0.2)',
+    zIndex: 10,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 16,
+  },
+  backButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: 'white',
+  },
+  badge: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderRadius: 9999,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  badgeText: {
+    fontSize: 12,
+    color: '#f87171',
+  },
+  content: {
+    flex: 1,
+    padding: 16,
+    position: 'relative',
+    zIndex: 10,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 64,
+  },
+  emptyText: {
+    color: '#9ca3af',
+    fontSize: 14,
+    marginTop: 12,
+  },
+  actionsList: {
+    gap: 1,
+  },
+  actionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+  },
+  actionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+    minWidth: 0,
+  },
+  actionTextContainer: {
+    flex: 1,
+    minWidth: 0,
+  },
+  actionTitle: {
+    fontSize: 14,
+    color: 'white',
+  },
+  actionSubtitle: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginTop: 4,
+  },
+  actionMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexShrink: 0,
+  },
+  deadlineText: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  priorityDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  divider: {
+    height: 1,
+    marginHorizontal: 16,
+    backgroundColor: 'rgba(34, 197, 94, 0.3)',
+  },
+});
 
 export default PendingActionsPage;
