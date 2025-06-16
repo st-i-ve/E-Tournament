@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Calendar as CalendarIcon } from 'lucide-react-native';
+import { Calendar as CalendarIcon } from 'lucide-react-native-native';
 import { CalendarView } from '@/components/CalendarView';
 
 const CalendarPage = () => {
@@ -12,7 +11,9 @@ const CalendarPage = () => {
           <CalendarIcon className="h-5 w-5 text-green-500" />
           Tournament Calendar
         </h1>
-        <p className="text-sm text-gray-400">View your upcoming matches and tournament schedule</p>
+        <p className="text-sm text-gray-400">
+          View your upcoming matches and tournament schedule
+        </p>
       </div>
 
       {/* Calendar Component */}

@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Calendar, Info } from 'lucide-react';
+import { Calendar, Info } from 'lucide-react-native';
 import { Match } from '@/data/enhancedMockData';
 
 interface MatchCardProps {
@@ -10,7 +9,12 @@ interface MatchCardProps {
   compact?: boolean;
 }
 
-const MatchCard = ({ match, userTeam, onInfoClick, compact = false }: MatchCardProps) => {
+const MatchCard = ({
+  match,
+  userTeam,
+  onInfoClick,
+  compact = false,
+}: MatchCardProps) => {
   const isHomeTeam = match.homeTeam === userTeam;
   const matchDate = new Date(match.scheduledDate);
 
@@ -20,24 +24,38 @@ const MatchCard = ({ match, userTeam, onInfoClick, compact = false }: MatchCardP
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-sm">
-              <span className={`truncate ${match.homeTeam === userTeam ? 'font-semibold text-green-400' : 'text-gray-300'}`}>
+              <span
+                className={`truncate ${
+                  match.homeTeam === userTeam
+                    ? 'font-semibold text-green-400'
+                    : 'text-gray-300'
+                }`}
+              >
                 {match.homeTeam}
               </span>
               <span className="text-gray-500">vs</span>
-              <span className={`truncate ${match.awayTeam === userTeam ? 'font-semibold text-green-400' : 'text-gray-300'}`}>
+              <span
+                className={`truncate ${
+                  match.awayTeam === userTeam
+                    ? 'font-semibold text-green-400'
+                    : 'text-gray-300'
+                }`}
+              >
                 {match.awayTeam}
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
               <Calendar className="h-3 w-3" />
-              <span>{matchDate.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
-              })}</span>
+              <span>
+                {matchDate.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </span>
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={() => onInfoClick(match)}
@@ -50,9 +68,9 @@ const MatchCard = ({ match, userTeam, onInfoClick, compact = false }: MatchCardP
 
       <div className="flex items-center justify-between text-xs">
         <div className="text-sm text-gray-400">
-          {matchDate.toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit' 
+          {matchDate.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
           })}
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react-native';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react-native-native';
 import GlassCard from './GlassCard';
 import { MotiView } from 'moti';
 
@@ -17,7 +17,9 @@ interface RecentResultsCarouselProps {
   results: MatchResult[];
 }
 
-export default function RecentResultsCarousel({ results }: RecentResultsCarouselProps) {
+export default function RecentResultsCarousel({
+  results,
+}: RecentResultsCarouselProps) {
   const getResultIcon = (result: string) => {
     switch (result) {
       case 'win':
@@ -43,8 +45,8 @@ export default function RecentResultsCarousel({ results }: RecentResultsCarousel
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Recent Results</Text>
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
@@ -58,15 +60,22 @@ export default function RecentResultsCarousel({ results }: RecentResultsCarousel
             <GlassCard style={styles.resultCard}>
               <View style={styles.resultHeader}>
                 {getResultIcon(result.result)}
-                <Text style={[styles.resultText, { color: getResultColor(result.result) }]}>
+                <Text
+                  style={[
+                    styles.resultText,
+                    { color: getResultColor(result.result) },
+                  ]}
+                >
                   {result.result.toUpperCase()}
                 </Text>
               </View>
-              
+
               <Text style={styles.opponent}>{result.opponent}</Text>
               <Text style={styles.score}>{result.score}</Text>
               <Text style={styles.date}>{result.date}</Text>
-              <Text style={styles.venue}>{result.isHome ? 'Home' : 'Away'}</Text>
+              <Text style={styles.venue}>
+                {result.isHome ? 'Home' : 'Away'}
+              </Text>
             </GlassCard>
           </MotiView>
         ))}

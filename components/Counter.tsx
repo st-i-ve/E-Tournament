@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState } from 'react';
-import { Minus, Plus } from 'lucide-react-native';
+import { Minus, Plus } from 'lucide-react-native-native';
 
 interface CounterProps {
   value: number;
@@ -10,12 +9,12 @@ interface CounterProps {
   className?: string;
 }
 
-const Counter: React.FC<CounterProps> = ({ 
-  value, 
-  onChange, 
-  min = 0, 
+const Counter: React.FC<CounterProps> = ({
+  value,
+  onChange,
+  min = 0,
   max = 99,
-  className = "" 
+  className = '',
 }) => {
   const [displayValue, setDisplayValue] = useState(value);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -23,29 +22,29 @@ const Counter: React.FC<CounterProps> = ({
   useEffect(() => {
     if (displayValue !== value) {
       setIsAnimating(true);
-      
+
       const duration = 300;
       const steps = Math.abs(value - displayValue);
       const stepDuration = duration / Math.max(steps, 1);
-      
+
       let currentStep = 0;
       const startValue = displayValue;
       const difference = value - startValue;
-      
+
       const timer = setInterval(() => {
         currentStep++;
         const progress = currentStep / steps;
-        const newValue = Math.round(startValue + (difference * progress));
-        
+        const newValue = Math.round(startValue + difference * progress);
+
         setDisplayValue(newValue);
-        
+
         if (currentStep >= steps) {
           clearInterval(timer);
           setDisplayValue(value);
           setIsAnimating(false);
         }
       }, stepDuration);
-      
+
       return () => clearInterval(timer);
     }
   }, [value, displayValue]);
@@ -63,7 +62,9 @@ const Counter: React.FC<CounterProps> = ({
   };
 
   return (
-    <div className={`flex items-center bg-gray-800/50 rounded-lg overflow-hidden ${className}`}>
+    <div
+      className={`flex items-center bg-gray-800/50 rounded-lg overflow-hidden ${className}`}
+    >
       <button
         onClick={decrement}
         disabled={value <= min}
@@ -71,9 +72,9 @@ const Counter: React.FC<CounterProps> = ({
       >
         <Minus className="h-3 w-3 text-white" />
       </button>
-      
+
       <div className="flex items-center justify-center min-w-[50px] h-10">
-        <span 
+        <span
           className={`text-lg font-bold text-white transition-all duration-200 ${
             isAnimating ? 'scale-110 text-green-400' : 'scale-100'
           }`}
@@ -81,7 +82,7 @@ const Counter: React.FC<CounterProps> = ({
           {displayValue}
         </span>
       </div>
-      
+
       <button
         onClick={increment}
         disabled={value >= max}

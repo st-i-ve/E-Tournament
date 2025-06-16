@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, Eye, Check, X } from 'lucide-react-native';
+import { Calendar, Clock, Eye, Check, X } from 'lucide-react-native-native';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DetailedMatch } from '@/data/matchStats';

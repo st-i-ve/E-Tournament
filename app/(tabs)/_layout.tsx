@@ -11,7 +11,7 @@ import {
   CalendarClock,
   CalendarCheck,
   CalendarCheck2,
-} from 'lucide-react-native';
+} from 'lucide-react-native-native';
 
 export default function TabLayout() {
   const iconStyle = {

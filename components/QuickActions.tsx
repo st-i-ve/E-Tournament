@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Trophy, Users, Calendar, Target } from 'lucide-react-native';
+import { Trophy, Users, Calendar, Target } from 'lucide-react-native-native';
 import GlassCard from './GlassCard';
 import { MotiView } from 'moti';
 
@@ -51,7 +51,7 @@ export default function QuickActions() {
             transition={{ delay: index * 100 }}
             style={styles.actionContainer}
           >
-            <GlassCard 
+            <GlassCard
               style={styles.actionCard}
               pressable
               onPress={action.onPress}

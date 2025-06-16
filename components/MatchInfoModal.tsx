@@ -1,9 +1,20 @@
 import React from 'react';
-import { Circle, Users, Target, TrendingUp, Flag } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Circle, Users, Target, TrendingUp, Flag } from 'lucide-react-native';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Match, mockTournaments, mockUsers, mockMatches, currentUser } from '@/data/enhancedMockData';
+import {
+  Match,
+  mockTournaments,
+  mockUsers,
+  mockMatches,
+  currentUser,
+} from '@/data/enhancedMockData';
 
 interface MatchInfoModalProps {
   match: Match | null;
@@ -12,20 +23,30 @@ interface MatchInfoModalProps {
   onClose: () => void;
 }
 
-const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProps) => {
+const MatchInfoModal = ({
+  match,
+  userTeam,
+  isOpen,
+  onClose,
+}: MatchInfoModalProps) => {
   if (!match) return null;
 
   const isHomeTeam = match.homeTeam === userTeam;
   const opponentTeam = isHomeTeam ? match.awayTeam : match.homeTeam;
-  const tournament = mockTournaments.find(t => t.id === match.tournamentId);
-  const opponentUser = mockUsers.find(user => user.teamName === opponentTeam);
-  const currentUserData = mockUsers.find(user => user.teamName === userTeam);
+  const tournament = mockTournaments.find((t) => t.id === match.tournamentId);
+  const opponentUser = mockUsers.find((user) => user.teamName === opponentTeam);
+  const currentUserData = mockUsers.find((user) => user.teamName === userTeam);
 
   // Get head-to-head matches
-  const headToHeadMatches = mockMatches.filter(match => 
-    (match.homeTeam === currentUser.teamName && match.awayTeam === opponentTeam) ||
-    (match.homeTeam === opponentTeam && match.awayTeam === currentUser.teamName)
-  ).filter(match => match.status === 'completed');
+  const headToHeadMatches = mockMatches
+    .filter(
+      (match) =>
+        (match.homeTeam === currentUser.teamName &&
+          match.awayTeam === opponentTeam) ||
+        (match.homeTeam === opponentTeam &&
+          match.awayTeam === currentUser.teamName)
+    )
+    .filter((match) => match.status === 'completed');
 
   // Calculate head-to-head stats
   const calculateH2HStats = () => {
@@ -35,20 +56,27 @@ const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProp
     let goalsFor = 0;
     let goalsAgainst = 0;
 
-    headToHeadMatches.forEach(match => {
+    headToHeadMatches.forEach((match) => {
       const isHome = match.homeTeam === currentUser.teamName;
       const userScore = isHome ? match.homeScore : match.awayScore;
       const oppScore = isHome ? match.awayScore : match.homeScore;
-      
+
       goalsFor += userScore;
       goalsAgainst += oppScore;
-      
+
       if (userScore > oppScore) wins++;
       else if (userScore === oppScore) draws++;
       else losses++;
     });
 
-    return { wins, draws, losses, goalsFor, goalsAgainst, totalMatches: headToHeadMatches.length };
+    return {
+      wins,
+      draws,
+      losses,
+      goalsFor,
+      goalsAgainst,
+      totalMatches: headToHeadMatches.length,
+    };
   };
 
   // Generate mock recent form for opponent
@@ -75,7 +103,11 @@ const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProp
       D: 'text-yellow-400 bg-yellow-500/20',
     };
     return (
-      <div className={`flex items-center justify-center h-6 w-6 rounded ${styles[result as keyof typeof styles]}`}>
+      <div
+        className={`flex items-center justify-center h-6 w-6 rounded ${
+          styles[result as keyof typeof styles]
+        }`}
+      >
         <span className="text-xs font-medium">{result}</span>
       </div>
     );
@@ -90,12 +122,15 @@ const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProp
             Match Details
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {/* Tournament Badge */}
           {tournament && (
             <div className="text-center">
-              <Badge variant="outline" className="text-xs text-gray-300 border-gray-600 bg-transparent">
+              <Badge
+                variant="outline"
+                className="text-xs text-gray-300 border-gray-600 bg-transparent"
+              >
                 {tournament.name}
               </Badge>
             </div>
@@ -107,7 +142,9 @@ const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProp
               {currentUserData && getPlayerAvatar(currentUserData.username)}
               <div>
                 <div className="text-sm font-medium text-white">
-                  {isHomeTeam ? currentUserData?.username : opponentUser?.username}
+                  {isHomeTeam
+                    ? currentUserData?.username
+                    : opponentUser?.username}
                 </div>
                 <div className="text-xs text-gray-500">
                   {isHomeTeam ? 'You (Home)' : 'Opponent (Home)'}
@@ -120,24 +157,28 @@ const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProp
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <div className="text-sm font-medium text-white">
-                  {isHomeTeam ? opponentUser?.username : currentUserData?.username}
+                  {isHomeTeam
+                    ? opponentUser?.username
+                    : currentUserData?.username}
                 </div>
                 <div className="text-xs text-gray-500">
                   {isHomeTeam ? 'Opponent (Away)' : 'You (Away)'}
                 </div>
               </div>
-              {isHomeTeam ? (opponentUser && getPlayerAvatar(opponentUser.username)) : (currentUserData && getPlayerAvatar(currentUserData.username))}
+              {isHomeTeam
+                ? opponentUser && getPlayerAvatar(opponentUser.username)
+                : currentUserData && getPlayerAvatar(currentUserData.username)}
             </div>
           </div>
 
           {/* Match Date */}
           <div className="text-center">
             <div className="text-sm font-medium text-white">
-              {new Date(match.scheduledDate).toLocaleDateString('en-US', { 
+              {new Date(match.scheduledDate).toLocaleDateString('en-US', {
                 weekday: 'long',
-                month: 'long', 
+                month: 'long',
                 day: 'numeric',
-                year: 'numeric'
+                year: 'numeric',
               })}
             </div>
           </div>
@@ -146,7 +187,7 @@ const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProp
           {opponentUser && (
             <>
               <Separator className="bg-gray-800" />
-              
+
               {/* Head-to-Head Record */}
               <div>
                 <h4 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
@@ -157,20 +198,27 @@ const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProp
                   <div>
                     <div className="grid grid-cols-3 gap-4 text-center mb-2">
                       <div>
-                        <div className="text-lg font-semibold text-green-400">{h2hStats.wins}</div>
+                        <div className="text-lg font-semibold text-green-400">
+                          {h2hStats.wins}
+                        </div>
                         <div className="text-xs text-gray-500">Wins</div>
                       </div>
                       <div>
-                        <div className="text-lg font-semibold text-yellow-400">{h2hStats.draws}</div>
+                        <div className="text-lg font-semibold text-yellow-400">
+                          {h2hStats.draws}
+                        </div>
                         <div className="text-xs text-gray-500">Draws</div>
                       </div>
                       <div>
-                        <div className="text-lg font-semibold text-red-400">{h2hStats.losses}</div>
+                        <div className="text-lg font-semibold text-red-400">
+                          {h2hStats.losses}
+                        </div>
                         <div className="text-xs text-gray-500">Losses</div>
                       </div>
                     </div>
                     <div className="text-center text-xs text-gray-500">
-                      Goals: {h2hStats.goalsFor} - {h2hStats.goalsAgainst} ({h2hStats.totalMatches} matches)
+                      Goals: {h2hStats.goalsFor} - {h2hStats.goalsAgainst} (
+                      {h2hStats.totalMatches} matches)
                     </div>
                   </div>
                 ) : (
@@ -191,19 +239,27 @@ const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProp
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Goals:</span>
-                    <span className="text-white font-medium">{opponentUser.totalGoals}</span>
+                    <span className="text-white font-medium">
+                      {opponentUser.totalGoals}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Matches:</span>
-                    <span className="text-white font-medium">{opponentUser.totalMatches}</span>
+                    <span className="text-white font-medium">
+                      {opponentUser.totalMatches}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Win Rate:</span>
-                    <span className="text-white font-medium">{opponentUser.winRate}%</span>
+                    <span className="text-white font-medium">
+                      {opponentUser.winRate}%
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Assists:</span>
-                    <span className="text-white font-medium">{opponentUser.totalAssists}</span>
+                    <span className="text-white font-medium">
+                      {opponentUser.totalAssists}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -218,9 +274,7 @@ const MatchInfoModal = ({ match, userTeam, isOpen, onClose }: MatchInfoModalProp
                 </h4>
                 <div className="flex justify-center space-x-2">
                   {opponentForm.map((result, index) => (
-                    <div key={index}>
-                      {getFormIcon(result)}
-                    </div>
+                    <div key={index}>{getFormIcon(result)}</div>
                   ))}
                 </div>
               </div>

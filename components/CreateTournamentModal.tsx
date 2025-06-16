@@ -7,7 +7,7 @@ import {
   Settings,
   ArrowRight,
   ArrowLeft,
-} from 'lucide-react-native';
+} from 'lucide-react-native-native';
 import {
   Dialog,
   DialogContent,

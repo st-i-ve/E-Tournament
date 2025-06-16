@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar } from 'lucide-react-native';
+import { Calendar } from 'lucide-react-native-native';
 import { Button } from '@/components/ui/button';
 import MinimalCalendar from '@/components/MinimalCalendar';
 import { useNavigate } from 'react-router-dom';

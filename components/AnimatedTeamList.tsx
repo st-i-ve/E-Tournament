@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Check } from 'lucide-react-native';
+import { Check } from 'lucide-react-native-native';
 
 interface Team {
   id: number;
@@ -15,14 +14,18 @@ interface AnimatedTeamListProps {
   onTeamSelect: (team: Team) => void;
 }
 
-const AnimatedTeamList = ({ teams, selectedTeam, onTeamSelect }: AnimatedTeamListProps) => {
+const AnimatedTeamList = ({
+  teams,
+  selectedTeam,
+  onTeamSelect,
+}: AnimatedTeamListProps) => {
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       teams.forEach((_, index) => {
         setTimeout(() => {
-          setVisibleItems(prev => [...prev, index]);
+          setVisibleItems((prev) => [...prev, index]);
         }, index * 100);
       });
     }, 200);
@@ -38,17 +41,19 @@ const AnimatedTeamList = ({ teams, selectedTeam, onTeamSelect }: AnimatedTeamLis
           onClick={() => onTeamSelect(team)}
           className={`
             relative p-4 rounded-xl cursor-pointer transition-all duration-500 backdrop-blur-sm
-            ${visibleItems.includes(index) 
-              ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-8'
+            ${
+              visibleItems.includes(index)
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-8'
             }
-            ${selectedTeam?.id === team.id
-              ? 'bg-white/20 border-2 border-white/40 shadow-lg scale-105'
-              : 'bg-white/10 border border-white/20 hover:bg-white/15 hover:scale-102'
+            ${
+              selectedTeam?.id === team.id
+                ? 'bg-white/20 border-2 border-white/40 shadow-lg scale-105'
+                : 'bg-white/10 border border-white/20 hover:bg-white/15 hover:scale-102'
             }
           `}
           style={{
-            transitionDelay: `${index * 50}ms`
+            transitionDelay: `${index * 50}ms`,
           }}
         >
           <div className="flex items-center gap-3">

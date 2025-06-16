@@ -22,7 +22,7 @@ import {
   Target,
   Trophy,
   Users,
-} from 'lucide-react-native';
+} from 'lucide-react-native-native';
 
 const HomePage = () => {
   const navigate = useNavigate();

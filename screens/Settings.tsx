@@ -6,7 +6,7 @@ import {
   Shield,
   User,
   Globe,
-} from 'lucide-react-native';
+} from 'lucide-react-native-native';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';

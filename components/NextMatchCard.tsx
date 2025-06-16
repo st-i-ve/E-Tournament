@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
-import { Calendar, Clock, MapPin, Bell } from 'lucide-react-native';
+import { Calendar, Clock, MapPin, Bell } from 'lucide-react-native-native';
 import GlassCard from './GlassCard';
 import { MotiView } from 'moti';
 
@@ -17,7 +17,7 @@ export default function NextMatchCard({
   date,
   time,
   venue,
-  isHome
+  isHome,
 }: NextMatchProps) {
   const [reminderEnabled, setReminderEnabled] = useState(false);
 
@@ -44,13 +44,9 @@ export default function NextMatchCard({
         style={styles.matchDetails}
       >
         <View style={styles.teams}>
-          <Text style={styles.teamText}>
-            {isHome ? 'You' : opponent}
-          </Text>
+          <Text style={styles.teamText}>{isHome ? 'You' : opponent}</Text>
           <Text style={styles.vs}>vs</Text>
-          <Text style={styles.teamText}>
-            {isHome ? opponent : 'You'}
-          </Text>
+          <Text style={styles.teamText}>{isHome ? opponent : 'You'}</Text>
         </View>
 
         <View style={styles.infoRow}>
@@ -65,7 +61,9 @@ export default function NextMatchCard({
 
         <View style={styles.infoRow}>
           <MapPin size={16} color="#00FF88" />
-          <Text style={styles.infoText}>{venue} ({isHome ? 'Home' : 'Away'})</Text>
+          <Text style={styles.infoText}>
+            {venue} ({isHome ? 'Home' : 'Away'})
+          </Text>
         </View>
       </MotiView>
     </GlassCard>

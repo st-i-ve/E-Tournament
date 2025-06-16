@@ -7,7 +7,7 @@ import {
   CheckCircle2,
   Circle,
   X,
-} from 'lucide-react-native';
+} from 'lucide-react-native-native';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {

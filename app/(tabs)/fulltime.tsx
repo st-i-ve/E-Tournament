@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GlassCard from '../../components/GlassCard';
-import { Calendar, MapPin, Target, Users } from 'lucide-react-native';
+import { Calendar, MapPin, Target, Users } from 'lucide-react-native-native';
 import { MotiView } from 'moti';
 
 interface HistoricalMatch {
@@ -77,7 +77,7 @@ export default function HistoryScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -98,13 +98,23 @@ export default function HistoryScreen() {
               <View style={styles.matchHeader}>
                 <View style={styles.matchInfo}>
                   <Text style={styles.opponent}>{match.opponent}</Text>
-                  <Text style={[styles.score, { color: getResultColor(match.result) }]}>
+                  <Text
+                    style={[
+                      styles.score,
+                      { color: getResultColor(match.result) },
+                    ]}
+                  >
                     {match.score}
                   </Text>
                 </View>
                 <View style={styles.ratingContainer}>
                   <Text style={styles.ratingLabel}>Rating</Text>
-                  <Text style={[styles.rating, { color: getRatingColor(match.rating) }]}>
+                  <Text
+                    style={[
+                      styles.rating,
+                      { color: getRatingColor(match.rating) },
+                    ]}
+                  >
                     {match.rating}
                   </Text>
                 </View>
