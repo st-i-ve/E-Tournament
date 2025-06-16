@@ -1,11 +1,82 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Animated,
+  Easing,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/contexts/AuthContext';
 
 const SignupPage = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const { login } = useAuth();
+  const [moveAnim1] = React.useState(new Animated.Value(0));
+  const [moveAnim2] = React.useState(new Animated.Value(0));
+  const [moveAnim3] = React.useState(new Animated.Value(0));
+
+  React.useEffect(() => {
+    const animateBackground = () => {
+      // First animation sequence
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(moveAnim1, {
+            toValue: 1,
+            duration: 15000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(moveAnim1, {
+            toValue: 0,
+            duration: 15000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+
+      // Second animation sequence
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(moveAnim2, {
+            toValue: 1,
+            duration: 20000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(moveAnim2, {
+            toValue: 0,
+            duration: 20000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+
+      // Third animation sequence
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(moveAnim3, {
+            toValue: 1,
+            duration: 18000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(moveAnim3, {
+            toValue: 0,
+            duration: 18000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    };
+
+    animateBackground();
+  }, []);
 
   const handleSocialLogin = (provider: string) => {
     console.log(`${provider} signup attempt`);
@@ -19,118 +90,268 @@ const SignupPage = () => {
     };
 
     login(userData);
-    navigate('/team-selection');
+    navigation.navigate('TeamSelection');
   };
 
+  // Interpolate animation values
+  const anim1Transform = moveAnim1.interpolate({
+    inputRange: [0, 0.33, 0.66, 1],
+    outputRange: [
+      'translateX(0) translateY(0) scale(1)',
+      'translateX(30px) translateY(-30px) scale(1.1)',
+      'translateX(-20px) translateY(20px) scale(0.9)',
+      'translateX(0) translateY(0) scale(1)',
+    ],
+  });
+
+  const anim2Transform = moveAnim2.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [
+      'translateX(0) translateY(0) scale(1)',
+      'translateX(-25px) translateY(-25px) scale(1.2)',
+      'translateX(0) translateY(0) scale(1)',
+    ],
+  });
+
+  const anim3Transform = moveAnim3.interpolate({
+    inputRange: [0, 0.25, 0.75, 1],
+    outputRange: [
+      'translateX(0) translateY(0) scale(1)',
+      'translateX(25px) translateY(25px) scale(0.8)',
+      'translateX(-30px) translateY(10px) scale(1.1)',
+      'translateX(0) translateY(0) scale(1)',
+    ],
+  });
+
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
-      <style>
-        {`
-          @keyframes move1 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-          }
-          
-          @keyframes move2 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(-25px, -25px) scale(1.2); }
-          }
-          
-          @keyframes move3 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(25px, 25px) scale(0.8); }
-            75% { transform: translate(-30px, 10px) scale(1.1); }
-          }
-
-          @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-          }
-        `}
-      </style>
-
+    <View style={styles.container}>
       {/* Shape Blur Background */}
-      <div className="absolute inset-0">
-        <div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-600/40 to-purple-600/40 rounded-full blur-3xl"
-          style={{ animation: 'move1 15s ease-in-out infinite' }}
-        ></div>
-        <div
-          className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full blur-3xl"
-          style={{ animation: 'move2 20s ease-in-out infinite' }}
-        ></div>
-        <div
-          className="absolute bottom-1/4 left-1/2 w-72 h-72 bg-gradient-to-r from-cyan-500/35 to-blue-500/35 rounded-full blur-3xl"
-          style={{ animation: 'move3 18s ease-in-out infinite' }}
-        ></div>
-      </div>
+      <View style={styles.backgroundContainer}>
+        <Animated.View
+          style={[
+            styles.backgroundShape1,
+            { transform: [{ translateX: 0 }, { translateY: 0 }, { scale: 1 }], // Simplified for demo
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.backgroundShape2,
+            { transform: [{ translateX: 0 }, { translateY: 0 }, { scale: 1 }], // Simplified for demo
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.backgroundShape3,
+            { transform: [{ translateX: 0 }, { translateY: 0 }, { scale: 1 }], // Simplified for demo
+          ]}
+        />
+      </View>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-sm space-y-8 text-center">
-        {/* Header */}
-        <div className="space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
-            Join us
-          </h1>
-          <p className="text-gray-400">Create your account to get started</p>
-        </div>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.content}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Join us</Text>
+            <Text style={styles.subtitle}>Create your account to get started</Text>
+          </View>
 
-        {/* Social Login Buttons */}
-        <div className="space-y-4">
-          <Button
-            onClick={() => handleSocialLogin('Google')}
-            className="w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 flex items-center gap-3 h-14 rounded-xl font-medium transition-all duration-300 relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            <svg width="20" height="20" viewBox="0 0 24 24">
-              <path
-                fill="#EA4335"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              />
-            </svg>
-            <span className="bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent font-semibold bg-[length:200%_100%] animate-[shimmer_2s_ease-in-out_infinite]">
-              Continue with Google
-            </span>
-          </Button>
+          {/* Social Login Buttons */}
+          <View style={styles.socialButtons}>
+            <TouchableOpacity
+              style={styles.socialButton}
+              onPress={() => handleSocialLogin('Google')}
+            >
+              <View style={styles.buttonOverlay} />
+              <View style={styles.buttonContent}>
+                {/* Google icon */}
+                <View style={styles.iconContainer}>
+                  <View
+                    style={[styles.googleIconPart, { backgroundColor: '#EA4335' }]}
+                  />
+                  <View
+                    style={[styles.googleIconPart, { backgroundColor: '#34A853' }]}
+                  />
+                  <View
+                    style={[styles.googleIconPart, { backgroundColor: '#FBBC05' }]}
+                  />
+                  <View
+                    style={[styles.googleIconPart, { backgroundColor: '#EA4335' }]}
+                  />
+                </View>
+                <Text style={styles.socialButtonText}>Continue with Google</Text>
+              </View>
+            </TouchableOpacity>
 
-          <Button
-            onClick={() => handleSocialLogin('Facebook')}
-            className="w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 flex items-center gap-3 h-14 rounded-xl font-medium transition-all duration-300 relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-            </svg>
-            <span className="bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent font-semibold bg-[length:200%_100%] animate-[shimmer_2s_ease-in-out_infinite]">
-              Continue with Facebook
-            </span>
-          </Button>
-        </div>
+            <TouchableOpacity
+              style={styles.socialButton}
+              onPress={() => handleSocialLogin('Facebook')}
+            >
+              <View style={styles.buttonOverlay} />
+              <View style={styles.buttonContent}>
+                {/* Facebook icon */}
+                <View style={styles.facebookIcon}>
+                  <Text style={styles.facebookIconText}>f</Text>
+                </View>
+                <Text style={styles.socialButtonText}>Continue with Facebook</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
 
-        <div className="text-center">
-          <button
-            onClick={() => navigate('/login')}
-            className="text-white/70 hover:text-white font-medium transition-colors"
+          <TouchableOpacity
+            style={styles.loginLink}
+            onPress={() => navigation.navigate('Login')}
           >
-            Already have an account? Sign in
-          </button>
-        </div>
-      </div>
-    </div>
+            <Text style={styles.loginLinkText}>
+              Already have an account? Sign in
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  backgroundContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: 'hidden',
+  },
+  backgroundShape1: {
+    position: 'absolute',
+    top: '25%',
+    left: '25%',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(59, 130, 246, 0.4)',
+    opacity: 0.4,
+  },
+  backgroundShape2: {
+    position: 'absolute',
+    top: '75%',
+    right: '25%',
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+    opacity: 0.4,
+  },
+  backgroundShape3: {
+    position: 'absolute',
+    bottom: '25%',
+    left: '50%',
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: 'rgba(6, 182, 212, 0.35)',
+    opacity: 0.4,
+  },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 16,
+  },
+  content: {
+    width: '100%',
+    maxWidth: 400,
+    alignSelf: 'center',
+  },
+  header: {
+    marginBottom: 32,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#9ca3af',
+    textAlign: 'center',
+  },
+  socialButtons: {
+    marginBottom: 24,
+    gap: 16,
+  },
+  socialButton: {
+    width: '100%',
+    height: 56,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  buttonOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+  },
+  iconContainer: {
+    width: 20,
+    height: 20,
+    position: 'relative',
+  },
+  googleIconPart: {
+    position: 'absolute',
+    width: 10,
+    height: 10,
+    borderRadius: 2,
+  },
+  facebookIcon: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#1877F2',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  facebookIconText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  socialButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  loginLink: {
+    marginTop: 16,
+    alignSelf: 'center',
+  },
+  loginLinkText: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+});
 
 export default SignupPage;
