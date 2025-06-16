@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Trophy, Calendar, Filter, Search } from 'lucide-react-native';
-import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import DetailedMatchCard from '@/components/DetailedMatchCard';
-import { detailedMatches, DetailedMatch } from '@/data/matchStats';
-import { currentUser } from '@/data/enhancedMockData';
+import Header from '../components/Header';
+import DetailedMatchCard from '../components/DetailedMatchCard';
+import { detailedMatches, DetailedMatch } from '../data/matchStats';
+import { currentUser } from '../data/enhancedMockData';
+import { Picker } from '@react-native-picker/picker';
 
 const FulltimePage = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTournament, setFilterTournament] = useState<string>('all');
 
@@ -56,89 +63,87 @@ const FulltimePage = () => {
   const losses = userMatches.length - wins - draws;
 
   const handleViewDetails = (match: DetailedMatch) => {
-    navigate(`/match-stats?matchId=${match.match_id}`);
+    navigation.navigate('MatchStats', { matchId: match.match_id });
   };
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 pb-24">
+    <View style={styles.container}>
       <Header />
 
       {/* Page Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
-            <Trophy className="h-5 w-5 text-green-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white">Match History</h1>
-            <p className="text-gray-400 text-sm">
+      <View style={styles.pageHeader}>
+        <View style={styles.headerContent}>
+          <View style={styles.headerIcon}>
+            <Trophy color="#4ade80" size={20} />
+          </View>
+          <View>
+            <Text style={styles.pageTitle}>Match History</Text>
+            <Text style={styles.pageSubtitle}>
               Completed matches and detailed statistics
-            </p>
-          </div>
-        </div>
+            </Text>
+          </View>
+        </View>
 
         {/* User Record Summary */}
-        <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-white font-semibold mb-2">Your Record</h3>
-              <div className="flex items-center gap-4">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-green-400">{wins}</div>
-                  <div className="text-xs text-gray-400">Wins</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-yellow-400">
-                    {draws}
-                  </div>
-                  <div className="text-xs text-gray-400">Draws</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-red-400">{losses}</div>
-                  <div className="text-xs text-gray-400">Losses</div>
-                </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-white">
-                {userMatches.length}
-              </div>
-              <div className="text-xs text-gray-400">Total Matches</div>
-            </div>
-          </div>
-        </div>
+        <View style={styles.recordContainer}>
+          <View style={styles.recordContent}>
+            <Text style={styles.recordTitle}>Your Record</Text>
+            <View style={styles.statsContainer}>
+              <View style={styles.statItem}>
+                <Text style={styles.winStat}>{wins}</Text>
+                <Text style={styles.statLabel}>Wins</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.drawStat}>{draws}</Text>
+                <Text style={styles.statLabel}>Draws</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.lossStat}>{losses}</Text>
+                <Text style={styles.statLabel}>Losses</Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.totalMatchesContainer}>
+            <Text style={styles.totalMatches}>{userMatches.length}</Text>
+            <Text style={styles.totalMatchesLabel}>Total Matches</Text>
+          </View>
+        </View>
 
         {/* Search and Filter */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
+        <View style={styles.filterContainer}>
+          <View style={styles.searchContainer}>
+            <Search color="#9ca3af" size={16} style={styles.searchIcon} />
+            <TextInput
               placeholder="Search matches or teams..."
+              placeholderTextColor="#9ca3af"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-gray-800/30 border-gray-700 text-white"
+              onChangeText={setSearchTerm}
+              style={styles.searchInput}
             />
-          </div>
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-gray-400" />
-            <select
-              value={filterTournament}
-              onChange={(e) => setFilterTournament(e.target.value)}
-              className="bg-gray-800/30 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm"
+          </View>
+          <View style={styles.tournamentFilter}>
+            <Filter color="#9ca3af" size={16} />
+            <Picker
+              selectedValue={filterTournament}
+              onValueChange={(itemValue) => setFilterTournament(itemValue)}
+              style={styles.picker}
+              dropdownIconColor="#9ca3af"
             >
-              <option value="all">All Tournaments</option>
+              <Picker.Item label="All Tournaments" value="all" />
               {tournaments.map((tournament) => (
-                <option key={tournament} value={tournament}>
-                  {tournament}
-                </option>
+                <Picker.Item
+                  key={tournament}
+                  label={tournament}
+                  value={tournament}
+                />
               ))}
-            </select>
-          </div>
-        </div>
-      </div>
+            </Picker>
+          </View>
+        </View>
+      </View>
 
       {/* Match List */}
-      <div className="space-y-4">
+      <ScrollView style={styles.matchList}>
         {filteredMatches.length > 0 ? (
           filteredMatches.map((match) => (
             <DetailedMatchCard
@@ -149,19 +154,172 @@ const FulltimePage = () => {
             />
           ))
         ) : (
-          <div className="bg-gray-900/30 rounded-xl p-8 text-center">
-            <Calendar className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-            <h3 className="text-white font-medium mb-2">No Matches Found</h3>
-            <p className="text-gray-400 text-sm">
+          <View style={styles.emptyState}>
+            <Calendar color="#6b7280" size={48} />
+            <Text style={styles.emptyStateTitle}>No Matches Found</Text>
+            <Text style={styles.emptyStateText}>
               {searchTerm || filterTournament !== 'all'
                 ? 'Try adjusting your search or filter criteria'
                 : 'No completed matches available yet'}
-            </p>
-          </div>
+            </Text>
+          </View>
         )}
-      </div>
-    </div>
+      </ScrollView>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+    paddingHorizontal: 8,
+    paddingTop: 16,
+    paddingBottom: 96,
+  },
+  pageHeader: {
+    marginBottom: 24,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  headerIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: 'rgba(74, 222, 128, 0.2)',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  pageSubtitle: {
+    fontSize: 14,
+    color: '#9ca3af',
+  },
+  recordContainer: {
+    backgroundColor: 'rgba(31, 41, 55, 0.3)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  recordContent: {
+    flex: 1,
+  },
+  recordTitle: {
+    color: 'white',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  winStat: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4ade80',
+    marginBottom: 4,
+  },
+  drawStat: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#facc15',
+    marginBottom: 4,
+  },
+  lossStat: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#f87171',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  totalMatchesContainer: {
+    alignItems: 'flex-end',
+  },
+  totalMatches: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  totalMatchesLabel: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  searchContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(31, 41, 55, 0.3)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(55, 65, 81, 0.5)',
+    paddingLeft: 12,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    color: 'white',
+    fontSize: 14,
+  },
+  tournamentFilter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(31, 41, 55, 0.3)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(55, 65, 81, 0.5)',
+    paddingLeft: 12,
+  },
+  picker: {
+    width: 150,
+    height: 40,
+    color: 'white',
+  },
+  matchList: {
+    flex: 1,
+  },
+  emptyState: {
+    backgroundColor: 'rgba(17, 24, 39, 0.3)',
+    borderRadius: 12,
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyStateTitle: {
+    color: 'white',
+    fontWeight: '500',
+    fontSize: 16,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateText: {
+    color: '#9ca3af',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+});
 
 export default FulltimePage;
