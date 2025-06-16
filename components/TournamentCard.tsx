@@ -1,5 +1,14 @@
 import React from 'react';
 import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Dimensions,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
   Trophy,
   Users,
   Crown,
@@ -7,8 +16,6 @@ import {
   Star,
   Medal,
 } from 'lucide-react-native';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Tournament } from '@/data/enhancedMockData';
 
 interface TournamentCardProps {
@@ -20,13 +27,13 @@ const TournamentCard = ({
   tournament,
   isAdmin = false,
 }: TournamentCardProps) => {
-  const getPositionColor = (position?: number) => {
-    if (!position) return 'bg-gray-500';
-    if (position === 1) return 'bg-gradient-to-r from-yellow-400 to-yellow-500';
-    if (position === 2) return 'bg-gradient-to-r from-gray-300 to-gray-400';
-    if (position === 3) return 'bg-gradient-to-r from-amber-500 to-amber-600';
-    if (position <= 4) return 'bg-gradient-to-r from-green-500 to-green-600';
-    return 'bg-gray-500';
+  const getPositionColors = (position?: number) => {
+    if (!position) return ['#6B7280', '#6B7280'];
+    if (position === 1) return ['#F59E0B', '#FBBF24'];
+    if (position === 2) return ['#D1D5DB', '#9CA3AF'];
+    if (position === 3) return ['#F97316', '#EA580C'];
+    if (position <= 4) return ['#22C55E', '#16A34A'];
+    return ['#6B7280', '#6B7280'];
   };
 
   const getPositionText = (position?: number) => {
@@ -39,112 +46,309 @@ const TournamentCard = ({
 
   const getPositionIcon = (position?: number) => {
     if (!position) return null;
-    if (position === 1) return <Trophy className="h-3 w-3" />;
-    if (position === 2) return <Medal className="h-3 w-3" />;
-    if (position === 3) return <Star className="h-3 w-3" />;
+    if (position === 1) return <Trophy size={12} color="white" />;
+    if (position === 2) return <Medal size={12} color="white" />;
+    if (position === 3) return <Star size={12} color="white" />;
     return null;
   };
 
+  const progressWidth = new Animated.Value(0);
+
+  React.useEffect(() => {
+    Animated.timing(progressWidth, {
+      toValue:
+        (tournament.totalParticipants / tournament.maxParticipants) * 100,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [tournament.totalParticipants]);
+
   return (
-    <Card className="bg-gradient-to-br from-[#1C1C1E] to-[#2C2C2E] border-0 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] overflow-hidden">
-      <CardContent className="p-4 relative">
+    <TouchableOpacity activeOpacity={0.9} style={styles.cardContainer}>
+      <LinearGradient
+        colors={['#1C1C1E', '#2C2C2E']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.card}
+      >
         {/* Background accent */}
-        <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/5 rounded-full -translate-y-8 translate-x-8" />
+        <View style={styles.backgroundAccent} />
 
-        <div className="flex items-start justify-between mb-3 relative z-10">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center">
-                  <Trophy className="h-4 w-4 text-green-500" />
-                </div>
-                <h3 className="font-bold text-white text-sm truncate">
-                  {tournament.name}
-                </h3>
-              </div>
-              {isAdmin && (
-                <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 rounded-full">
-                  <Crown className="h-3 w-3 text-yellow-400" />
-                  <span className="text-yellow-400 text-xs font-medium">
-                    Admin
-                  </span>
-                </div>
-              )}
-            </div>
+        <View style={styles.cardContent}>
+          <View style={styles.headerContainer}>
+            <View style={styles.titleContainer}>
+              <View style={styles.iconContainer}>
+                <Trophy size={16} color="#22C55E" />
+              </View>
+              <Text style={styles.tournamentName} numberOfLines={1}>
+                {tournament.name}
+              </Text>
+            </View>
 
-            <div className="flex items-center gap-2 mb-3">
-              <Badge
-                variant="outline"
-                className={`text-xs border-0 ${
+            {isAdmin && (
+              <View style={styles.adminBadge}>
+                <Crown size={12} color="#F59E0B" />
+                <Text style={styles.adminText}>Admin</Text>
+              </View>
+            )}
+          </View>
+
+          <View style={styles.badgeContainer}>
+            <View
+              style={[
+                styles.typeBadge,
+                tournament.type === 'league'
+                  ? styles.leagueBadge
+                  : styles.tournamentBadge,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.badgeText,
                   tournament.type === 'league'
-                    ? 'bg-blue-500/20 text-blue-400'
-                    : 'bg-purple-500/20 text-purple-400'
-                }`}
+                    ? styles.leagueText
+                    : styles.tournamentText,
+                ]}
               >
                 {tournament.type.toUpperCase()}
-              </Badge>
-              <Badge
-                variant="outline"
-                className="border-0 bg-green-500/20 text-green-400 text-xs"
-              >
-                ACTIVE
-              </Badge>
-            </div>
-          </div>
+              </Text>
+            </View>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>ACTIVE</Text>
+            </View>
+          </View>
 
           {tournament.userPosition && (
-            <div
-              className={`px-3 py-1.5 rounded-full text-xs font-bold text-white ${getPositionColor(
-                tournament.userPosition
-              )} flex items-center gap-1 shadow-lg`}
-            >
-              {getPositionIcon(tournament.userPosition)}
-              {getPositionText(tournament.userPosition)}
-            </div>
+            <View style={styles.positionContainer}>
+              <LinearGradient
+                colors={getPositionColors(tournament.userPosition)}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.positionBadge}
+              >
+                {getPositionIcon(tournament.userPosition)}
+                <Text style={styles.positionText}>
+                  {getPositionText(tournament.userPosition)}
+                </Text>
+              </LinearGradient>
+            </View>
           )}
-        </div>
 
-        <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 text-gray-400">
-              <Users className="h-3 w-3" />
-              <span className="font-medium">
+          <View style={styles.infoContainer}>
+            <View style={styles.infoItem}>
+              <Users size={12} color="#9CA3AF" />
+              <Text style={styles.infoText}>
                 {tournament.totalParticipants}/{tournament.maxParticipants}
-              </span>
-            </div>
-            <span className="text-gray-600">•</span>
-            <div className="flex items-center gap-1 text-gray-400">
-              <Calendar className="h-3 w-3" />
-              <span>{tournament.matchDays.length} days/week</span>
-            </div>
-          </div>
+              </Text>
+            </View>
+            <Text style={styles.divider}>•</Text>
+            <View style={styles.infoItem}>
+              <Calendar size={12} color="#9CA3AF" />
+              <Text style={styles.infoText}>
+                {tournament.matchDays.length} days/week
+              </Text>
+            </View>
 
-          <div className="text-right">
-            <div className="text-green-400 font-semibold text-xs">
-              {Math.round(
-                (tournament.totalParticipants / tournament.maxParticipants) *
-                  100
-              )}
-              % full
-            </div>
-          </div>
-        </div>
+            <View style={styles.progressTextContainer}>
+              <Text style={styles.progressText}>
+                {Math.round(
+                  (tournament.totalParticipants / tournament.maxParticipants) *
+                    100
+                )}
+                % full
+              </Text>
+            </View>
+          </View>
 
-        {/* Progress bar */}
-        <div className="mt-3 w-full h-1 bg-gray-700 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-500"
-            style={{
-              width: `${
-                (tournament.totalParticipants / tournament.maxParticipants) *
-                100
-              }%`,
-            }}
-          />
-        </div>
-      </CardContent>
-    </Card>
+          {/* Progress bar */}
+          <View style={styles.progressBarBackground}>
+            <Animated.View
+              style={[
+                styles.progressBarFill,
+                {
+                  width: progressWidth.interpolate({
+                    inputRange: [0, 100],
+                    outputRange: ['0%', '100%'],
+                  }),
+                },
+              ]}
+            />
+          </View>
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  cardContainer: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  card: {
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  backgroundAccent: {
+    position: 'absolute',
+    top: -32,
+    right: 32,
+    width: 80,
+    height: 80,
+    backgroundColor: 'rgba(34, 197, 94, 0.05)',
+    borderRadius: 40,
+  },
+  cardContent: {
+    padding: 16,
+    position: 'relative',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  iconContainer: {
+    width: 32,
+    height: 32,
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  tournamentName: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+    flexShrink: 1,
+  },
+  adminBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  adminText: {
+    color: '#F59E0B',
+    fontSize: 12,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  typeBadge: {
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginRight: 8,
+  },
+  leagueBadge: {
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+  },
+  tournamentBadge: {
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  leagueText: {
+    color: '#3B82F6',
+  },
+  tournamentText: {
+    color: '#A855F7',
+  },
+  statusBadge: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  statusText: {
+    color: '#22C55E',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  positionContainer: {
+    position: 'absolute',
+    right: 16,
+    top: 16,
+  },
+  positionBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  positionText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: 4,
+  },
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  infoText: {
+    color: '#9CA3AF',
+    fontSize: 12,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  divider: {
+    color: '#4B5563',
+    marginHorizontal: 4,
+  },
+  progressTextContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  progressText: {
+    color: '#22C55E',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  progressBarBackground: {
+    height: 4,
+    backgroundColor: '#374151',
+    borderRadius: 2,
+    marginTop: 12,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
+});
 
 export default TournamentCard;
