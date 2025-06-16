@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Image,
+  Pressable,
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import {
   Upload,
   Camera,
@@ -37,16 +39,22 @@ const ResultSubmissionModal = ({
 }: ResultSubmissionModalProps) => {
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
-  const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [screenshot, setScreenshot] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionStep, setSubmissionStep] = useState<
     'input' | 'uploading' | 'success'
   >('input');
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setScreenshot(file);
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setScreenshot(result.assets[0].uri);
     }
   };
 
@@ -54,7 +62,7 @@ const ResultSubmissionModal = ({
     setIsSubmitting(true);
     setSubmissionStep('uploading');
 
-    // Simulate API call and Gemini processing
+    // Simulate API call and processing
     setTimeout(() => {
       setSubmissionStep('success');
       setIsSubmitting(false);
@@ -80,177 +88,412 @@ const ResultSubmissionModal = ({
     switch (submissionStep) {
       case 'uploading':
         return (
-          <div className="text-center py-6">
-            <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
-              <Upload className="h-6 w-6 text-white" />
-            </div>
-            <h3 className="text-base font-medium text-white mb-2">
-              Processing...
-            </h3>
-            <p className="text-sm text-gray-400 mb-3">Analyzing screenshot</p>
-            <div className="w-full bg-gray-800 rounded-full h-1">
-              <div
-                className="bg-green-600 h-1 rounded-full animate-pulse"
-                style={{ width: '60%' }}
-              ></div>
-            </div>
-          </div>
+          <View style={styles.uploadingContainer}>
+            <View style={styles.uploadingIcon}>
+              <Upload size={24} color="white" />
+            </View>
+            <Text style={styles.uploadingTitle}>Processing...</Text>
+            <Text style={styles.uploadingText}>Analyzing screenshot</Text>
+            <View style={styles.progressBar}>
+              <View style={styles.progressFill} />
+            </View>
+          </View>
         );
 
       case 'success':
         return (
-          <div className="text-center py-6">
-            <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Check className="h-6 w-6 text-white" />
-            </div>
-            <h3 className="text-base font-medium text-white mb-2">Submitted</h3>
-            <p className="text-sm text-gray-400 mb-4">
-              Waiting for verification
-            </p>
-            <Button
-              onClick={onClose}
-              className="w-full bg-green-600 hover:bg-green-500"
-            >
-              Close
-            </Button>
-          </div>
+          <View style={styles.successContainer}>
+            <View style={styles.successIcon}>
+              <Check size={24} color="white" />
+            </View>
+            <Text style={styles.successTitle}>Submitted</Text>
+            <Text style={styles.successText}>Waiting for verification</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
         );
 
       default:
         return (
           <>
             {/* Match Info */}
-            <div className="bg-gray-800/30 rounded-lg p-3 mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Award className="h-3 w-3 text-green-400" />
-                  <span className="text-xs font-medium text-white">
+            <View style={styles.matchInfoContainer}>
+              <View style={styles.matchInfoHeader}>
+                <View style={styles.tournamentInfo}>
+                  <Award size={14} color="#34D399" />
+                  <Text style={styles.tournamentText}>
                     {matchData.tournament}
-                  </span>
-                </div>
-                <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/30 text-xs px-2 py-0.5">
-                  <Clock className="h-2 w-2 mr-1" />
-                  {formatDeadline(matchData.deadline)}
-                </Badge>
-              </div>
+                  </Text>
+                </View>
+                <View style={styles.deadlineBadge}>
+                  <Clock size={12} color="#F97316" />
+                  <Text style={styles.deadlineText}>
+                    {formatDeadline(matchData.deadline)}
+                  </Text>
+                </View>
+              </View>
 
-              <div className="text-center">
-                <p className="text-sm font-medium text-white">
+              <View style={styles.matchCenter}>
+                <Text style={styles.teamsText}>
                   {matchData.homeTeam} vs {matchData.awayTeam}
-                </p>
-              </div>
-            </div>
+                </Text>
+              </View>
+            </View>
 
             {/* Score Input */}
-            <div className="mb-4">
-              <h3 className="text-xs font-medium text-gray-400 mb-3">
-                Match Result
-              </h3>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitleSmall}>Match Result</Text>
 
-              <div className="grid grid-cols-3 gap-3 items-center">
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">
-                    {matchData.homeTeam}
-                  </label>
+              <View style={styles.scoreInputContainer}>
+                <View style={styles.teamInput}>
+                  <Text style={styles.teamLabel}>{matchData.homeTeam}</Text>
                   <Counter
                     value={homeScore}
                     onChange={setHomeScore}
                     min={0}
                     max={20}
                   />
-                </div>
+                </View>
 
-                <div className="text-center">
-                  <span className="text-sm font-medium text-gray-400">VS</span>
-                </div>
+                <Text style={styles.vsText}>VS</Text>
 
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">
-                    {matchData.awayTeam}
-                  </label>
+                <View style={styles.teamInput}>
+                  <Text style={styles.teamLabel}>{matchData.awayTeam}</Text>
                   <Counter
                     value={awayScore}
                     onChange={setAwayScore}
                     min={0}
                     max={20}
                   />
-                </div>
-              </div>
-            </div>
+                </View>
+              </View>
+            </View>
 
             {/* Screenshot Upload */}
-            <div className="mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Camera className="h-3 w-3 text-green-400" />
-                <h3 className="text-xs font-medium text-white">Screenshot</h3>
-                <Badge
-                  variant="outline"
-                  className="text-xs bg-green-500/10 text-green-400 border-green-500/30 px-1.5 py-0"
-                >
-                  Optional
-                </Badge>
-              </div>
+            <View style={styles.section}>
+              <View style={styles.uploadHeader}>
+                <Camera size={14} color="#34D399" />
+                <Text style={styles.uploadTitle}>Screenshot</Text>
+                <View style={styles.optionalBadge}>
+                  <Text style={styles.optionalText}>Optional</Text>
+                </View>
+              </View>
 
-              <div className="border border-dashed border-gray-600 rounded-lg p-4 text-center">
+              <Pressable style={styles.uploadContainer} onPress={pickImage}>
                 {screenshot ? (
-                  <div className="space-y-1">
-                    <Check className="h-5 w-5 text-green-400 mx-auto" />
-                    <p className="text-xs text-white font-medium">
-                      {screenshot.name}
-                    </p>
-                  </div>
+                  <View style={styles.uploadSuccess}>
+                    <Check size={20} color="#34D399" />
+                    <Text style={styles.uploadSuccessText}>
+                      Screenshot selected
+                    </Text>
+                  </View>
                 ) : (
-                  <div className="space-y-1">
-                    <Upload className="h-5 w-5 text-gray-400 mx-auto" />
-                    <p className="text-xs text-gray-400">Upload screenshot</p>
-                  </div>
+                  <View style={styles.uploadPrompt}>
+                    <Upload size={20} color="#9CA3AF" />
+                    <Text style={styles.uploadPromptText}>
+                      Upload screenshot
+                    </Text>
+                  </View>
                 )}
 
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="screenshot-upload"
-                />
-                <label
-                  htmlFor="screenshot-upload"
-                  className="inline-block mt-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded cursor-pointer transition-colors"
+                <TouchableOpacity
+                  style={styles.uploadButton}
+                  onPress={pickImage}
                 >
-                  {screenshot ? 'Change' : 'Choose File'}
-                </label>
-              </div>
-            </div>
+                  <Text style={styles.uploadButtonText}>
+                    {screenshot ? 'Change' : 'Choose File'}
+                  </Text>
+                </TouchableOpacity>
+              </Pressable>
+            </View>
 
             {/* Submit Button */}
-            <Button
-              onClick={handleSubmit}
+            <TouchableOpacity
+              style={[
+                styles.submitButton,
+                isSubmitting && styles.submitButtonDisabled,
+              ]}
+              onPress={handleSubmit}
               disabled={isSubmitting}
-              className="w-full bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:text-gray-400"
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Result'}
-            </Button>
+              <Text style={styles.submitButtonText}>
+                {isSubmitting ? 'Submitting...' : 'Submit Result'}
+              </Text>
+            </TouchableOpacity>
           </>
         );
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-sm p-4">
-        <DialogHeader className="pb-2">
-          <DialogTitle className="text-white text-base">
-            Submit Result
-          </DialogTitle>
-          <DialogDescription className="text-gray-400 text-sm">
-            Enter your match result
-          </DialogDescription>
-        </DialogHeader>
+    <Modal
+      visible={isOpen}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Submit Result</Text>
+            <Text style={styles.modalDescription}>Enter your match result</Text>
+          </View>
 
-        {renderContent()}
-      </DialogContent>
-    </Dialog>
+          {renderContent()}
+        </View>
+      </View>
+    </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#111827',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#374151',
+    width: '100%',
+    maxWidth: 400,
+    padding: 16,
+  },
+  modalHeader: {
+    paddingBottom: 8,
+  },
+  modalTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalDescription: {
+    color: '#9CA3AF',
+    fontSize: 14,
+  },
+  matchInfoContainer: {
+    backgroundColor: 'rgba(31, 41, 55, 0.3)',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  matchInfoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  tournamentInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  tournamentText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  deadlineBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(249, 115, 22, 0.3)',
+  },
+  deadlineText: {
+    color: '#F97316',
+    fontSize: 12,
+    marginLeft: 4,
+  },
+  matchCenter: {
+    alignItems: 'center',
+  },
+  teamsText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  section: {
+    marginBottom: 16,
+  },
+  sectionTitleSmall: {
+    color: '#9CA3AF',
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 12,
+  },
+  scoreInputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+  },
+  teamInput: {
+    flex: 1,
+  },
+  teamLabel: {
+    color: '#6B7280',
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  vsText: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  uploadHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 8,
+  },
+  uploadTitle: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  optionalBadge: {
+    backgroundColor: 'rgba(52, 211, 153, 0.1)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(52, 211, 153, 0.3)',
+  },
+  optionalText: {
+    color: '#34D399',
+    fontSize: 12,
+  },
+  uploadContainer: {
+    borderWidth: 1,
+    borderColor: '#4B5563',
+    borderStyle: 'dashed',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+  },
+  uploadSuccess: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  uploadSuccessText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  uploadPrompt: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  uploadPromptText: {
+    color: '#9CA3AF',
+    fontSize: 12,
+  },
+  uploadButton: {
+    backgroundColor: '#374151',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 4,
+    marginTop: 8,
+  },
+  uploadButtonText: {
+    color: 'white',
+    fontSize: 12,
+  },
+  submitButton: {
+    backgroundColor: '#059669',
+    paddingVertical: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#374151',
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  uploadingContainer: {
+    paddingVertical: 24,
+    alignItems: 'center',
+  },
+  uploadingIcon: {
+    width: 48,
+    height: 48,
+    backgroundColor: '#059669',
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  uploadingTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  uploadingText: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    marginBottom: 12,
+  },
+  progressBar: {
+    width: '100%',
+    backgroundColor: '#1F2937',
+    borderRadius: 4,
+    height: 4,
+  },
+  progressFill: {
+    backgroundColor: '#059669',
+    height: 4,
+    borderRadius: 4,
+    width: '60%',
+  },
+  successContainer: {
+    paddingVertical: 24,
+    alignItems: 'center',
+  },
+  successIcon: {
+    width: 48,
+    height: 48,
+    backgroundColor: '#059669',
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  successTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  successText: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  closeButton: {
+    width: '100%',
+    backgroundColor: '#059669',
+    paddingVertical: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+});
 
 export default ResultSubmissionModal;
