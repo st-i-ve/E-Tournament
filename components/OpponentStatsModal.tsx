@@ -1,5 +1,13 @@
 import React from 'react';
 import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import {
   Trophy,
   Target,
   Shield,
@@ -7,29 +15,36 @@ import {
   Users,
   X,
 } from 'lucide-react-native';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { mockUsers, mockMatches, currentUser } from '@/data/enhancedMockData';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface OpponentStatsModalProps {
   opponent: string;
   isOpen: boolean;
   onClose: () => void;
+  opponentUser?: {
+    username: string;
+    teamName: string;
+  };
+  currentUser: {
+    teamName: string;
+  };
+  mockMatches: Array<{
+    homeTeam: string;
+    awayTeam: string;
+    status: string;
+    homeScore?: number;
+    awayScore?: number;
+  }>;
 }
 
 const OpponentStatsModal = ({
   opponent,
   isOpen,
   onClose,
+  opponentUser,
+  currentUser,
+  mockMatches,
 }: OpponentStatsModalProps) => {
-  // Get opponent user data
-  const opponentUser = mockUsers.find((user) => user.teamName === opponent);
-
   // Get head-to-head matches
   const headToHeadMatches = mockMatches
     .filter(
@@ -53,12 +68,14 @@ const OpponentStatsModal = ({
       const userScore = isHome ? match.homeScore : match.awayScore;
       const oppScore = isHome ? match.awayScore : match.homeScore;
 
-      goalsFor += userScore;
-      goalsAgainst += oppScore;
+      goalsFor += userScore || 0;
+      goalsAgainst += oppScore || 0;
 
-      if (userScore > oppScore) wins++;
-      else if (userScore === oppScore) draws++;
-      else losses++;
+      if (userScore && oppScore) {
+        if (userScore > oppScore) wins++;
+        else if (userScore === oppScore) draws++;
+        else losses++;
+      }
     });
 
     return {
@@ -96,176 +113,390 @@ const OpponentStatsModal = ({
 
   const getFormIcon = (result: string) => {
     const styles = {
-      W: 'text-green-400 bg-green-400/20',
-      L: 'text-red-400 bg-red-400/20',
-      D: 'text-yellow-400 bg-yellow-400/20',
+      W: { backgroundColor: 'rgba(74, 222, 128, 0.2)', color: '#4ADE80' },
+      L: { backgroundColor: 'rgba(248, 113, 113, 0.2)', color: '#F87171' },
+      D: { backgroundColor: 'rgba(251, 191, 36, 0.2)', color: '#FBBF24' },
     };
+
+    const style = styles[result as keyof typeof styles] || styles.W;
+
     return (
-      <div
-        className={`flex items-center justify-center h-6 w-6 rounded-sm ${
-          styles[result as keyof typeof styles]
-        }`}
+      <View
+        style={[styles.formIcon, { backgroundColor: style.backgroundColor }]}
       >
-        <span className="text-xs font-bold">{result}</span>
-      </div>
+        <Text style={[styles.formIconText, { color: style.color }]}>
+          {result}
+        </Text>
+      </View>
     );
   };
 
   const getTeamCrest = (teamName: string) => {
     const initial = teamName.charAt(0).toUpperCase();
     return (
-      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-        {initial}
-      </div>
+      <LinearGradient
+        colors={['#3B82F6', '#8B5CF6']}
+        start={[0, 0]}
+        end={[1, 1]}
+        style={styles.teamCrest}
+      >
+        <Text style={styles.teamCrestText}>{initial}</Text>
+      </LinearGradient>
     );
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-[#1C1C1E] border-gray-700 text-white max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-white flex items-center gap-3">
-            {getTeamCrest(opponent)}
-            <div>
-              <div className="text-lg font-bold">{opponent}</div>
-              <div className="text-sm text-gray-400">
-                {opponentUser?.username || 'Unknown Player'}
-              </div>
-            </div>
-          </DialogTitle>
-        </DialogHeader>
+    <Modal
+      visible={isOpen}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <LinearGradient
+            colors={['#1C1C1E', '#121212']}
+            style={styles.gradientBackground}
+          />
 
-        <div className="space-y-6">
-          {/* Head-to-Head Record */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-              <Trophy className="h-4 w-4 text-yellow-500" />
-              Head-to-Head Record
-            </h3>
-            {h2hStats.totalMatches > 0 ? (
-              <div className="bg-gray-800/50 rounded-lg p-4">
-                <div className="grid grid-cols-3 gap-4 text-center mb-3">
-                  <div>
-                    <div className="text-lg font-bold text-green-400">
-                      {h2hStats.wins}
-                    </div>
-                    <div className="text-xs text-gray-400">Wins</div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-yellow-400">
-                      {h2hStats.draws}
-                    </div>
-                    <div className="text-xs text-gray-400">Draws</div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-red-400">
-                      {h2hStats.losses}
-                    </div>
-                    <div className="text-xs text-gray-400">Losses</div>
-                  </div>
-                </div>
-                <div className="text-center text-sm text-gray-400">
-                  Goals: {h2hStats.goalsFor} - {h2hStats.goalsAgainst} (
-                  {h2hStats.totalMatches} matches)
-                </div>
-              </div>
-            ) : (
-              <div className="bg-gray-800/50 rounded-lg p-4 text-center text-gray-400">
-                No previous matches
-              </div>
-            )}
-          </div>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <X size={24} color="#9CA3AF" />
+            </TouchableOpacity>
+            <View style={styles.headerContent}>
+              {getTeamCrest(opponent)}
+              <View style={styles.headerText}>
+                <Text style={styles.teamName}>{opponent}</Text>
+                <Text style={styles.username}>
+                  {opponentUser?.username || 'Unknown Player'}
+                </Text>
+              </View>
+            </View>
+          </View>
 
-          {/* Season Stats */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-              <Target className="h-4 w-4 text-blue-500" />
-              Season Performance
-            </h3>
-            <div className="bg-gray-800/50 rounded-lg p-4">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Position:</span>
-                  <span className="text-white font-medium">
-                    #{seasonStats.position}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Points:</span>
-                  <span className="text-white font-medium">
-                    {seasonStats.points}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Matches:</span>
-                  <span className="text-white font-medium">
-                    {seasonStats.matchesPlayed}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Goals:</span>
-                  <span className="text-white font-medium">
-                    {seasonStats.goalsFor}:{seasonStats.goalsAgainst}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ScrollView style={styles.content}>
+            {/* Head-to-Head Record */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Trophy size={16} color="#FBBF24" />
+                <Text style={styles.sectionTitle}>Head-to-Head Record</Text>
+              </View>
+              {h2hStats.totalMatches > 0 ? (
+                <View style={styles.statsCard}>
+                  <View style={styles.statsRow}>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statValueGreen}>{h2hStats.wins}</Text>
+                      <Text style={styles.statLabel}>Wins</Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statValueYellow}>
+                        {h2hStats.draws}
+                      </Text>
+                      <Text style={styles.statLabel}>Draws</Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statValueRed}>{h2hStats.losses}</Text>
+                      <Text style={styles.statLabel}>Losses</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.goalsText}>
+                    Goals: {h2hStats.goalsFor} - {h2hStats.goalsAgainst} (
+                    {h2hStats.totalMatches} matches)
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.statsCard}>
+                  <Text style={styles.noMatchesText}>No previous matches</Text>
+                </View>
+              )}
+            </View>
 
-          {/* Recent Form */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-purple-500" />
-              Recent Form
-            </h3>
-            <div className="flex justify-center space-x-2">
-              {opponentForm.map((result, index) => (
-                <div key={index}>{getFormIcon(result)}</div>
-              ))}
-            </div>
-          </div>
+            {/* Season Stats */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Target size={16} color="#3B82F6" />
+                <Text style={styles.sectionTitle}>Season Performance</Text>
+              </View>
+              <View style={styles.statsCard}>
+                <View style={styles.statsGrid}>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.gridLabel}>Position:</Text>
+                    <Text style={styles.gridValue}>
+                      #{seasonStats.position}
+                    </Text>
+                  </View>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.gridLabel}>Points:</Text>
+                    <Text style={styles.gridValue}>{seasonStats.points}</Text>
+                  </View>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.gridLabel}>Matches:</Text>
+                    <Text style={styles.gridValue}>
+                      {seasonStats.matchesPlayed}
+                    </Text>
+                  </View>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.gridLabel}>Goals:</Text>
+                    <Text style={styles.gridValue}>
+                      {seasonStats.goalsFor}:{seasonStats.goalsAgainst}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
 
-          {/* Strengths & Weaknesses */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-              <Shield className="h-4 w-4 text-green-500" />
-              Quick Analysis
-            </h3>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className="bg-green-500/20 text-green-400 border-green-500/30 text-xs"
-                >
-                  Strong Attack
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs"
-                >
-                  Good Form
-                </Badge>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className="bg-red-500/20 text-red-400 border-red-500/30 text-xs"
-                >
-                  Weak Defense
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs"
-                >
-                  Inconsistent
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+            {/* Recent Form */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <TrendingUp size={16} color="#8B5CF6" />
+                <Text style={styles.sectionTitle}>Recent Form</Text>
+              </View>
+              <View style={styles.formContainer}>
+                {opponentForm.map((result, index) => (
+                  <View key={index}>{getFormIcon(result)}</View>
+                ))}
+              </View>
+            </View>
+
+            {/* Quick Analysis */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Shield size={16} color="#4ADE80" />
+                <Text style={styles.sectionTitle}>Quick Analysis</Text>
+              </View>
+              <View style={styles.badgesContainer}>
+                <View style={styles.badgesRow}>
+                  <View style={[styles.badge, styles.badgeGreen]}>
+                    <Text style={styles.badgeTextGreen}>Strong Attack</Text>
+                  </View>
+                  <View style={[styles.badge, styles.badgeBlue]}>
+                    <Text style={styles.badgeTextBlue}>Good Form</Text>
+                  </View>
+                </View>
+                <View style={styles.badgesRow}>
+                  <View style={[styles.badge, styles.badgeRed]}>
+                    <Text style={styles.badgeTextRed}>Weak Defense</Text>
+                  </View>
+                  <View style={[styles.badge, styles.badgeYellow]}>
+                    <Text style={styles.badgeTextYellow}>Inconsistent</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#1C1C1E',
+    marginHorizontal: 20,
+    marginVertical: 50,
+    borderRadius: 16,
+    overflow: 'hidden',
+    maxHeight: '80%',
+  },
+  gradientBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  header: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2C2C2E',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 1,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  teamCrest: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  teamCrestText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  headerText: {
+    flex: 1,
+  },
+  teamName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  username: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    marginTop: 4,
+  },
+  content: {
+    padding: 16,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#E5E7EB',
+    marginLeft: 8,
+  },
+  statsCard: {
+    backgroundColor: 'rgba(39, 39, 41, 0.5)',
+    borderRadius: 12,
+    padding: 16,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statValueGreen: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#4ADE80',
+    marginBottom: 4,
+  },
+  statValueYellow: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FBBF24',
+    marginBottom: 4,
+  },
+  statValueRed: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#F87171',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  goalsText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
+  },
+  noMatchesText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    paddingVertical: 8,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  gridItem: {
+    width: '50%',
+    marginBottom: 12,
+  },
+  gridLabel: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    marginBottom: 4,
+  },
+  gridValue: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: 'white',
+  },
+  formContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  formIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  formIconText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  badgesContainer: {
+    gap: 8,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  badge: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 1,
+  },
+  badgeGreen: {
+    backgroundColor: 'rgba(74, 222, 128, 0.2)',
+    borderColor: 'rgba(74, 222, 128, 0.3)',
+  },
+  badgeBlue: {
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+  },
+  badgeRed: {
+    backgroundColor: 'rgba(248, 113, 113, 0.2)',
+    borderColor: 'rgba(248, 113, 113, 0.3)',
+  },
+  badgeYellow: {
+    backgroundColor: 'rgba(251, 191, 36, 0.2)',
+    borderColor: 'rgba(251, 191, 36, 0.3)',
+  },
+  badgeTextGreen: {
+    fontSize: 12,
+    color: '#4ADE80',
+  },
+  badgeTextBlue: {
+    fontSize: 12,
+    color: '#3B82F6',
+  },
+  badgeTextRed: {
+    fontSize: 12,
+    color: '#F87171',
+  },
+  badgeTextYellow: {
+    fontSize: 12,
+    color: '#FBBF24',
+  },
+});
 
 export default OpponentStatsModal;
