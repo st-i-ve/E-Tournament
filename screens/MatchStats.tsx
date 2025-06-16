@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ArrowLeft } from 'lucide-react-native';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/NewComponents/ui/chart';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, LineChart, Line, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { detailedMatches } from '@/data/matchStats';
 import { currentUser } from '@/data/enhancedMockData';

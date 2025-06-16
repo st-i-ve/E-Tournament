@@ -1,14 +1,14 @@
 
 import React, { useState, useMemo } from 'react';
-import { Clock, Trophy, Calendar, Filter, CheckCircle2, Circle, X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Clock, Trophy, Calendar, Filter, CheckCircle2, Circle, X } from 'lucide-react-native';
+import { Badge } from '@/components/NewComponents/ui/badge';
+import { Button } from '@/components/NewComponents/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/NewComponents/ui/select';
 import { currentUser, mockMatches, mockTournaments, Match } from '@/data/enhancedMockData';
 import { detailedMatches } from '@/data/matchStats';
-import MatchCard from '@/components/MatchCard';
-import MatchInfoModal from '@/components/MatchInfoModal';
-import DetailedMatchCard from '@/components/DetailedMatchCard';
+import MatchCard from '@/components/NewComponents/MatchCard';
+import MatchInfoModal from '@/components/NewComponents/MatchInfoModal';
+import DetailedMatchCard from '@/components/NewComponents/DetailedMatchCard';
 import { useNavigate } from 'react-router-dom';
 
 const SchedulePage = () => {

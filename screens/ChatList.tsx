@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Users, Clock } from 'lucide-react';
+import { MessageCircle, Users, Clock } from 'lucide-react-native';
 
 // Mock chat list data
 const mockChats = [

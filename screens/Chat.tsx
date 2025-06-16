@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Send } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ChevronLeft, Send } from 'lucide-react-native';
+import { Button } from '@/components/NewComponents/ui/button';
 
 // Mock chat data
 const mockMessages = [

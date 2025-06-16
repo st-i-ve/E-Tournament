@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Calendar } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import MinimalCalendar from '@/components/MinimalCalendar';
+import { Calendar } from 'lucide-react-native';
+import { Button } from '@/components/NewComponents/ui/button';
+import MinimalCalendar from '@/components/NewComponents/MinimalCalendar';
 import { useNavigate } from 'react-router-dom';
 
 const FixturesPage = () => {

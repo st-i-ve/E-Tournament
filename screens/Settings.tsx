@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Palette, Bell, Shield, User, Globe } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
+import { ArrowLeft, Palette, Bell, Shield, User, Globe } from 'lucide-react-native';
+import { Button } from '@/components/NewComponents/ui/button';
+import { Switch } from '@/components/NewComponents/ui/switch';
+import { Separator } from '@/components/NewComponents/ui/separator';  
 import { useNavigate } from 'react-router-dom';
 
 const SettingsPage = () => {

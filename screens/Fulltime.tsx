@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { Trophy, Calendar, Filter, Search } from 'lucide-react';
+import { Trophy, Calendar, Filter, Search } from 'lucide-react-native';
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import DetailedMatchCard from '@/components/DetailedMatchCard';
+import Header from '@/components/NewComponents/Header';
+import { Badge } from '@/components/NewComponents/ui/badge';
+import { Input } from '@/components/NewComponents/ui/input';
+import DetailedMatchCard from '@/components/NewComponents/DetailedMatchCard';
 import { detailedMatches, DetailedMatch } from '@/data/matchStats';
 import { currentUser } from '@/data/enhancedMockData';
 

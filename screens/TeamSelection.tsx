@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/NewComponents/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import AnimatedTeamList from '@/components/AnimatedTeamList';
+import AnimatedTeamList from '@/components/NewComponents/AnimatedTeamList'; 
 
 const teams = [
   { id: 1, name: 'Manchester United', league: 'Premier League', color: '#DA020E' },

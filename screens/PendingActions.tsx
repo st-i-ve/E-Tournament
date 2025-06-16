@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, CheckCircle, Clock, AlertCircle, Bell } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import ResultSubmissionModal from '@/components/ResultSubmissionModal';
-import ResultVerificationModal from '@/components/ResultVerificationModal';
+import { ArrowLeft, Upload, CheckCircle, Clock, AlertCircle, Bell } from 'lucide-react-native';
+import { Badge } from '@/components/NewComponents/ui/badge';
+import { Button } from '@/components/NewComponents/ui/button';
+import ResultSubmissionModal from '@/components/NewComponents/ResultSubmissionModal';
+import ResultVerificationModal from '@/components/NewComponents/ResultVerificationModal'; 
 
 // Mock pending actions data
 const mockPendingActions = [

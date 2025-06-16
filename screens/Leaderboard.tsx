@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
-import { Triangle, Users, Target, Info } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Triangle, Users, Target, Info } from 'lucide-react-native';
+import { Badge } from '@/components/NewComponents/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/NewComponents/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/NewComponents/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/NewComponents/ui/dialog';
 import { currentUser, mockTournaments } from '@/data/enhancedMockData';
-import LeagueLeaderboardTable from '@/components/LeagueLeaderboardTable';
-import KnockoutBracket from '@/components/KnockoutBracket';
+import LeagueLeaderboardTable from '@/components/NewComponents/LeagueLeaderboardTable';
+import KnockoutBracket from '@/components/NewComponents/KnockoutBracket';
 
 const LeaderboardPage = () => {
   const [selectedTournament, setSelectedTournament] = useState<string>(mockTournaments[0]?.id || '');

@@ -1,14 +1,14 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Trophy, Target, TrendingUp, Settings, User, Award, Bell, Upload, CheckCircle, Clock, AlertCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Trophy, Target, TrendingUp, Settings, User, Award, Bell, Upload, CheckCircle, Clock, AlertCircle } from 'lucide-react-native';
+import { Badge } from '@/components/NewComponents/ui/badge';
+import { Button } from '@/components/NewComponents/ui/button';
+import { Separator } from '@/components/NewComponents/ui/separator';  
 import { currentUser, mockTournaments } from '@/data/enhancedMockData';
 import { detailedMatches, TeamMatchStats } from '@/data/matchStats';
 import { useNavigate } from 'react-router-dom';
-import CountUp from '@/components/CountUp';
+import CountUp from '@/components/NewComponents/CountUp';
 
 // Mock pending actions data
 const mockPendingActions = [
