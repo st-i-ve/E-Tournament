@@ -1,58 +1,199 @@
 import React from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+  Easing,
+} from 'react-native';
 import { LucideIcon } from 'lucide-react-native';
-import { Button } from '@/components/ui/button';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface QuickActionButtonProps {
   icon: LucideIcon;
   title: string;
   description: string;
-  onClick: () => void;
+  onPress: () => void;
   variant?: 'primary' | 'secondary';
 }
 
-const QuickActionButton = ({
+const QuickActionButton: React.FC<QuickActionButtonProps> = ({
   icon: Icon,
   title,
   description,
-  onClick,
+  onPress,
   variant = 'primary',
-}: QuickActionButtonProps) => {
+}) => {
+  const scaleValue = new Animated.Value(1);
+  const shimmerValue = new Animated.Value(0);
+
+  const handlePressIn = () => {
+    Animated.spring(scaleValue, {
+      toValue: 1.05,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const startShimmerAnimation = () => {
+    shimmerValue.setValue(0);
+    Animated.timing(shimmerValue, {
+      toValue: 1,
+      duration: 700,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const shimmerTranslateX = shimmerValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-300, 300],
+  });
+
   return (
-    <Button
-      onClick={onClick}
-      className={`
-        relative h-auto p-3 flex flex-col items-center text-center gap-2 
-        transition-all duration-300 hover:scale-105 hover:shadow-lg
-        ${
-          variant === 'primary'
-            ? 'bg-green-600 hover:bg-green-500 text-white'
-            : 'bg-black hover:bg-gray-900 text-gray-100 border border-gray-800 hover:border-gray-700'
-        }
-        rounded-xl group overflow-hidden
-        before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent
-        before:translate-x-[-100%] before:skew-x-12 before:transition-transform before:duration-700
-        hover:before:translate-x-[200%]
-      `}
-      variant="outline"
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={() => {
+        startShimmerAnimation();
+        onPress();
+      }}
+      style={[
+        styles.button,
+        variant === 'primary' ? styles.primaryButton : styles.secondaryButton,
+      ]}
     >
-      <div
-        className={`
-        p-1.5 rounded-full transition-colors duration-300 z-10
-        ${
-          variant === 'primary'
-            ? 'bg-green-500/20 group-hover:bg-green-400/30'
-            : 'bg-gray-700/20 group-hover:bg-gray-600/30'
-        }
-      `}
-      >
-        <Icon className="h-4 w-4" />
-      </div>
-      <div className="z-10 relative px-0.5">
-        <h3 className="font-semibold text-xs leading-tight">{title}</h3>
-        <p className="text-xs opacity-80 mt-0.5 leading-tight">{description}</p>
-      </div>
-    </Button>
+      <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+        {/* Shimmer Effect */}
+        <Animated.View
+          style={[
+            styles.shimmer,
+            {
+              transform: [
+                { translateX: shimmerTranslateX },
+                { skewX: '20deg' },
+              ],
+            },
+          ]}
+        />
+
+        {/* Icon Container */}
+        <View
+          style={[
+            styles.iconContainer,
+            variant === 'primary'
+              ? styles.primaryIconContainer
+              : styles.secondaryIconContainer,
+          ]}
+        >
+          <Icon
+            size={16}
+            color={variant === 'primary' ? '#FFFFFF' : '#F3F4F6'}
+          />
+        </View>
+
+        {/* Text Content */}
+        <View style={styles.textContainer}>
+          <Text
+            style={[
+              styles.title,
+              variant === 'primary' ? styles.primaryText : styles.secondaryText,
+            ]}
+          >
+            {title}
+          </Text>
+          <Text
+            style={[
+              styles.description,
+              variant === 'primary'
+                ? styles.primaryDescription
+                : styles.secondaryDescription,
+            ]}
+          >
+            {description}
+          </Text>
+        </View>
+      </Animated.View>
+    </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    height: 'auto',
+    padding: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  primaryButton: {
+    backgroundColor: '#16A34A', // green-600
+  },
+  secondaryButton: {
+    backgroundColor: '#000000',
+    borderWidth: 1,
+    borderColor: '#1F2937', // gray-800
+  },
+  shimmer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  iconContainer: {
+    padding: 6,
+    borderRadius: 999,
+    marginBottom: 8,
+    alignSelf: 'center',
+  },
+  primaryIconContainer: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)', // green-500/20
+  },
+  secondaryIconContainer: {
+    backgroundColor: 'rgba(55, 65, 81, 0.2)', // gray-700/20
+  },
+  textContainer: {
+    paddingHorizontal: 2,
+    alignItems: 'center',
+  },
+  title: {
+    fontWeight: '600',
+    fontSize: 12,
+    lineHeight: 16,
+    textAlign: 'center',
+  },
+  primaryText: {
+    color: '#FFFFFF',
+  },
+  secondaryText: {
+    color: '#F3F4F6', // gray-100
+  },
+  description: {
+    fontSize: 12,
+    marginTop: 2,
+    lineHeight: 16,
+    textAlign: 'center',
+  },
+  primaryDescription: {
+    opacity: 0.8,
+    color: '#FFFFFF',
+  },
+  secondaryDescription: {
+    opacity: 0.8,
+    color: '#F3F4F6',
+  },
+});
 
 export default QuickActionButton;
