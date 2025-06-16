@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import {
   Trophy,
   Target,
@@ -13,49 +21,67 @@ import {
   Clock,
   AlertCircle,
 } from 'lucide-react-native';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { currentUser, mockTournaments } from '@/data/enhancedMockData';
-import { detailedMatches, TeamMatchStats } from '@/data/matchStats';
-import { useNavigate } from 'react-router-dom';
-import CountUp from '@/components/CountUp';
 
-// Mock pending actions data
-const mockPendingActions = [
+// Mock data
+const currentUser = {
+  id: 'user-1',
+  username: 'Player',
+  teamName: 'Dream Team',
+};
+
+const mockTournaments = [
   {
-    id: 'action-1',
-    type: 'submit_result',
-    matchId: 'match-123',
-    opponent: 'Phoenix Rising',
-    tournament: 'Champions Elite League',
-    deadline: '2025-06-16T23:59:59Z',
-    priority: 'high',
+    id: 'tournament-1',
+    name: 'Champions Elite League',
+    type: 'League',
+    totalParticipants: 12,
+    userPosition: 1,
+    status: 'Active',
+    participants: ['user-1'],
   },
   {
-    id: 'action-2',
-    type: 'verify_result',
-    matchId: 'match-124',
-    opponent: 'Lightning Strikes',
-    tournament: 'Weekend Warriors Cup',
-    submittedScore: '2-1',
-    deadline: '2025-06-17T23:59:59Z',
-    priority: 'medium',
+    id: 'tournament-2',
+    name: 'Weekend Warriors Cup',
+    type: 'Cup',
+    totalParticipants: 8,
+    userPosition: 3,
+    status: 'Ongoing',
+    participants: ['user-1'],
   },
+];
+
+const detailedMatches = [
   {
-    id: 'action-3',
-    type: 'awaiting_verification',
-    matchId: 'match-125',
-    opponent: 'Desert Eagles',
-    tournament: 'Champions Elite League',
-    submittedAt: '2025-06-15T14:30:00Z',
-    priority: 'low',
+    team_home: {
+      name: 'Dream Team',
+      score: 3,
+      stats: {
+        possession_percent: 60,
+        passes: 450,
+        successful_passes: 380,
+        shots: 12,
+        shots_on_target: 8,
+        tackles: 18,
+      },
+    },
+    team_away: {
+      name: 'Phoenix Rising',
+      score: 1,
+      stats: {
+        possession_percent: 40,
+        passes: 320,
+        successful_passes: 250,
+        shots: 8,
+        shots_on_target: 3,
+        tackles: 12,
+      },
+    },
   },
 ];
 
 const ProfilePage = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const navigation = useNavigation();
+  const [pendingCount] = useState(mockTournaments.length);
 
   // Calculate player stats
   const userMatches = detailedMatches.filter(
@@ -87,7 +113,7 @@ const ProfilePage = () => {
   );
 
   // Calculate strengths and weaknesses
-  const calculateAverageStats = (): TeamMatchStats | null => {
+  const calculateAverageStats = () => {
     if (userMatches.length === 0) return null;
 
     const totalStats = userMatches.reduce((acc, match) => {
@@ -97,19 +123,15 @@ const ProfilePage = () => {
         : match.team_away.stats;
 
       Object.keys(userTeamStats).forEach((key) => {
-        acc[key as keyof TeamMatchStats] =
-          (acc[key as keyof TeamMatchStats] || 0) +
-          userTeamStats[key as keyof TeamMatchStats];
+        acc[key] = (acc[key] || 0) + userTeamStats[key];
       });
 
       return acc;
-    }, {} as TeamMatchStats);
+    }, {});
 
-    const avgStats: TeamMatchStats = {} as TeamMatchStats;
+    const avgStats = {};
     Object.keys(totalStats).forEach((key) => {
-      avgStats[key as keyof TeamMatchStats] = Math.round(
-        totalStats[key as keyof TeamMatchStats] / userMatches.length
-      );
+      avgStats[key] = Math.round(totalStats[key] / userMatches.length);
     });
 
     return avgStats;
@@ -120,25 +142,22 @@ const ProfilePage = () => {
   const getStrengthsAndWeaknesses = () => {
     if (!avgStats) return { strengths: [], weaknesses: [] };
 
-    const strengths: Array<{ name: string; value: string }> = [];
-    const weaknesses: Array<{ name: string; value: string }> = [];
+    const strengths = [];
+    const weaknesses = [];
 
-    if ('possession_percent' in avgStats && avgStats.possession_percent >= 55) {
+    if (avgStats.possession_percent >= 55) {
       strengths.push({
         name: 'Ball Control',
         value: `${avgStats.possession_percent}%`,
       });
-    } else if (
-      'possession_percent' in avgStats &&
-      avgStats.possession_percent <= 40
-    ) {
+    } else if (avgStats.possession_percent <= 40) {
       weaknesses.push({
         name: 'Ball Control',
         value: `${avgStats.possession_percent}%`,
       });
     }
 
-    if ('successful_passes' in avgStats && 'passes' in avgStats) {
+    if (avgStats.successful_passes && avgStats.passes) {
       const passAccuracy = Math.round(
         (avgStats.successful_passes / avgStats.passes) * 100
       );
@@ -151,7 +170,7 @@ const ProfilePage = () => {
         });
     }
 
-    if ('shots_on_target' in avgStats && 'shots' in avgStats) {
+    if (avgStats.shots_on_target && avgStats.shots) {
       const shotAccuracy = Math.round(
         (avgStats.shots_on_target / avgStats.shots) * 100
       );
@@ -161,12 +180,12 @@ const ProfilePage = () => {
         weaknesses.push({ name: 'Shot Accuracy', value: `${shotAccuracy}%` });
     }
 
-    if ('tackles' in avgStats && avgStats.tackles >= 15) {
+    if (avgStats.tackles >= 15) {
       strengths.push({
         name: 'Defensive Work',
         value: `${avgStats.tackles} tackles/game`,
       });
-    } else if ('tackles' in avgStats && avgStats.tackles <= 8) {
+    } else if (avgStats.tackles <= 8) {
       weaknesses.push({
         name: 'Defensive Work',
         value: `${avgStats.tackles} tackles/game`,
@@ -178,209 +197,198 @@ const ProfilePage = () => {
 
   const { strengths, weaknesses } = getStrengthsAndWeaknesses();
 
-  const getActionIcon = (type: string) => {
-    switch (type) {
-      case 'submit_result':
-        return <Upload className="h-4 w-4" />;
-      case 'verify_result':
-        return <CheckCircle className="h-4 w-4" />;
-      case 'awaiting_verification':
-        return <Clock className="h-4 w-4" />;
-      default:
-        return <AlertCircle className="h-4 w-4" />;
-    }
-  };
-
-  const getActionColor = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return 'text-red-400 border-red-500/30 bg-red-500/10';
-      case 'medium':
-        return 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10';
-      case 'low':
-        return 'text-gray-400 border-gray-500/30 bg-gray-500/10';
-      default:
-        return 'text-gray-400 border-gray-500/30 bg-gray-500/10';
-    }
-  };
-
-  const getActionText = (action: any) => {
-    switch (action.type) {
-      case 'submit_result':
-        return `Submit result vs ${action.opponent}`;
-      case 'verify_result':
-        return `Verify result vs ${action.opponent} (${action.submittedScore})`;
-      case 'awaiting_verification':
-        return `Awaiting verification from ${action.opponent}`;
-      default:
-        return 'Unknown action';
-    }
-  };
-
-  const formatDeadline = (deadline: string) => {
-    const date = new Date(deadline);
-    const now = new Date();
-    const diffHours = Math.ceil(
-      (date.getTime() - now.getTime()) / (1000 * 60 * 60)
-    );
-
-    if (diffHours < 24) {
-      return `${diffHours}h left`;
-    } else {
-      const diffDays = Math.ceil(diffHours / 24);
-      return `${diffDays}d left`;
-    }
-  };
-
-  const pendingCount = mockPendingActions.length;
-
-  return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Geometric background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+  const renderBackgroundShapes = () => {
+    return (
+      <View style={styles.backgroundContainer} pointerEvents="none">
         {/* Triangles */}
-        <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
-        <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
+        <View style={[styles.triangle, { top: 80, left: 40 }]} />
+        <View
+          style={[
+            styles.triangle,
+            {
+              top: '33%',
+              right: 80,
+              width: 24,
+              height: 24,
+              transform: [{ rotate: '12deg' }],
+            },
+          ]}
+        />
+        <View
+          style={[
+            styles.triangle,
+            { bottom: '25%', left: '25%', width: 40, height: 40 },
+          ]}
+        />
 
         {/* Circles */}
-        <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
-        <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
+        <View
+          style={[
+            styles.circle,
+            { top: '25%', left: '33%', width: 48, height: 48 },
+          ]}
+        />
+        <View
+          style={[
+            styles.circle,
+            { bottom: '33%', right: '25%', width: 32, height: 32 },
+          ]}
+        />
+        <View
+          style={[
+            styles.circle,
+            { top: '66%', left: 80, width: 24, height: 24 },
+          ]}
+        />
 
         {/* Rectangles */}
-        <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
-        <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
+        <View
+          style={[
+            styles.rectangle,
+            { top: '50%', right: 40, width: 48, height: 32 },
+          ]}
+        />
+        <View
+          style={[
+            styles.rectangle,
+            { bottom: 80, left: '50%', width: 32, height: 48 },
+          ]}
+        />
 
-        {/* Crossing lines */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-      </div>
+        {/* Lines */}
+        <View style={[styles.verticalLine, { left: '25%' }]} />
+        <View style={[styles.horizontalLine, { top: '33%' }]} />
+        <View style={[styles.horizontalLine, { top: '66%' }]} />
+      </View>
+    );
+  };
+
+  const CountUp = ({ end, duration = 1500, suffix = '' }) => {
+    const [count] = useState(new Animated.Value(0));
+
+    React.useEffect(() => {
+      Animated.timing(count, {
+        toValue: end,
+        duration,
+        useNativeDriver: true,
+      }).start();
+    }, [end]);
+
+    return (
+      <Animated.Text style={styles.countUpText}>
+        {count.interpolate({
+          inputRange: [0, end],
+          outputRange: [0, end],
+        })}
+        {suffix}
+      </Animated.Text>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {renderBackgroundShapes()}
 
       {/* Header with notification badge */}
-      <div className="relative z-10 p-4">
-        <div className="flex items-start gap-4 mb-1">
-          <div className="w-8 h-8 mt-1 flex-shrink-0 relative">
-            {/* Intersecting circles design */}
-            <div className="absolute top-0 left-0 w-6 h-6 border-2 border-green-400 rounded-full"></div>
-            <div className="absolute top-2 left-2 w-6 h-6 border-2 border-green-400 rounded-full"></div>
-          </div>
-          <div className="flex flex-col flex-1">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-white to-green-400 bg-clip-text text-transparent leading-tight">
-              Profile
-            </h1>
-            <p className="text-xs text-gray-500 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_2s_ease-in-out_infinite]">
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <View style={styles.logoContainer}>
+            <View style={styles.logoCircle} />
+            <View style={[styles.logoCircle, styles.logoCircleOverlay]} />
+          </View>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>Profile</Text>
+            <Text style={styles.headerSubtitle}>
               Your tournament stats and performance
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+            </Text>
+          </View>
+          <View style={styles.headerActions}>
             {pendingCount > 0 && (
-              <Button
-                onClick={() => navigate('/pending-actions')}
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-full hover:bg-gray-800/50 relative"
+              <TouchableOpacity
+                style={styles.notificationButton}
+                onPress={() => navigation.navigate('PendingActions')}
               >
-                <Bell className="h-5 w-5 text-gray-400" />
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
-                  {pendingCount}
-                </Badge>
-              </Button>
+                <Bell size={20} color="#9ca3af" />
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{pendingCount}</Text>
+                </View>
+              </TouchableOpacity>
             )}
-            <Button
-              onClick={() => navigate('/settings')}
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full hover:bg-gray-800/50"
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => navigation.navigate('Settings')}
             >
-              <Settings className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+              <Settings size={16} color="white" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {/* User Info */}
-        <div className="mt-6 flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
-            <User className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-white">
-              {user?.username || 'Player'}
-            </h2>
-            <p className="text-sm text-green-400">
-              {user?.teamName || 'No Team Selected'}
-            </p>
-          </div>
-        </div>
-      </div>
+        <View style={styles.userInfo}>
+          <View style={styles.avatar}>
+            <User size={24} color="white" />
+          </View>
+          <View>
+            <Text style={styles.username}>{currentUser.username}</Text>
+            <Text style={styles.teamName}>{currentUser.teamName}</Text>
+          </View>
+        </View>
+      </View>
 
-      <div className="p-4 space-y-8 relative z-10">
+      <ScrollView style={styles.content}>
         {/* Player Overview */}
-        <div className="py-4">
-          <div className="flex items-center gap-2 mb-6">
-            <Target className="h-4 w-4 text-green-400" />
-            <h2 className="text-sm font-medium text-white">Overview</h2>
-          </div>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Target size={16} color="#34d399" />
+            <Text style={styles.sectionTitle}>Overview</Text>
+          </View>
 
-          <div className="grid grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-400 mb-1">
-                <CountUp end={totalGoals} duration={1500} />
-              </div>
-              <div className="text-xs text-gray-400">Total Goals</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-400 mb-1">
-                <CountUp end={userTournaments.length} duration={1500} />
-              </div>
-              <div className="text-xs text-gray-400">Tournaments</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-400 mb-1">
-                <CountUp end={winRate} duration={1500} suffix="%" />
-              </div>
-              <div className="text-xs text-gray-400">Win Rate</div>
-            </div>
-          </div>
-        </div>
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <CountUp end={totalGoals} duration={1500} />
+              <Text style={styles.statLabel}>Total Goals</Text>
+            </View>
+            <View style={styles.statItem}>
+              <CountUp end={userTournaments.length} duration={1500} />
+              <Text style={styles.statLabel}>Tournaments</Text>
+            </View>
+            <View style={styles.statItem}>
+              <CountUp end={winRate} duration={1500} suffix="%" />
+              <Text style={styles.statLabel}>Win Rate</Text>
+            </View>
+          </View>
+        </View>
 
-        {/* Line separator */}
-        <div className="h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
+        {/* Divider */}
+        <View style={styles.divider} />
 
         {/* Tournament Performance */}
-        <div className="py-4">
-          <div className="flex items-center gap-2 mb-6">
-            <Trophy className="h-4 w-4 text-green-400" />
-            <h2 className="text-sm font-medium text-white">Tournaments</h2>
-          </div>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Trophy size={16} color="#34d399" />
+            <Text style={styles.sectionTitle}>Tournaments</Text>
+          </View>
 
-          <div className="space-y-3">
+          <View style={styles.tournamentsList}>
             {userTournaments.map((tournament) => (
-              <div
-                key={tournament.id}
-                className="flex items-center justify-between py-3"
-              >
-                <div>
-                  <h4 className="text-sm font-medium text-white">
-                    {tournament.name}
-                  </h4>
-                  <p className="text-xs text-gray-400">
+              <View key={tournament.id} style={styles.tournamentItem}>
+                <View>
+                  <Text style={styles.tournamentName}>{tournament.name}</Text>
+                  <Text style={styles.tournamentDetails}>
                     {tournament.type} • {tournament.totalParticipants} players
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {tournament.userPosition && (
-                    <Badge
-                      variant="outline"
-                      className={`text-xs ${
-                        tournament.userPosition === 1
-                          ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
-                          : tournament.userPosition <= 3
-                          ? 'bg-green-500/10 text-green-400 border-green-500/30'
-                          : 'bg-gray-500/10 text-gray-400 border-gray-500/30'
-                      }`}
-                    >
+                  </Text>
+                </View>
+                <View style={styles.tournamentBadges}>
+                  <View
+                    style={[
+                      styles.positionBadge,
+                      tournament.userPosition === 1 && styles.goldBadge,
+                      tournament.userPosition === 2 && styles.silverBadge,
+                      tournament.userPosition === 3 && styles.bronzeBadge,
+                      tournament.userPosition > 3 && styles.grayBadge,
+                    ]}
+                  >
+                    <Text style={styles.badgeText}>
                       {tournament.userPosition === 1
                         ? '1st'
                         : tournament.userPosition === 2
@@ -388,101 +396,382 @@ const ProfilePage = () => {
                         : tournament.userPosition === 3
                         ? '3rd'
                         : `${tournament.userPosition}th`}
-                    </Badge>
-                  )}
-                  <Badge
-                    variant="outline"
-                    className="text-xs bg-green-500/10 text-green-400 border-green-500/30"
-                  >
-                    {tournament.status}
-                  </Badge>
-                </div>
-              </div>
+                    </Text>
+                  </View>
+                  <View style={styles.statusBadge}>
+                    <Text style={styles.statusBadgeText}>
+                      {tournament.status}
+                    </Text>
+                  </View>
+                </View>
+              </View>
             ))}
-          </div>
-        </div>
+          </View>
+        </View>
 
-        {/* Line separator */}
-        <div className="h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
+        {/* Divider */}
+        <View style={styles.divider} />
 
         {/* Performance Analysis */}
-        <div className="py-4">
-          <div className="flex items-center gap-2 mb-6">
-            <TrendingUp className="h-4 w-4 text-green-400" />
-            <h2 className="text-sm font-medium text-white">
-              Performance Analysis
-            </h2>
-          </div>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <TrendingUp size={16} color="#34d399" />
+            <Text style={styles.sectionTitle}>Performance Analysis</Text>
+          </View>
 
-          <div className="space-y-8">
+          <View style={styles.analysisContainer}>
             {/* Strengths */}
-            <div>
-              <h3 className="text-sm font-medium text-green-400 mb-4 flex items-center gap-2">
-                <TrendingUp className="h-3 w-3" />
-                Strengths
-              </h3>
+            <View style={styles.analysisSection}>
+              <View style={styles.analysisHeader}>
+                <TrendingUp size={12} color="#34d399" />
+                <Text style={[styles.analysisTitle, { color: '#34d399' }]}>
+                  Strengths
+                </Text>
+              </View>
               {strengths.length > 0 ? (
-                <div className="space-y-3">
+                <View style={styles.analysisList}>
                   {strengths.map((strength, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center py-2"
-                    >
-                      <span className="text-sm text-gray-200">
+                    <View key={index} style={styles.analysisItem}>
+                      <Text style={styles.analysisItemName}>
                         {strength.name}
-                      </span>
-                      <span className="text-sm text-green-400 font-medium">
+                      </Text>
+                      <Text
+                        style={[styles.analysisItemValue, { color: '#34d399' }]}
+                      >
                         {strength.value}
-                      </span>
-                    </div>
+                      </Text>
+                    </View>
                   ))}
-                </div>
+                </View>
               ) : (
-                <p className="text-xs text-gray-400 italic py-2">
+                <Text style={styles.noDataText}>
                   Play more matches to see your strengths!
-                </p>
+                </Text>
               )}
-            </div>
+            </View>
 
-            {/* Line separator */}
-            <div className="h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
+            {/* Divider */}
+            <View style={styles.divider} />
 
             {/* Areas for Improvement */}
-            <div>
-              <h3 className="text-sm font-medium text-orange-400 mb-4 flex items-center gap-2">
-                <Award className="h-3 w-3" />
-                Areas for Improvement
-              </h3>
+            <View style={styles.analysisSection}>
+              <View style={styles.analysisHeader}>
+                <Award size={12} color="#f97316" />
+                <Text style={[styles.analysisTitle, { color: '#f97316' }]}>
+                  Areas for Improvement
+                </Text>
+              </View>
               {weaknesses.length > 0 ? (
-                <div className="space-y-3">
+                <View style={styles.analysisList}>
                   {weaknesses.map((weakness, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center py-2"
-                    >
-                      <span className="text-sm text-gray-200">
+                    <View key={index} style={styles.analysisItem}>
+                      <Text style={styles.analysisItemName}>
                         {weakness.name}
-                      </span>
-                      <span className="text-sm text-orange-400 font-medium">
+                      </Text>
+                      <Text
+                        style={[styles.analysisItemValue, { color: '#f97316' }]}
+                      >
                         {weakness.value}
-                      </span>
-                    </div>
+                      </Text>
+                    </View>
                   ))}
-                </div>
+                </View>
               ) : (
-                <p className="text-xs text-gray-400 italic py-2">
+                <Text style={styles.noDataText}>
                   Great job! No major weaknesses detected.
-                </p>
+                </Text>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
+            </View>
+          </View>
+        </View>
 
-      {/* Bottom spacing for navigation */}
-      <div className="h-20"></div>
-    </div>
+        {/* Bottom spacing */}
+        <View style={styles.bottomSpacing} />
+      </ScrollView>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  backgroundContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: 'hidden',
+  },
+  triangle: {
+    position: 'absolute',
+    width: 32,
+    height: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+    transform: [{ rotate: '45deg' }],
+  },
+  circle: {
+    position: 'absolute',
+    borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+  },
+  rectangle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+  },
+  verticalLine: {
+    position: 'absolute',
+    width: 1,
+    height: '100%',
+    backgroundColor: 'rgba(34, 197, 94, 0.05)',
+  },
+  horizontalLine: {
+    position: 'absolute',
+    width: '100%',
+    height: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.05)',
+  },
+  header: {
+    padding: 16,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+    marginBottom: 8,
+  },
+  logoContainer: {
+    width: 32,
+    height: 32,
+    position: 'relative',
+  },
+  logoCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#34d399',
+    position: 'absolute',
+  },
+  logoCircleOverlay: {
+    top: 8,
+    left: 8,
+  },
+  headerTextContainer: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    lineHeight: 24,
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  notificationButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  settingsButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#ef4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    fontSize: 10,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 24,
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#10b981',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  username: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+  },
+  teamName: {
+    fontSize: 14,
+    color: '#34d399',
+  },
+  content: {
+    paddingHorizontal: 16,
+  },
+  section: {
+    paddingVertical: 16,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'white',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  countUpText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#34d399',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.3)',
+    marginVertical: 8,
+  },
+  tournamentsList: {
+    gap: 12,
+  },
+  tournamentItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  tournamentName: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'white',
+  },
+  tournamentDetails: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  tournamentBadges: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  positionBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 9999,
+    borderWidth: 1,
+  },
+  goldBadge: {
+    backgroundColor: 'rgba(234, 179, 8, 0.1)',
+    borderColor: 'rgba(234, 179, 8, 0.3)',
+  },
+  silverBadge: {
+    backgroundColor: 'rgba(156, 163, 175, 0.1)',
+    borderColor: 'rgba(156, 163, 175, 0.3)',
+  },
+  bronzeBadge: {
+    backgroundColor: 'rgba(180, 83, 9, 0.1)',
+    borderColor: 'rgba(180, 83, 9, 0.3)',
+  },
+  grayBadge: {
+    backgroundColor: 'rgba(156, 163, 175, 0.1)',
+    borderColor: 'rgba(156, 163, 175, 0.3)',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 9999,
+    borderWidth: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    borderColor: 'rgba(34, 197, 94, 0.3)',
+  },
+  statusBadgeText: {
+    fontSize: 12,
+    color: '#34d399',
+  },
+  analysisContainer: {
+    gap: 16,
+  },
+  analysisSection: {
+    gap: 16,
+  },
+  analysisHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  analysisTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  analysisList: {
+    gap: 12,
+  },
+  analysisItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  analysisItemName: {
+    fontSize: 14,
+    color: '#e5e7eb',
+  },
+  analysisItemValue: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  noDataText: {
+    fontSize: 12,
+    color: '#9ca3af',
+    fontStyle: 'italic',
+    paddingVertical: 8,
+  },
+  bottomSpacing: {
+    height: 80,
+  },
+});
 
 export default ProfilePage;
