@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Keyboard,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { ChevronLeft, Send } from 'lucide-react-native';
-import { Button } from '@/components/ui/button';
 
 // Mock chat data
 const mockMessages = [
@@ -43,124 +51,229 @@ const mockMessages = [
 ];
 
 const ChatPage = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation();
   const [newMessage, setNewMessage] = useState('');
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       console.log('Sending message:', newMessage);
       setNewMessage('');
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
+      Keyboard.dismiss();
     }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
-      {/* Geometric background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Triangles */}
-        <div className="absolute top-20 left-10 w-8 h-8 border border-green-500/10 transform rotate-45"></div>
-        <div className="absolute top-1/3 right-20 w-6 h-6 border border-green-500/10 transform rotate-12"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-10 h-10 border border-green-500/10 transform rotate-45"></div>
-
-        {/* Circles */}
-        <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-green-500/10 rounded-full"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-8 h-8 border border-green-500/10 rounded-full"></div>
-        <div className="absolute top-2/3 left-20 w-6 h-6 border border-green-500/10 rounded-full"></div>
-
-        {/* Rectangles */}
-        <div className="absolute top-1/2 right-10 w-12 h-8 border border-green-500/10"></div>
-        <div className="absolute bottom-20 left-1/2 w-8 h-12 border border-green-500/10"></div>
-
-        {/* Crossing lines */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-        <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent"></div>
-      </div>
-
+    <View style={styles.container}>
       {/* Header */}
-      <div className="sticky top-0 bg-black/95 backdrop-blur-sm border-b border-green-500/20 z-10">
-        <div className="flex items-center gap-3 p-4">
-          <Button
-            onClick={() => navigate('/')}
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-full hover:bg-gray-800/50 text-green-400"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          <div className="w-8 h-8 flex-shrink-0 relative">
-            {/* Single circle with glow */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-2 border-green-400 rounded-full shadow-lg shadow-green-400/20"></div>
-          </div>
-          <div className="flex flex-col">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-white to-green-400 bg-clip-text text-transparent leading-tight">
-              Tournament Chat
-            </h1>
-            <p className="text-xs text-gray-500 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_2s_ease-in-out_infinite]">
-              Champions Elite League
-            </p>
-          </div>
-        </div>
-      </div>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <ChevronLeft color="#4ade80" size={20} />
+        </TouchableOpacity>
+
+        <View style={styles.avatarContainer}>
+          <View style={styles.avatar} />
+        </View>
+
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>Tournament Chat</Text>
+          <Text style={styles.headerSubtitle}>Champions Elite League</Text>
+        </View>
+      </View>
 
       {/* Messages */}
-      <div className="flex-1 p-4 space-y-4 overflow-y-auto relative z-10">
+      <ScrollView
+        style={styles.messagesContainer}
+        contentContainerStyle={styles.messagesContent}
+      >
         {mockMessages.map((message) => (
-          <div
+          <View
             key={message.id}
-            className={`flex ${
-              message.isUser ? 'justify-end' : 'justify-start'
-            }`}
+            style={[
+              styles.messageWrapper,
+              message.isUser
+                ? styles.messageWrapperRight
+                : styles.messageWrapperLeft,
+            ]}
           >
-            <div
-              className={`max-w-[80%] ${
+            <View
+              style={[
+                styles.messageBubble,
                 message.isUser
-                  ? 'bg-green-600/20 border-green-500/30'
-                  : 'bg-gray-800/40 border-gray-700/30'
-              } rounded-2xl px-4 py-3 border backdrop-blur-sm`}
+                  ? styles.userMessageBubble
+                  : styles.otherMessageBubble,
+              ]}
             >
               {!message.isUser && (
-                <div className="text-xs text-green-400 mb-1 font-medium">
-                  {message.sender}
-                </div>
+                <Text style={styles.messageSender}>{message.sender}</Text>
               )}
-              <div className="text-white text-sm mb-1">{message.text}</div>
-              <div className="text-xs text-gray-500">{message.timestamp}</div>
-            </div>
-          </div>
+              <Text style={styles.messageText}>{message.text}</Text>
+              <Text style={styles.messageTimestamp}>{message.timestamp}</Text>
+            </View>
+          </View>
         ))}
-      </div>
+      </ScrollView>
 
-      {/* Input wrapper with semicircle design */}
-      <div className="p-4 relative z-10">
-        <div className="bg-gray-800/20 border border-gray-700/30 rounded-full p-1 backdrop-blur-sm flex items-center gap-2">
-          <input
-            type="text"
+      {/* Input area */}
+      <View style={styles.inputContainer}>
+        <View style={styles.inputWrapper}>
+          <TextInput
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onChangeText={setNewMessage}
             placeholder="Type your message..."
-            className="flex-1 bg-gray-800/40 border border-gray-700/30 rounded-full px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-green-500/50 text-sm"
+            placeholderTextColor="#9ca3af"
+            style={styles.textInput}
+            onSubmitEditing={handleSendMessage}
           />
-          <Button
-            onClick={handleSendMessage}
-            className="bg-green-600 hover:bg-green-700 text-white rounded-full h-12 w-12 flex items-center justify-center transition-colors"
+          <TouchableOpacity
+            onPress={handleSendMessage}
+            style={styles.sendButton}
           >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Bottom spacing for navigation */}
-      <div className="h-20"></div>
-    </div>
+            <Send color="white" size={16} />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+    position: 'relative',
+  },
+  header: {
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(74, 222, 128, 0.2)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
+  },
+  backButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  avatarContainer: {
+    width: 32,
+    height: 32,
+    position: 'relative',
+  },
+  avatar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#4ade80',
+    shadowColor: 'rgba(74, 222, 128, 0.2)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 8,
+    shadowOpacity: 1,
+  },
+  headerTextContainer: {
+    flexDirection: 'column',
+    marginLeft: 12,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 2,
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  messagesContainer: {
+    flex: 1,
+    padding: 16,
+  },
+  messagesContent: {
+    paddingBottom: 16,
+  },
+  messageWrapper: {
+    marginBottom: 16,
+  },
+  messageWrapperLeft: {
+    alignItems: 'flex-start',
+  },
+  messageWrapperRight: {
+    alignItems: 'flex-end',
+  },
+  messageBubble: {
+    maxWidth: '80%',
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+  },
+  userMessageBubble: {
+    backgroundColor: 'rgba(22, 163, 74, 0.2)',
+    borderColor: 'rgba(74, 222, 128, 0.3)',
+  },
+  otherMessageBubble: {
+    backgroundColor: 'rgba(31, 41, 55, 0.4)',
+    borderColor: 'rgba(55, 65, 81, 0.3)',
+  },
+  messageSender: {
+    fontSize: 12,
+    color: '#4ade80',
+    marginBottom: 4,
+    fontWeight: '500',
+  },
+  messageText: {
+    fontSize: 14,
+    color: 'white',
+    marginBottom: 4,
+  },
+  messageTimestamp: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  inputContainer: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+  inputWrapper: {
+    backgroundColor: 'rgba(31, 41, 55, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(55, 65, 81, 0.3)',
+    borderRadius: 24,
+    padding: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  textInput: {
+    flex: 1,
+    backgroundColor: 'rgba(31, 41, 55, 0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(55, 65, 81, 0.3)',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    color: 'white',
+    fontSize: 14,
+  },
+  sendButton: {
+    backgroundColor: '#16a34a',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
+});
 
 export default ChatPage;
