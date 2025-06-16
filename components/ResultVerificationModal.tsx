@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  TextInput,
+  ActivityIndicator,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import {
   CheckCircle,
   XCircle,
@@ -76,220 +78,449 @@ const ResultVerificationModal = ({
 
   if (hasOwnScreenshot === null) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-sm p-4">
-          <DialogHeader className="pb-2">
-            <DialogTitle className="text-white text-base">
-              Verify Result
-            </DialogTitle>
-            <DialogDescription className="text-gray-400 text-sm">
-              {verificationData.opponent} submitted a result
-            </DialogDescription>
-          </DialogHeader>
+      <Modal
+        visible={isOpen}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={onClose}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Verify Result</Text>
+              <Text style={styles.modalDescription}>
+                {verificationData.opponent} submitted a result
+              </Text>
+            </View>
 
-          {/* Match Info */}
-          <div className="bg-gray-800/30 rounded-lg p-3 mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Award className="h-3 w-3 text-green-400" />
-                <span className="text-xs font-medium text-white">
-                  {verificationData.tournament}
-                </span>
-              </div>
-              <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/30 text-xs px-2 py-0.5">
-                <Clock className="h-2 w-2 mr-1" />
-                {formatDeadline(verificationData.deadline)}
-              </Badge>
-            </div>
+            {/* Match Info */}
+            <View style={styles.matchInfoContainer}>
+              <View style={styles.matchInfoHeader}>
+                <View style={styles.tournamentInfo}>
+                  <Award size={14} color="#34D399" />
+                  <Text style={styles.tournamentText}>
+                    {verificationData.tournament}
+                  </Text>
+                </View>
+                <View style={styles.deadlineBadge}>
+                  <Clock size={10} color="#F97316" />
+                  <Text style={styles.deadlineText}>
+                    {formatDeadline(verificationData.deadline)}
+                  </Text>
+                </View>
+              </View>
 
-            <div className="text-center mb-2">
-              <p className="text-sm font-medium text-white mb-1">
-                {verificationData.homeTeam} vs {verificationData.awayTeam}
-              </p>
-              <div className="text-lg font-bold text-green-400">
-                {verificationData.submittedScore}
-              </div>
-            </div>
+              <View style={styles.matchCenter}>
+                <Text style={styles.teamsText}>
+                  {verificationData.homeTeam} vs {verificationData.awayTeam}
+                </Text>
+                <Text style={styles.scoreText}>
+                  {verificationData.submittedScore}
+                </Text>
+              </View>
 
-            {verificationData.hasScreenshot &&
-              verificationData.aiConfidence && (
-                <div className="flex items-center justify-center gap-1">
-                  <CheckCircle className="h-3 w-3 text-green-400" />
-                  <span className="text-xs text-green-400">
-                    AI Verified ({verificationData.aiConfidence}%)
-                  </span>
-                </div>
-              )}
-          </div>
+              {verificationData.hasScreenshot &&
+                verificationData.aiConfidence && (
+                  <View style={styles.aiVerified}>
+                    <CheckCircle size={14} color="#34D399" />
+                    <Text style={styles.aiVerifiedText}>
+                      AI Verified ({verificationData.aiConfidence}%)
+                    </Text>
+                  </View>
+                )}
+            </View>
 
-          {/* Screenshot Question */}
-          <div className="mb-4">
-            <h3 className="text-xs font-medium text-white mb-2">
-              Do you have a screenshot?
-            </h3>
+            {/* Screenshot Question */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Do you have a screenshot?</Text>
 
-            <div className="space-y-2">
-              <Button
-                onClick={() => setHasOwnScreenshot(true)}
-                variant="outline"
-                className="w-full justify-start bg-gray-800 border-gray-600 hover:bg-gray-700 text-white text-sm h-8"
-              >
-                <Eye className="h-3 w-3 mr-2" />
-                Yes, I have one
-              </Button>
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.outlineButton]}
+                  onPress={() => setHasOwnScreenshot(true)}
+                >
+                  <Eye size={14} color="white" />
+                  <Text style={styles.buttonText}>Yes, I have one</Text>
+                </TouchableOpacity>
 
-              <Button
-                onClick={() => setHasOwnScreenshot(false)}
-                variant="outline"
-                className="w-full justify-start bg-gray-800 border-gray-600 hover:bg-gray-700 text-white text-sm h-8"
-              >
-                <XCircle className="h-3 w-3 mr-2" />
-                No screenshot
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+                <TouchableOpacity
+                  style={[styles.button, styles.outlineButton]}
+                  onPress={() => setHasOwnScreenshot(false)}
+                >
+                  <XCircle size={14} color="white" />
+                  <Text style={styles.buttonText}>No screenshot</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     );
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-sm p-4">
-        <DialogHeader className="pb-2">
-          <DialogTitle className="text-white text-base">
-            {hasOwnScreenshot ? 'Upload Screenshot' : 'Verify Result'}
-          </DialogTitle>
-          <DialogDescription className="text-gray-400 text-sm">
-            {hasOwnScreenshot
-              ? 'Upload for automatic verification'
-              : 'Confirm if you agree with the result'}
-          </DialogDescription>
-        </DialogHeader>
+    <Modal
+      visible={isOpen}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>
+              {hasOwnScreenshot ? 'Upload Screenshot' : 'Verify Result'}
+            </Text>
+            <Text style={styles.modalDescription}>
+              {hasOwnScreenshot
+                ? 'Upload for automatic verification'
+                : 'Confirm if you agree with the result'}
+            </Text>
+          </View>
 
-        {/* Match Info */}
-        <div className="bg-gray-800/30 rounded-lg p-3 mb-4">
-          <div className="text-center">
-            <p className="text-sm font-medium text-white mb-1">
-              {verificationData.homeTeam} vs {verificationData.awayTeam}
-            </p>
-            <div className="text-lg font-bold text-green-400 mb-1">
-              {verificationData.submittedScore}
-            </div>
-            <p className="text-xs text-gray-400">
-              by {verificationData.opponent}
-            </p>
-          </div>
-        </div>
+          {/* Match Info */}
+          <View style={styles.matchInfoContainer}>
+            <View style={styles.matchCenter}>
+              <Text style={styles.teamsText}>
+                {verificationData.homeTeam} vs {verificationData.awayTeam}
+              </Text>
+              <Text style={styles.scoreText}>
+                {verificationData.submittedScore}
+              </Text>
+              <Text style={styles.opponentText}>
+                by {verificationData.opponent}
+              </Text>
+            </View>
+          </View>
 
-        {hasOwnScreenshot ? (
-          // Screenshot upload flow with counter for manual score entry
-          <>
-            <div className="mb-4">
-              <h3 className="text-xs font-medium text-gray-400 mb-3">
-                Your Result
-              </h3>
+          {hasOwnScreenshot ? (
+            // Screenshot upload flow with counter for manual score entry
+            <>
+              <View style={styles.section}>
+                <Text style={styles.sectionTitleSmall}>Your Result</Text>
 
-              <div className="grid grid-cols-3 gap-3 items-center mb-4">
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">
-                    {verificationData.homeTeam}
-                  </label>
-                  <Counter
-                    value={homeScore}
-                    onChange={setHomeScore}
-                    min={0}
-                    max={20}
-                    className="bg-gray-800/30"
-                  />
-                </div>
+                <View style={styles.scoreInputContainer}>
+                  <View style={styles.teamInput}>
+                    <Text style={styles.teamLabel}>
+                      {verificationData.homeTeam}
+                    </Text>
+                    <Counter
+                      value={homeScore}
+                      onChange={setHomeScore}
+                      min={0}
+                      max={20}
+                      style={styles.counter}
+                    />
+                  </View>
 
-                <div className="text-center">
-                  <span className="text-sm font-medium text-gray-400">VS</span>
-                </div>
+                  <Text style={styles.vsText}>VS</Text>
 
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">
-                    {verificationData.awayTeam}
-                  </label>
-                  <Counter
-                    value={awayScore}
-                    onChange={setAwayScore}
-                    min={0}
-                    max={20}
-                    className="bg-gray-800/30"
-                  />
-                </div>
-              </div>
-            </div>
+                  <View style={styles.teamInput}>
+                    <Text style={styles.teamLabel}>
+                      {verificationData.awayTeam}
+                    </Text>
+                    <Counter
+                      value={awayScore}
+                      onChange={setAwayScore}
+                      min={0}
+                      max={20}
+                      style={styles.counter}
+                    />
+                  </View>
+                </View>
+              </View>
 
-            <div className="mb-4">
-              <div className="border border-dashed border-gray-600 rounded-lg p-4 text-center mb-3">
-                <Eye className="h-5 w-5 text-gray-400 mx-auto mb-1" />
-                <p className="text-xs text-gray-400 mb-2">
-                  Upload your screenshot
-                </p>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  id="verification-upload"
-                />
-                <label
-                  htmlFor="verification-upload"
-                  className="inline-block px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded cursor-pointer transition-colors"
+              <View style={styles.section}>
+                <View style={styles.uploadContainer}>
+                  <Eye size={20} color="#9CA3AF" />
+                  <Text style={styles.uploadText}>Upload your screenshot</Text>
+                  <TouchableOpacity style={styles.uploadButton}>
+                    <Text style={styles.uploadButtonText}>Choose File</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.infoBoxBlue}>
+                  <AlertTriangle size={14} color="#60A5FA" />
+                  <Text style={styles.infoTextBlue}>
+                    AI will compare screenshots automatically
+                  </Text>
+                </View>
+              </View>
+            </>
+          ) : (
+            // Manual approval flow
+            <View style={styles.section}>
+              <View style={styles.infoBoxYellow}>
+                <AlertTriangle size={14} color="#F59E0B" />
+                <Text style={styles.infoTextYellow}>
+                  Please verify based on your memory
+                </Text>
+              </View>
+
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[styles.button, styles.approveButton]}
+                  onPress={() => handleDecision('approve')}
+                  disabled={isSubmitting}
                 >
-                  Choose File
-                </label>
-              </div>
+                  {isSubmitting && decision === 'approve' ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <>
+                      <ThumbsUp size={14} color="white" />
+                      <Text style={styles.buttonText}>Approve</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
 
-              <div className="flex items-start gap-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded">
-                <AlertTriangle className="h-3 w-3 text-blue-400 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-blue-400">
-                  AI will compare screenshots automatically
-                </p>
-              </div>
-            </div>
-          </>
-        ) : (
-          // Manual approval flow
-          <div className="mb-4">
-            <div className="flex items-start gap-2 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded mb-3">
-              <AlertTriangle className="h-3 w-3 text-yellow-400 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-yellow-400">
-                Please verify based on your memory
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Button
-                onClick={() => handleDecision('approve')}
-                disabled={isSubmitting}
-                className="w-full bg-green-600 hover:bg-green-500 text-white text-sm h-8"
-              >
-                <ThumbsUp className="h-3 w-3 mr-2" />
-                {isSubmitting && decision === 'approve'
-                  ? 'Approving...'
-                  : 'Approve'}
-              </Button>
-
-              <Button
-                onClick={() => handleDecision('dispute')}
-                disabled={isSubmitting}
-                variant="outline"
-                className="w-full bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20 text-sm h-8"
-              >
-                <ThumbsDown className="h-3 w-3 mr-2" />
-                {isSubmitting && decision === 'dispute'
-                  ? 'Disputing...'
-                  : 'Dispute'}
-              </Button>
-            </div>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
+                <TouchableOpacity
+                  style={[styles.button, styles.disputeButton]}
+                  onPress={() => handleDecision('dispute')}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting && decision === 'dispute' ? (
+                    <ActivityIndicator color="#F87171" />
+                  ) : (
+                    <>
+                      <ThumbsDown size={14} color="#F87171" />
+                      <Text style={styles.disputeButtonText}>Dispute</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </View>
+      </View>
+    </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#111827',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#374151',
+    width: '100%',
+    maxWidth: 400,
+    padding: 16,
+  },
+  modalHeader: {
+    paddingBottom: 8,
+  },
+  modalTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalDescription: {
+    color: '#9CA3AF',
+    fontSize: 14,
+  },
+  matchInfoContainer: {
+    backgroundColor: 'rgba(31, 41, 55, 0.3)',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  matchInfoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  tournamentInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  tournamentText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  deadlineBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(249, 115, 22, 0.3)',
+  },
+  deadlineText: {
+    color: '#F97316',
+    fontSize: 12,
+    marginLeft: 4,
+  },
+  matchCenter: {
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  teamsText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  scoreText: {
+    color: '#34D399',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  opponentText: {
+    color: '#9CA3AF',
+    fontSize: 12,
+  },
+  aiVerified: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  aiVerifiedText: {
+    color: '#34D399',
+    fontSize: 12,
+  },
+  section: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  sectionTitleSmall: {
+    color: '#9CA3AF',
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 12,
+  },
+  buttonGroup: {
+    gap: 8,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    height: 32,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  outlineButton: {
+    backgroundColor: '#1F2937',
+    borderWidth: 1,
+    borderColor: '#4B5563',
+  },
+  approveButton: {
+    backgroundColor: '#059669',
+  },
+  disputeButton: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  disputeButtonText: {
+    color: '#F87171',
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  scoreInputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  teamInput: {
+    flex: 1,
+  },
+  teamLabel: {
+    color: '#6B7280',
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  vsText: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  counter: {
+    backgroundColor: 'rgba(31, 41, 55, 0.3)',
+  },
+  uploadContainer: {
+    borderWidth: 1,
+    borderColor: '#4B5563',
+    borderStyle: 'dashed',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  uploadText: {
+    color: '#9CA3AF',
+    fontSize: 12,
+    marginVertical: 4,
+  },
+  uploadButton: {
+    backgroundColor: '#374151',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 4,
+    marginTop: 4,
+  },
+  uploadButtonText: {
+    color: 'white',
+    fontSize: 12,
+  },
+  infoBoxYellow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    padding: 8,
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.3)',
+    borderRadius: 6,
+    marginBottom: 12,
+  },
+  infoTextYellow: {
+    color: '#F59E0B',
+    fontSize: 12,
+    flex: 1,
+  },
+  infoBoxBlue: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    padding: 8,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    borderRadius: 6,
+  },
+  infoTextBlue: {
+    color: '#60A5FA',
+    fontSize: 12,
+    flex: 1,
+  },
+});
 
 export default ResultVerificationModal;
