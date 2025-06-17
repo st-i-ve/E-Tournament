@@ -1,17 +1,17 @@
+// In your navigation setup
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './screens/Home';
+import SettingsScreen from './screens/Settings';
 
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import BottomNav from './BottomNav';
+const Stack = createStackNavigator();
 
-const Layout = () => {
+function AppNavigator() {
   return (
-    <div className="flex flex-col min-h-screen bg-background font-sans">
-      <main className="flex-grow pb-20">
-        <Outlet />
-      </main>
-      <BottomNav />
-    </div>
+    <Layout>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+      </Stack.Navigator>
+    </Layout>
   );
-};
-
-export default Layout;
+}
