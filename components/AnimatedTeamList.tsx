@@ -1,4 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+  Platform,
+} from 'react-native';
 import { Check } from 'lucide-react-native';
 
 interface Team {
@@ -19,64 +27,148 @@ const AnimatedTeamList = ({
   selectedTeam,
   onTeamSelect,
 }: AnimatedTeamListProps) => {
-  const [visibleItems, setVisibleItems] = useState<number[]>([]);
+  const [animations] = useState(() => teams.map(() => new Animated.Value(0)));
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      teams.forEach((_, index) => {
-        setTimeout(() => {
-          setVisibleItems((prev) => [...prev, index]);
-        }, index * 100);
+    const animationsSequence = teams.map((_, index) => {
+      return Animated.timing(animations[index], {
+        toValue: 1,
+        duration: 500,
+        delay: index * 100,
+        useNativeDriver: true,
       });
-    }, 200);
+    });
 
-    return () => clearTimeout(timer);
+    Animated.stagger(100, animationsSequence).start();
   }, [teams]);
 
+  const getAnimatedStyle = (index: number) => {
+    return {
+      opacity: animations[index],
+      transform: [
+        {
+          translateY: animations[index].interpolate({
+            inputRange: [0, 1],
+            outputRange: [30, 0],
+          }),
+        },
+        {
+          scale:
+            selectedTeam?.id === teams[index].id
+              ? animations[index].interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 1.05],
+                })
+              : 1,
+        },
+      ],
+    };
+  };
+
   return (
-    <div className="space-y-3">
+    <View style={styles.container}>
       {teams.map((team, index) => (
-        <div
+        <Animated.View
           key={team.id}
-          onClick={() => onTeamSelect(team)}
-          className={`
-            relative p-4 rounded-xl cursor-pointer transition-all duration-500 backdrop-blur-sm
-            ${
-              visibleItems.includes(index)
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-8'
-            }
-            ${
-              selectedTeam?.id === team.id
-                ? 'bg-white/20 border-2 border-white/40 shadow-lg scale-105'
-                : 'bg-white/10 border border-white/20 hover:bg-white/15 hover:scale-102'
-            }
-          `}
-          style={{
-            transitionDelay: `${index * 50}ms`,
-          }}
+          style={[
+            styles.teamItem,
+            getAnimatedStyle(index),
+            selectedTeam?.id === team.id && styles.selectedTeam,
+          ]}
         >
-          <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg"
-              style={{ backgroundColor: team.color }}
-            >
-              {team.name.substring(0, 2)}
-            </div>
-            <div className="flex-1">
-              <h3 className="text-white font-medium">{team.name}</h3>
-              <p className="text-gray-300 text-sm">{team.league}</p>
-            </div>
-            {selectedTeam?.id === team.id && (
-              <div className="animate-scale-in">
-                <Check className="h-6 w-6 text-white" />
-              </div>
-            )}
-          </div>
-        </div>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => onTeamSelect(team)}
+            style={styles.touchableArea}
+          >
+            <View style={styles.teamContent}>
+              <View
+                style={[styles.teamInitials, { backgroundColor: team.color }]}
+              >
+                <Text style={styles.initialsText}>
+                  {team.name.substring(0, 2)}
+                </Text>
+              </View>
+
+              <View style={styles.teamInfo}>
+                <Text style={styles.teamName}>{team.name}</Text>
+                <Text style={styles.teamLeague}>{team.league}</Text>
+              </View>
+
+              {selectedTeam?.id === team.id && (
+                <Animated.View style={styles.checkIcon}>
+                  <Check size={24} color="#ffffff" />
+                </Animated.View>
+              )}
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
       ))}
-    </div>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 12,
+  },
+  teamItem: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+  },
+  selectedTeam: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  touchableArea: {
+    padding: 16,
+  },
+  teamContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  teamInitials: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  initialsText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  teamInfo: {
+    flex: 1,
+  },
+  teamName: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  teamLeague: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 14,
+  },
+  checkIcon: {
+    opacity: 1,
+  },
+});
 
 export default AnimatedTeamList;
