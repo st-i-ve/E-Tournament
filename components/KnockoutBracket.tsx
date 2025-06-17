@@ -1,13 +1,27 @@
 import React from 'react';
-import { Trophy, Users } from 'lucide-react-native';
-import { Badge } from '@/components/ui/badge';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from '@/components/ui/tooltip';
-import { mockUsers, currentUser } from '@/data/enhancedMockData';
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import { Trophy, Users } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+
+// Mock data
+const mockUsers = [
+  { id: 1, username: 'Player1' },
+  { id: 2, username: 'Player2' },
+  { id: 3, username: 'Player3' },
+  { id: 4, username: 'Player4' },
+  { id: 5, username: 'Player5' },
+  { id: 6, username: 'Player6' },
+  { id: 7, username: 'Player7' },
+  { id: 8, username: 'CurrentPlayer', isCurrent: true },
+];
+
+const currentUser = { id: 8 };
 
 // Generate knockout bracket structure
 const generateBracketData = () => {
@@ -93,174 +107,314 @@ const MatchCard = ({
     match.player1?.id === currentUser.id ||
     match.player2?.id === currentUser.id;
 
-  const getTooltipContent = () => {
-    if (isUpcoming) {
-      return `${match.player1?.username} vs ${match.player2?.username}`;
-    }
-    return `${match.player1?.username} vs ${match.player2?.username}\nScore: ${match.score}`;
-  };
-
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div
-          className={`bg-gray-900/50 rounded-md p-2 border transition-all cursor-default w-24 ${
-            isCurrentUserMatch
-              ? 'border-green-500/50 bg-green-500/5'
-              : 'border-gray-700/50'
-          }`}
-        >
-          <div className="space-y-1">
-            {/* Player 1 */}
-            <div
-              className={`flex items-center justify-between text-[10px] ${
-                match.winner?.id === match.player1?.id
-                  ? 'text-green-400 font-medium'
-                  : isUpcoming
-                  ? 'text-white'
-                  : 'text-gray-400'
-              }`}
-            >
-              <span className="truncate max-w-[50px]">
-                {match.player1?.username.substring(0, 6)}
-              </span>
-              {match.score && !isUpcoming && (
-                <span className="ml-1 text-[9px]">
-                  {match.score.split('-')[0]}
-                </span>
-              )}
-            </div>
-
-            {/* VS or Score */}
-            <div className="text-center">
-              {isUpcoming ? (
-                <span className="text-[8px] text-gray-500">VS</span>
-              ) : (
-                <div className="text-[8px] text-gray-500">-</div>
-              )}
-            </div>
-
-            {/* Player 2 */}
-            <div
-              className={`flex items-center justify-between text-[10px] ${
-                match.winner?.id === match.player2?.id
-                  ? 'text-green-400 font-medium'
-                  : isUpcoming
-                  ? 'text-white'
-                  : 'text-gray-400'
-              }`}
-            >
-              <span className="truncate max-w-[50px]">
-                {match.player2?.username.substring(0, 6)}
-              </span>
-              {match.score && !isUpcoming && (
-                <span className="ml-1 text-[9px]">
-                  {match.score.split('-')[1]}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {isUpcoming && (
-            <div className="mt-1 text-center">
-              <Badge
-                variant="outline"
-                className="text-[8px] bg-yellow-500/20 text-yellow-400 border-yellow-500/30 px-1 py-0"
-              >
-                UP
-              </Badge>
-            </div>
+    <TouchableOpacity
+      style={[
+        styles.matchCard,
+        isCurrentUserMatch && styles.currentUserMatchCard,
+      ]}
+      activeOpacity={0.7}
+    >
+      <View style={styles.matchContent}>
+        {/* Player 1 */}
+        <View style={styles.playerRow}>
+          <Text
+            style={[
+              styles.playerText,
+              match.winner?.id === match.player1?.id && styles.winnerText,
+              isUpcoming && !match.winner && styles.upcomingPlayerText,
+            ]}
+            numberOfLines={1}
+          >
+            {match.player1?.username.substring(0, 6)}
+          </Text>
+          {match.score && !isUpcoming && (
+            <Text style={styles.scoreText}>{match.score.split('-')[0]}</Text>
           )}
-        </div>
-      </TooltipTrigger>
-      <TooltipContent className="bg-gray-800 border-gray-700 text-white">
-        <p className="whitespace-pre-line">{getTooltipContent()}</p>
-      </TooltipContent>
-    </Tooltip>
+        </View>
+
+        {/* VS or Score */}
+        <View style={styles.vsContainer}>
+          {isUpcoming ? (
+            <Text style={styles.vsText}>VS</Text>
+          ) : (
+            <View style={styles.scoreLine} />
+          )}
+        </View>
+
+        {/* Player 2 */}
+        <View style={styles.playerRow}>
+          <Text
+            style={[
+              styles.playerText,
+              match.winner?.id === match.player2?.id && styles.winnerText,
+              isUpcoming && !match.winner && styles.upcomingPlayerText,
+            ]}
+            numberOfLines={1}
+          >
+            {match.player2?.username.substring(0, 6)}
+          </Text>
+          {match.score && !isUpcoming && (
+            <Text style={styles.scoreText}>{match.score.split('-')[1]}</Text>
+          )}
+        </View>
+      </View>
+
+      {isUpcoming && (
+        <View style={styles.upcomingBadge}>
+          <Text style={styles.upcomingBadgeText}>UP</Text>
+        </View>
+      )}
+    </TouchableOpacity>
   );
 };
 
 const KnockoutBracket = () => {
+  const navigation = useNavigation();
   const { quarterfinals, semifinals, final } = generateBracketData();
 
   return (
-    <TooltipProvider>
-      <div className="space-y-6 -mx-4 px-4">
-        {/* Bracket Container */}
-        <div className="min-h-[400px] overflow-x-auto">
-          <div className="flex gap-6 min-w-[500px] justify-center py-4">
-            {/* Quarterfinals */}
-            <div className="flex flex-col justify-center space-y-3">
-              <h3 className="text-xs font-medium text-gray-400 text-center mb-1">
-                Quarterfinals
-              </h3>
+    <View style={styles.container}>
+      {/* Bracket Container */}
+      <ScrollView horizontal style={styles.scrollContainer}>
+        <View style={styles.bracketContainer}>
+          {/* Quarterfinals */}
+          <View style={styles.roundContainer}>
+            <Text style={styles.roundTitle}>Quarterfinals</Text>
+            <View style={styles.matchesContainer}>
               {quarterfinals.map((match) => (
-                <div key={match.id}>
+                <View key={match.id} style={styles.matchWrapper}>
                   <MatchCard match={match} />
-                </div>
+                </View>
               ))}
-            </div>
+            </View>
+          </View>
 
-            {/* Connection Lines */}
-            <div className="flex flex-col justify-center items-center">
-              <div className="flex flex-col space-y-12 h-full justify-center">
-                {[0, 1].map((i) => (
-                  <div key={i} className="flex items-center">
-                    <div className="w-6 h-px bg-gray-600"></div>
-                    <div className="w-2 h-12 border-t border-b border-r border-gray-600 rounded-r"></div>
-                    <div className="w-6 h-px bg-gray-600"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* Connection Lines */}
+          <View style={styles.connectionsContainer}>
+            <View style={styles.connectionsColumn}>
+              {[0, 1].map((i) => (
+                <View key={i} style={styles.connectionGroup}>
+                  <View style={styles.connectionLine} />
+                  <View style={styles.connectionBracket} />
+                  <View style={styles.connectionLine} />
+                </View>
+              ))}
+            </View>
+          </View>
 
-            {/* Semifinals */}
-            <div className="flex flex-col justify-center space-y-12 relative">
-              <h3 className="text-xs font-medium text-gray-400 text-center mb-1 absolute -top-8 left-1/2 transform -translate-x-1/2">
-                Semifinals
-              </h3>
+          {/* Semifinals */}
+          <View style={styles.roundContainer}>
+            <Text style={styles.roundTitle}>Semifinals</Text>
+            <View style={styles.matchesContainer}>
               {semifinals.map((match) => (
-                <div key={match.id}>
+                <View key={match.id} style={styles.semifinalMatchWrapper}>
                   <MatchCard match={match} />
-                </div>
+                </View>
               ))}
-            </div>
+            </View>
+          </View>
 
-            {/* Connection Lines to Final */}
-            <div className="flex flex-col justify-center items-center">
-              <div className="flex items-center">
-                <div className="w-6 h-px bg-gray-600"></div>
-                <div className="w-2 h-24 border-t border-b border-r border-gray-600 rounded-r"></div>
-                <div className="w-6 h-px bg-gray-600"></div>
-              </div>
-            </div>
+          {/* Connection Lines to Final */}
+          <View style={styles.finalConnectionsContainer}>
+            <View style={styles.connectionGroup}>
+              <View style={styles.connectionLine} />
+              <View style={styles.finalConnectionBracket} />
+              <View style={styles.connectionLine} />
+            </View>
+          </View>
 
-            {/* Final */}
-            <div className="flex flex-col justify-center">
-              <h3 className="text-xs font-medium text-gray-400 text-center mb-3">
-                Final
-              </h3>
-              <div>
-                <MatchCard match={final} isUpcoming={true} />
-              </div>
-              <div className="mt-3 text-center">
-                <Trophy className="h-5 w-5 text-yellow-500 mx-auto" />
-                <p className="text-[9px] text-gray-400 mt-1">Champion</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          {/* Final */}
+          <View style={styles.finalContainer}>
+            <Text style={styles.roundTitle}>Final</Text>
+            <View style={styles.matchWrapper}>
+              <MatchCard match={final} isUpcoming={true} />
+            </View>
+            <View style={styles.trophyContainer}>
+              <Trophy size={20} color="#f59e0b" />
+              <Text style={styles.trophyText}>Champion</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
 
-        {/* Tournament Info */}
-        <div className="text-center bg-gray-900/30 rounded-lg p-3">
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
-            <Users className="h-3 w-3" />
-            <span>8 players • Single elimination</span>
-          </div>
-        </div>
-      </div>
-    </TooltipProvider>
+      {/* Tournament Info */}
+      <View style={styles.tournamentInfo}>
+        <Users size={12} color="#9CA3AF" />
+        <Text style={styles.tournamentInfoText}>
+          8 players • Single elimination
+        </Text>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'rgba(17, 24, 39, 0.3)',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  bracketContainer: {
+    flexDirection: 'row',
+    minWidth: 500,
+    paddingVertical: 16,
+  },
+  roundContainer: {
+    justifyContent: 'center',
+  },
+  roundTitle: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  matchesContainer: {
+    justifyContent: 'space-around',
+  },
+  matchWrapper: {
+    marginBottom: 12,
+  },
+  semifinalMatchWrapper: {
+    marginBottom: 48,
+  },
+  matchCard: {
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    borderRadius: 6,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(55, 65, 81, 0.5)',
+    width: 96,
+  },
+  currentUserMatchCard: {
+    borderColor: 'rgba(16, 185, 129, 0.5)',
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+  },
+  matchContent: {
+    gap: 4,
+  },
+  playerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  playerText: {
+    fontSize: 10,
+    color: '#9CA3AF',
+    maxWidth: 50,
+  },
+  upcomingPlayerText: {
+    color: '#FFFFFF',
+  },
+  winnerText: {
+    color: '#4ADE80',
+    fontWeight: '500',
+  },
+  scoreText: {
+    fontSize: 9,
+    color: '#9CA3AF',
+    marginLeft: 4,
+  },
+  vsContainer: {
+    alignItems: 'center',
+  },
+  vsText: {
+    fontSize: 8,
+    color: '#6B7280',
+  },
+  scoreLine: {
+    height: 1,
+    width: '100%',
+    backgroundColor: '#6B7280',
+  },
+  upcomingBadge: {
+    marginTop: 4,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(234, 179, 8, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(234, 179, 8, 0.3)',
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+  },
+  upcomingBadgeText: {
+    fontSize: 8,
+    color: '#F59E0B',
+  },
+  connectionsContainer: {
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+  },
+  connectionsColumn: {
+    justifyContent: 'space-around',
+    height: '100%',
+    gap: 48,
+  },
+  connectionGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  connectionLine: {
+    width: 24,
+    height: 1,
+    backgroundColor: '#4B5563',
+  },
+  connectionBracket: {
+    width: 8,
+    height: 48,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#4B5563',
+    borderTopRightRadius: 2,
+    borderBottomRightRadius: 2,
+  },
+  finalConnectionsContainer: {
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+  },
+  finalConnectionBracket: {
+    width: 8,
+    height: 96,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#4B5563',
+    borderTopRightRadius: 2,
+    borderBottomRightRadius: 2,
+  },
+  finalContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  trophyContainer: {
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  trophyText: {
+    fontSize: 9,
+    color: '#9CA3AF',
+    marginTop: 4,
+  },
+  tournamentInfo: {
+    backgroundColor: 'rgba(31, 41, 55, 0.3)',
+    borderRadius: 8,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 16,
+  },
+  tournamentInfoText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+  },
+});
 
 export default KnockoutBracket;
