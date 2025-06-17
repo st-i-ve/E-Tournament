@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  Modal,
+  StyleSheet,
+  SafeAreaView,
+} from 'react-native';
+import {
   X,
   Trophy,
   Users,
@@ -8,22 +18,16 @@ import {
   ArrowRight,
   ArrowLeft,
 } from 'lucide-react-native';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Stepper, Step } from '@/components/ui/stepper';
 
 interface CreateTournamentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateTournament: (tournament: any) => void;
+}
+
+interface Step {
+  id: string;
+  title: string;
 }
 
 const CreateTournamentModal = ({
@@ -115,218 +119,545 @@ const CreateTournamentModal = ({
     }
   };
 
+  const StepperComponent = () => (
+    <View style={styles.stepperContainer}>
+      {steps.map((step, index) => (
+        <React.Fragment key={step.id}>
+          <View style={styles.stepContainer}>
+            <View
+              style={[
+                styles.stepCircle,
+                currentStep > index + 1 && styles.completedStep,
+                currentStep === index + 1 && styles.activeStep,
+              ]}
+            >
+              {currentStep > index + 1 ? (
+                <Text style={styles.stepText}>✓</Text>
+              ) : (
+                <Text style={styles.stepText}>{index + 1}</Text>
+              )}
+            </View>
+            <Text
+              style={[
+                styles.stepTitle,
+                currentStep === index + 1 && styles.activeStepTitle,
+              ]}
+            >
+              {step.title}
+            </Text>
+          </View>
+          {index < steps.length - 1 && <View style={styles.stepLine} />}
+        </React.Fragment>
+      ))}
+    </View>
+  );
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-[#1C1C1E] border-gray-700 max-w-md mx-auto">
-        <DialogHeader>
-          <DialogTitle className="text-white flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-green-500" />
-            Create Tournament
-          </DialogTitle>
-        </DialogHeader>
+    <Modal
+      visible={isOpen}
+      animationType="slide"
+      onRequestClose={onClose}
+      transparent={false}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerContent}>
+              <Trophy size={20} color="#34D399" />
+              <Text style={styles.title}>Create Tournament</Text>
+            </View>
+          </View>
 
-        {/* Stepper */}
-        <Stepper steps={steps} currentStep={currentStep} className="mb-8" />
+          {/* Stepper */}
+          <StepperComponent />
 
-        {/* Step Content */}
-        <div className="space-y-6">
-          {currentStep === 1 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">
-                Tournament Type
-              </h3>
-              <div className="space-y-3">
-                {tournamentTypes.map((type) => (
-                  <Button
-                    key={type.id}
-                    onClick={() => handleTypeSelect(type.id)}
-                    variant="outline"
-                    className={`w-full p-4 h-auto justify-start ${
-                      tournamentData.type === type.id
-                        ? 'bg-green-500/20 border-green-500 text-green-400'
-                        : 'bg-gray-800/50 border-gray-700 text-gray-300 hover:border-gray-600'
-                    }`}
-                  >
-                    <div className="text-left">
-                      <h4 className="font-semibold">{type.name}</h4>
-                      <p className="text-sm opacity-80">{type.description}</p>
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Step Content */}
+          <ScrollView style={styles.content}>
+            {currentStep === 1 && (
+              <View style={styles.stepContent}>
+                <Text style={styles.stepHeading}>Tournament Type</Text>
+                <View style={styles.typeContainer}>
+                  {tournamentTypes.map((type) => (
+                    <TouchableOpacity
+                      key={type.id}
+                      onPress={() => handleTypeSelect(type.id)}
+                      style={[
+                        styles.typeButton,
+                        tournamentData.type === type.id && styles.selectedType,
+                      ]}
+                    >
+                      <View style={styles.typeTextContainer}>
+                        <Text style={styles.typeName}>{type.name}</Text>
+                        <Text style={styles.typeDescription}>
+                          {type.description}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            )}
 
-          {currentStep === 2 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">
-                Tournament Settings
-              </h3>
+            {currentStep === 2 && (
+              <View style={styles.stepContent}>
+                <Text style={styles.stepHeading}>Tournament Settings</Text>
+                <View style={styles.settingsContainer}>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Tournament Name</Text>
+                    <TextInput
+                      value={tournamentData.name}
+                      onChangeText={(text) =>
+                        setTournamentData({ ...tournamentData, name: text })
+                      }
+                      placeholder="Enter tournament name"
+                      placeholderTextColor="#6B7280"
+                      style={styles.input}
+                    />
+                  </View>
 
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="name" className="text-gray-300">
-                    Tournament Name
-                  </Label>
-                  <Input
-                    id="name"
-                    value={tournamentData.name}
-                    onChange={(e) =>
-                      setTournamentData({
-                        ...tournamentData,
-                        name: e.target.value,
-                      })
-                    }
-                    placeholder="Enter tournament name"
-                    className="bg-gray-800 border-gray-600 text-white"
-                  />
-                </div>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Maximum Participants</Text>
+                    <View style={styles.participantGrid}>
+                      {participantOptions.map((option) => (
+                        <TouchableOpacity
+                          key={option}
+                          onPress={() =>
+                            setTournamentData({
+                              ...tournamentData,
+                              maxParticipants: option,
+                            })
+                          }
+                          style={[
+                            styles.participantButton,
+                            tournamentData.maxParticipants === option &&
+                              styles.selectedParticipant,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.participantText,
+                              tournamentData.maxParticipants === option &&
+                                styles.selectedParticipantText,
+                            ]}
+                          >
+                            {option}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
 
-                <div>
-                  <Label className="text-gray-300">Maximum Participants</Label>
-                  <div className="grid grid-cols-4 gap-2 mt-2">
-                    {participantOptions.map((option) => (
-                      <Button
-                        key={option}
-                        onClick={() =>
-                          setTournamentData({
-                            ...tournamentData,
-                            maxParticipants: option,
-                          })
-                        }
-                        variant="outline"
-                        size="sm"
-                        className={`${
-                          tournamentData.maxParticipants === option
-                            ? 'bg-green-500 text-white border-green-500'
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                        }`}
-                      >
-                        {option}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+            {currentStep === 3 && (
+              <View style={styles.stepContent}>
+                <Text style={styles.stepHeading}>Match Schedule</Text>
+                <Text style={styles.scheduleSubtitle}>
+                  Select the days when matches can be played
+                </Text>
 
-          {currentStep === 3 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">
-                Match Schedule
-              </h3>
-              <p className="text-gray-400 text-sm">
-                Select the days when matches can be played
-              </p>
-
-              <div className="grid grid-cols-2 gap-2">
-                {weekDays.map((day) => (
-                  <Button
-                    key={day}
-                    onClick={() => handleMatchDayToggle(day)}
-                    variant="outline"
-                    size="sm"
-                    className={`${
-                      tournamentData.matchDays.includes(day)
-                        ? 'bg-green-500 text-white border-green-500'
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    {day}
-                  </Button>
-                ))}
-              </div>
-
-              {tournamentData.matchDays.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-gray-400 text-sm mb-2">Selected days:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {tournamentData.matchDays.map((day) => (
-                      <Badge
-                        key={day}
-                        variant="outline"
-                        className="bg-green-500/20 text-green-400 border-green-500/30"
+                <View style={styles.daysGrid}>
+                  {weekDays.map((day) => (
+                    <TouchableOpacity
+                      key={day}
+                      onPress={() => handleMatchDayToggle(day)}
+                      style={[
+                        styles.dayButton,
+                        tournamentData.matchDays.includes(day) &&
+                          styles.selectedDay,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.dayText,
+                          tournamentData.matchDays.includes(day) &&
+                            styles.selectedDayText,
+                        ]}
                       >
                         {day}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
 
-          {currentStep === 4 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">
-                Review & Create
-              </h3>
+                {tournamentData.matchDays.length > 0 && (
+                  <View style={styles.selectedDaysContainer}>
+                    <Text style={styles.selectedDaysLabel}>Selected days:</Text>
+                    <View style={styles.selectedDaysList}>
+                      {tournamentData.matchDays.map((day) => (
+                        <View key={day} style={styles.dayBadge}>
+                          <Text style={styles.dayBadgeText}>{day}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+              </View>
+            )}
 
-              <div className="bg-gray-800/50 rounded-xl p-4 space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Name:</span>
-                  <span className="text-white font-medium">
-                    {tournamentData.name}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Type:</span>
-                  <span className="text-white font-medium capitalize">
-                    {tournamentData.type}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Max Players:</span>
-                  <span className="text-white font-medium">
-                    {tournamentData.maxParticipants}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Match Days:</span>
-                  <span className="text-white font-medium">
-                    {tournamentData.matchDays.length} days
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+            {currentStep === 4 && (
+              <View style={styles.stepContent}>
+                <Text style={styles.stepHeading}>Review & Create</Text>
+                <View style={styles.reviewContainer}>
+                  <View style={styles.reviewRow}>
+                    <Text style={styles.reviewLabel}>Name:</Text>
+                    <Text style={styles.reviewValue}>
+                      {tournamentData.name}
+                    </Text>
+                  </View>
+                  <View style={styles.reviewRow}>
+                    <Text style={styles.reviewLabel}>Type:</Text>
+                    <Text style={styles.reviewValue}>
+                      {tournamentData.type.charAt(0).toUpperCase() +
+                        tournamentData.type.slice(1)}
+                    </Text>
+                  </View>
+                  <View style={styles.reviewRow}>
+                    <Text style={styles.reviewLabel}>Max Players:</Text>
+                    <Text style={styles.reviewValue}>
+                      {tournamentData.maxParticipants}
+                    </Text>
+                  </View>
+                  <View style={styles.reviewRow}>
+                    <Text style={styles.reviewLabel}>Match Days:</Text>
+                    <Text style={styles.reviewValue}>
+                      {tournamentData.matchDays.length} days
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+          </ScrollView>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between pt-4">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={currentStep === 1}
-            className="bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Previous
-          </Button>
-
-          {currentStep < 4 ? (
-            <Button
-              onClick={handleNext}
-              disabled={!canProceed()}
-              className="bg-green-600 hover:bg-green-500 text-white"
+          {/* Navigation Buttons */}
+          <View style={styles.navigation}>
+            <TouchableOpacity
+              onPress={handlePrevious}
+              disabled={currentStep === 1}
+              style={[
+                styles.navButton,
+                styles.prevButton,
+                currentStep === 1 && styles.disabledButton,
+              ]}
             >
-              Next
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handleCreate}
-              className="bg-green-600 hover:bg-green-500 text-white"
-            >
-              Create Tournament
-              <Trophy className="h-4 w-4 ml-2" />
-            </Button>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+              <ArrowLeft
+                size={16}
+                color={currentStep === 1 ? '#6B7280' : '#D1D5DB'}
+              />
+              <Text
+                style={[
+                  styles.navButtonText,
+                  currentStep === 1 && styles.disabledButtonText,
+                ]}
+              >
+                Previous
+              </Text>
+            </TouchableOpacity>
+
+            {currentStep < 4 ? (
+              <TouchableOpacity
+                onPress={handleNext}
+                disabled={!canProceed()}
+                style={[
+                  styles.navButton,
+                  styles.nextButton,
+                  !canProceed() && styles.disabledButton,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.navButtonText,
+                    styles.nextButtonText,
+                    !canProceed() && styles.disabledButtonText,
+                  ]}
+                >
+                  Next
+                </Text>
+                <ArrowRight
+                  size={16}
+                  color={!canProceed() ? '#6B7280' : 'white'}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={handleCreate}
+                style={[styles.navButton, styles.createButton]}
+              >
+                <Text style={[styles.navButtonText, styles.createButtonText]}>
+                  Create Tournament
+                </Text>
+                <Trophy size={16} color="white" />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </SafeAreaView>
+    </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#1C1C1E',
+  },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#1C1C1E',
+  },
+  header: {
+    marginBottom: 24,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  title: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  stepperContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  stepContainer: {
+    alignItems: 'center',
+  },
+  stepCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#3A3A3C',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stepText: {
+    color: '#D1D5DB',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  stepTitle: {
+    marginTop: 8,
+    color: '#6B7280',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  stepLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#3A3A3C',
+    marginHorizontal: 4,
+  },
+  activeStep: {
+    backgroundColor: '#34D399',
+  },
+  activeStepTitle: {
+    color: '#34D399',
+  },
+  completedStep: {
+    backgroundColor: '#34D399',
+  },
+  content: {
+    flex: 1,
+    marginBottom: 16,
+  },
+  stepContent: {
+    marginBottom: 24,
+  },
+  stepHeading: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  typeContainer: {
+    gap: 12,
+  },
+  typeButton: {
+    backgroundColor: '#3A3A3C',
+    borderWidth: 1,
+    borderColor: '#3A3A3C',
+    borderRadius: 8,
+    padding: 16,
+  },
+  selectedType: {
+    backgroundColor: 'rgba(52, 211, 153, 0.2)',
+    borderColor: '#34D399',
+  },
+  typeTextContainer: {},
+  typeName: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  typeDescription: {
+    color: '#9CA3AF',
+    fontSize: 14,
+  },
+  settingsContainer: {
+    gap: 24,
+  },
+  inputGroup: {
+    gap: 8,
+  },
+  label: {
+    color: '#D1D5DB',
+    fontSize: 14,
+  },
+  input: {
+    backgroundColor: '#3A3A3C',
+    color: 'white',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+  },
+  participantGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  participantButton: {
+    width: '22%',
+    backgroundColor: '#3A3A3C',
+    borderRadius: 6,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectedParticipant: {
+    backgroundColor: '#34D399',
+  },
+  participantText: {
+    color: '#D1D5DB',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  selectedParticipantText: {
+    color: 'white',
+  },
+  scheduleSubtitle: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  daysGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  dayButton: {
+    width: '48%',
+    backgroundColor: '#3A3A3C',
+    borderRadius: 6,
+    padding: 12,
+    alignItems: 'center',
+  },
+  selectedDay: {
+    backgroundColor: '#34D399',
+  },
+  dayText: {
+    color: '#D1D5DB',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  selectedDayText: {
+    color: 'white',
+    fontWeight: '600',
+  },
+  selectedDaysContainer: {
+    marginTop: 16,
+  },
+  selectedDaysLabel: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  selectedDaysList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  dayBadge: {
+    backgroundColor: 'rgba(52, 211, 153, 0.2)',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(52, 211, 153, 0.3)',
+  },
+  dayBadgeText: {
+    color: '#34D399',
+    fontSize: 12,
+  },
+  reviewContainer: {
+    backgroundColor: '#3A3A3C',
+    borderRadius: 12,
+    padding: 16,
+    gap: 12,
+  },
+  reviewRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  reviewLabel: {
+    color: '#9CA3AF',
+    fontSize: 14,
+  },
+  reviewValue: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  navigation: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#3A3A3C',
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    borderRadius: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  prevButton: {
+    backgroundColor: '#3A3A3C',
+    borderWidth: 1,
+    borderColor: '#3A3A3C',
+  },
+  nextButton: {
+    backgroundColor: '#34D399',
+  },
+  createButton: {
+    backgroundColor: '#34D399',
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  navButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  nextButtonText: {
+    color: 'white',
+  },
+  createButtonText: {
+    color: 'white',
+  },
+  disabledButtonText: {
+    color: '#6B7280',
+  },
+});
 
 export default CreateTournamentModal;
