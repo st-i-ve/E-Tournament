@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
 import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Modal,
+  Dimensions,
+} from 'react-native';
+import {
   Calendar,
   Clock,
   MapPin,
@@ -10,6 +19,7 @@ import {
   CalendarDays,
   List,
 } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,6 +28,7 @@ import MatchCard from './MatchCard';
 import MatchInfoModal from './MatchInfoModal';
 
 const CalendarView = () => {
+  const navigation = useNavigation();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
@@ -74,25 +85,30 @@ const CalendarView = () => {
   const renderCalendarGrid = () => {
     const days = getDaysInMonth(currentDate);
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const screenWidth = Dimensions.get('window').width;
+    const daySize = (screenWidth - 48) / 7; // 48 = padding * 2 (assuming 24 padding)
 
     return (
-      <div className="bg-gray-900/40 rounded-2xl p-12 border border-gray-800/50">
+      <View style={styles.calendarContainer}>
         {/* Week day headers */}
-        <div className="grid grid-cols-7 gap-6 mb-8">
+        <View style={styles.weekDaysContainer}>
           {weekDays.map((day) => (
-            <div
-              key={day}
-              className="p-6 text-center text-xl font-semibold text-gray-300 bg-gray-800/30 rounded-lg"
-            >
-              {day}
-            </div>
+            <View key={day} style={styles.weekDayHeader}>
+              <Text style={styles.weekDayText}>{day}</Text>
+            </View>
           ))}
-        </div>
+        </View>
 
         {/* Calendar days */}
-        <div className="grid grid-cols-7 gap-6">
+        <View style={styles.daysContainer}>
           {days.map((day, index) => {
-            if (!day) return <div key={index} className="p-6 h-40" />;
+            if (!day)
+              return (
+                <View
+                  key={index}
+                  style={[styles.dayEmpty, { width: daySize, height: daySize }]}
+                />
+              );
 
             const matches = getMatchesForDate(day);
             const isToday = day.toDateString() === new Date().toDateString();
@@ -107,53 +123,46 @@ const CalendarView = () => {
             );
 
             return (
-              <div
+              <TouchableOpacity
                 key={day.toDateString()}
-                className={`p-6 h-40 border-2 border-gray-700 rounded-xl cursor-pointer transition-all hover:bg-gray-800/70 hover:border-gray-600 ${
-                  isToday
-                    ? 'bg-green-500/15 border-green-500/50'
-                    : 'bg-gray-800/20'
-                } ${isSelected ? 'bg-blue-500/25 border-blue-500/60' : ''}`}
-                onClick={() => setSelectedDate(isSelected ? null : day)}
+                style={[
+                  styles.dayContainer,
+                  { width: daySize, height: daySize },
+                  isToday && styles.todayDay,
+                  isSelected && styles.selectedDay,
+                ]}
+                onPress={() => setSelectedDate(isSelected ? null : day)}
               >
-                <div
-                  className={`text-2xl font-bold mb-4 ${
-                    isToday ? 'text-green-400' : 'text-gray-200'
-                  }`}
+                <Text
+                  style={[styles.dayNumber, isToday && styles.todayDayNumber]}
                 >
                   {day.getDate()}
-                </div>
+                </Text>
 
                 {/* Match indicators */}
                 {matches.length > 0 && (
-                  <div className="flex items-center justify-center gap-3">
+                  <View style={styles.matchIndicators}>
                     {homeMatches.length > 0 && (
-                      <div
-                        className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                        title="Home match"
-                      >
-                        <span className="text-xs font-bold text-white">
+                      <View style={styles.homeMatchIndicator}>
+                        <Text style={styles.matchIndicatorText}>
                           {homeMatches.length}
-                        </span>
-                      </div>
+                        </Text>
+                      </View>
                     )}
                     {awayMatches.length > 0 && (
-                      <div
-                        className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center"
-                        title="Away match"
-                      >
-                        <span className="text-xs font-bold text-white">
+                      <View style={styles.awayMatchIndicator}>
+                        <Text style={styles.matchIndicatorText}>
                           {awayMatches.length}
-                        </span>
-                      </div>
+                        </Text>
+                      </View>
                     )}
-                  </div>
+                  </View>
                 )}
-              </div>
+              </TouchableOpacity>
             );
           })}
-        </div>
-      </div>
+        </View>
+      </View>
     );
   };
 
@@ -164,17 +173,19 @@ const CalendarView = () => {
     if (matches.length === 0) return null;
 
     return (
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-          <Calendar className="h-5 w-5 text-green-500" />
-          {selectedDate.toLocaleDateString('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-          })}
-        </h3>
-        <div className="grid gap-4">
+      <View style={styles.selectedMatchesContainer}>
+        <View style={styles.selectedDateHeader}>
+          <Calendar color="#10B981" size={20} />
+          <Text style={styles.selectedDateText}>
+            {selectedDate.toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            })}
+          </Text>
+        </View>
+        <View style={styles.matchesList}>
           {matches.map((match, index) => (
             <MatchCard
               key={`${match.homeTeam}-${match.awayTeam}-${index}`}
@@ -183,58 +194,58 @@ const CalendarView = () => {
               onInfoClick={setSelectedMatch}
             />
           ))}
-        </div>
-      </div>
+        </View>
+      </View>
     );
   };
 
   return (
-    <div className="space-y-8">
+    <ScrollView style={styles.container}>
       {/* Header Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <h2 className="text-3xl font-bold text-white">{formatMonth()}</h2>
-          <div className="flex items-center gap-4 text-base text-gray-400">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded-full" />
-              <span>Home</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-blue-500 rounded-full" />
-              <span>Away</span>
-            </div>
-          </div>
-        </div>
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.monthTitle}>{formatMonth()}</Text>
+          <View style={styles.legend}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, styles.homeLegendDot]} />
+              <Text style={styles.legendText}>Home</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, styles.awayLegendDot]} />
+              <Text style={styles.legendText}>Away</Text>
+            </View>
+          </View>
+        </View>
 
-        <div className="flex items-center gap-3">
+        <View style={styles.headerControls}>
           <Button
             variant="outline"
             size="default"
-            onClick={() => navigateMonth('prev')}
-            className="bg-gray-900/50 border-gray-700 text-gray-300 hover:bg-gray-800 px-4 py-2"
+            onPress={() => navigateMonth('prev')}
+            style={styles.navButton}
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft size={20} color="#D1D5DB" />
           </Button>
 
           <Button
             variant="outline"
             size="default"
-            onClick={() => setCurrentDate(new Date())}
-            className="bg-gray-900/50 border-gray-700 text-gray-300 hover:bg-gray-800 px-4 py-2"
+            onPress={() => setCurrentDate(new Date())}
+            style={styles.navButton}
           >
-            Today
+            <Text style={styles.navButtonText}>Today</Text>
           </Button>
 
           <Button
             variant="outline"
             size="default"
-            onClick={() => navigateMonth('next')}
-            className="bg-gray-900/50 border-gray-700 text-gray-300 hover:bg-gray-800 px-4 py-2"
+            onPress={() => navigateMonth('next')}
+            style={styles.navButton}
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight size={20} color="#D1D5DB" />
           </Button>
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* Calendar Grid */}
       {renderCalendarGrid()}
@@ -243,9 +254,9 @@ const CalendarView = () => {
       {renderSelectedDateMatches()}
 
       {/* Legend */}
-      <div className="text-center text-base text-gray-500 mt-8">
+      <Text style={styles.legendHint}>
         Click on a date to view matches for that day
-      </div>
+      </Text>
 
       {/* Match Info Modal */}
       <MatchInfoModal
@@ -254,8 +265,178 @@ const CalendarView = () => {
         isOpen={!!selectedMatch}
         onClose={() => setSelectedMatch(null)}
       />
-    </div>
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#111827',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  headerLeft: {
+    flexDirection: 'column',
+    gap: 12,
+  },
+  monthTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  legend: {
+    flexDirection: 'row',
+    gap: 16,
+    alignItems: 'center',
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  legendDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+  },
+  homeLegendDot: {
+    backgroundColor: '#10B981',
+  },
+  awayLegendDot: {
+    backgroundColor: '#3B82F6',
+  },
+  legendText: {
+    color: '#9CA3AF',
+    fontSize: 16,
+  },
+  headerControls: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  navButton: {
+    backgroundColor: 'rgba(17, 24, 39, 0.5)',
+    borderColor: '#374151',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  navButtonText: {
+    color: '#D1D5DB',
+  },
+  calendarContainer: {
+    backgroundColor: 'rgba(31, 41, 55, 0.4)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(55, 65, 81, 0.5)',
+    padding: 16,
+    marginBottom: 24,
+  },
+  weekDaysContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  weekDayHeader: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 8,
+  },
+  weekDayText: {
+    color: '#D1D5DB',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  daysContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  dayEmpty: {
+    // Empty day placeholder
+  },
+  dayContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#374151',
+    backgroundColor: 'rgba(31, 41, 55, 0.2)',
+    margin: 2,
+    padding: 8,
+  },
+  todayDay: {
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    borderColor: 'rgba(16, 185, 129, 0.5)',
+  },
+  selectedDay: {
+    backgroundColor: 'rgba(59, 130, 246, 0.25)',
+    borderColor: 'rgba(59, 130, 246, 0.6)',
+  },
+  dayNumber: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#E5E7EB',
+    marginBottom: 8,
+  },
+  todayDayNumber: {
+    color: '#10B981',
+  },
+  matchIndicators: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  homeMatchIndicator: {
+    width: 24,
+    height: 24,
+    backgroundColor: '#10B981',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  awayMatchIndicator: {
+    width: 24,
+    height: 24,
+    backgroundColor: '#3B82F6',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  matchIndicatorText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  selectedMatchesContainer: {
+    marginTop: 24,
+  },
+  selectedDateHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  selectedDateText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: 'white',
+  },
+  matchesList: {
+    gap: 12,
+  },
+  legendHint: {
+    textAlign: 'center',
+    color: '#6B7280',
+    marginTop: 24,
+    fontSize: 16,
+  },
+});
 
 export default CalendarView;
