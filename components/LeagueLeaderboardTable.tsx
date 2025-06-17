@@ -1,21 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Trophy, Check, X, Minus } from 'lucide-react-native';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from '@/components/ui/tooltip';
-import { mockUsers, currentUser } from '@/data/enhancedMockData';
+
+// Mock data
+const mockUsers = [
+  { id: 1, username: 'Player1' },
+  { id: 2, username: 'Player2' },
+  { id: 3, username: 'Player3' },
+  { id: 4, username: 'Player4' },
+  { id: 5, username: 'Player5' },
+  { id: 6, username: 'CurrentPlayer', isCurrent: true },
+];
+
+const currentUser = { id: 6 };
 
 // Enhanced teams data with user integration
 const teams = mockUsers.map((user, index) => ({
@@ -32,22 +36,22 @@ const teams = mockUsers.map((user, index) => ({
 }));
 
 const GameResultIcon = ({ result }: { result: 'W' | 'L' | 'D' }) => {
-  const styles = {
-    W: 'text-green-400 bg-green-400/20',
-    L: 'text-red-400 bg-red-400/20',
-    D: 'text-yellow-400 bg-yellow-400/20',
+  const iconStyles = {
+    W: { color: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.2)' },
+    L: { color: '#f87171', backgroundColor: 'rgba(248, 113, 113, 0.2)' },
+    D: { color: '#facc15', backgroundColor: 'rgba(250, 204, 21, 0.2)' },
   };
-  const icon = {
-    W: <Check className="h-3 w-3" />,
-    L: <X className="h-3 w-3" />,
-    D: <Minus className="h-3 w-3" />,
-  };
+
+  const IconComponent = {
+    W: Check,
+    L: X,
+    D: Minus,
+  }[result];
+
   return (
-    <div
-      className={`flex items-center justify-center h-4 w-4 rounded-sm ${styles[result]}`}
-    >
-      {icon[result]}
-    </div>
+    <View style={[styles.resultIcon, iconStyles[result]]}>
+      <IconComponent size={12} />
+    </View>
   );
 };
 
@@ -57,179 +61,184 @@ const truncateName = (name: string, maxLength: number = 10) => {
 };
 
 const LeaderboardTable = () => {
-  return (
-    <TooltipProvider>
-      <div className="space-y-4 -mx-4">
-        <div className="flex">
-          {/* Fixed Table 1 - Position and Player (Static, no scroll) */}
-          <div className="flex-shrink-0 w-36 bg-gray-900/50 rounded-l-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent border-0">
-                  <TableHead
-                    className="text-center text-xs text-gray-400 font-medium w-6 py-2 h-10"
-                    style={{ fontSize: '11px' }}
-                  >
-                    Pos
-                  </TableHead>
-                  <TableHead
-                    className="text-left text-xs text-gray-400 font-medium py-2 h-10"
-                    style={{ fontSize: '11px' }}
-                  >
-                    Player
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {teams.map((team) => (
-                  <TableRow
-                    key={team.pos}
-                    className={`hover:bg-gray-800/30 transition-colors border-0 h-10 ${
-                      team.isCurrentUser
-                        ? 'bg-green-500/10 border-l-2 border-green-500'
-                        : ''
-                    }`}
-                  >
-                    <TableCell className="text-center py-2 px-1 h-10">
-                      <span
-                        className={`font-semibold ${
-                          team.isCurrentUser ? 'text-green-300' : 'text-white'
-                        }`}
-                        style={{ fontSize: '11px' }}
-                      >
-                        {team.pos}
-                      </span>
-                    </TableCell>
-                    <TableCell className="py-2 px-2 h-10">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div
-                            className={`font-medium cursor-default ${
-                              team.isCurrentUser
-                                ? 'text-green-300'
-                                : 'text-gray-100'
-                            }`}
-                            style={{ fontSize: '11px' }}
-                          >
-                            {truncateName(team.name)}
-                          </div>
-                        </TooltipTrigger>
-                        {team.name.length > 10 && (
-                          <TooltipContent className="bg-gray-800 border-gray-700 text-white">
-                            <p>{team.name}</p>
-                          </TooltipContent>
-                        )}
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+  const navigation = useNavigation();
 
-          {/* Scrollable Table 2 - Stats and Last 5 */}
-          <div className="flex-1 bg-gray-900/50 rounded-r-lg overflow-hidden">
-            <ScrollArea className="w-full">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent border-0">
-                    <TableHead
-                      className="text-center text-xs text-gray-400 font-medium w-10 py-2 h-10"
-                      style={{ fontSize: '11px' }}
-                    >
-                      MP
-                    </TableHead>
-                    <TableHead
-                      className="text-center text-xs text-gray-400 font-medium w-8 py-2 h-10"
-                      style={{ fontSize: '11px' }}
-                    >
-                      W
-                    </TableHead>
-                    <TableHead
-                      className="text-center text-xs text-gray-400 font-medium w-8 py-2 h-10"
-                      style={{ fontSize: '11px' }}
-                    >
-                      D
-                    </TableHead>
-                    <TableHead
-                      className="text-center text-xs text-gray-400 font-medium w-8 py-2 h-10"
-                      style={{ fontSize: '11px' }}
-                    >
-                      L
-                    </TableHead>
-                    <TableHead
-                      className="text-center text-xs text-gray-400 font-medium w-10 py-2 h-10"
-                      style={{ fontSize: '11px' }}
-                    >
-                      Pts
-                    </TableHead>
-                    <TableHead
-                      className="text-center text-xs text-gray-400 font-medium w-20 py-2 h-10"
-                      style={{ fontSize: '11px' }}
-                    >
-                      Last 5
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {teams.map((team) => (
-                    <TableRow
-                      key={team.pos}
-                      className={`hover:bg-gray-800/30 transition-colors border-0 h-10 ${
-                        team.isCurrentUser ? 'bg-green-500/10' : ''
-                      }`}
-                    >
-                      <TableCell
-                        className="text-center text-gray-100 py-2 px-2 h-10"
-                        style={{ fontSize: '11px' }}
-                      >
-                        {team.mp}
-                      </TableCell>
-                      <TableCell
-                        className="text-center text-green-400 font-medium py-2 px-2 h-10"
-                        style={{ fontSize: '11px' }}
-                      >
-                        {team.w}
-                      </TableCell>
-                      <TableCell
-                        className="text-center text-gray-400 py-2 px-2 h-10"
-                        style={{ fontSize: '11px' }}
-                      >
-                        {team.d}
-                      </TableCell>
-                      <TableCell
-                        className="text-center text-red-400 font-medium py-2 px-2 h-10"
-                        style={{ fontSize: '11px' }}
-                      >
-                        {team.l}
-                      </TableCell>
-                      <TableCell
-                        className="text-center font-bold text-white py-2 px-2 h-10"
-                        style={{ fontSize: '11px' }}
-                      >
-                        {team.pts}
-                      </TableCell>
-                      <TableCell className="text-center py-2 px-2 h-10">
-                        <div className="flex justify-center space-x-1">
-                          {team.last5.map((result, index) => (
-                            <GameResultIcon
-                              key={index}
-                              result={result as 'W' | 'L' | 'D'}
-                            />
-                          ))}
-                        </div>
-                      </TableCell>
-                    </TableRow>
+  return (
+    <View style={styles.container}>
+      <View style={styles.tablesContainer}>
+        {/* Fixed Table - Position and Player */}
+        <View style={styles.fixedTable}>
+          <View style={styles.tableHeader}>
+            <Text style={styles.headerText}>Pos</Text>
+            <Text style={styles.headerText}>Player</Text>
+          </View>
+          {teams.map((team) => (
+            <View
+              key={team.pos}
+              style={[
+                styles.tableRow,
+                team.isCurrentUser && styles.currentUserRow,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.cellText,
+                  styles.positionCell,
+                  team.isCurrentUser && styles.currentUserText,
+                ]}
+              >
+                {team.pos}
+              </Text>
+              <View style={styles.nameCell}>
+                <Text
+                  style={[
+                    styles.cellText,
+                    team.isCurrentUser && styles.currentUserText,
+                  ]}
+                  numberOfLines={1}
+                >
+                  {truncateName(team.name)}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* Scrollable Table - Stats */}
+        <ScrollView horizontal style={styles.scrollableTable}>
+          <View>
+            <View style={styles.tableHeader}>
+              <Text style={styles.headerText}>MP</Text>
+              <Text style={styles.headerText}>W</Text>
+              <Text style={styles.headerText}>D</Text>
+              <Text style={styles.headerText}>L</Text>
+              <Text style={styles.headerText}>Pts</Text>
+              <Text style={styles.headerText}>Last 5</Text>
+            </View>
+            {teams.map((team) => (
+              <View
+                key={team.pos}
+                style={[
+                  styles.tableRow,
+                  team.isCurrentUser && styles.currentUserRow,
+                ]}
+              >
+                <Text style={styles.cellText}>{team.mp}</Text>
+                <Text style={[styles.cellText, styles.winText]}>{team.w}</Text>
+                <Text style={[styles.cellText, styles.drawText]}>{team.d}</Text>
+                <Text style={[styles.cellText, styles.lossText]}>{team.l}</Text>
+                <Text style={[styles.cellText, styles.pointsText]}>
+                  {team.pts}
+                </Text>
+                <View style={styles.lastFiveContainer}>
+                  {team.last5.map((result, index) => (
+                    <GameResultIcon
+                      key={index}
+                      result={result as 'W' | 'L' | 'D'}
+                    />
                   ))}
-                </TableBody>
-              </Table>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-          </div>
-        </div>
-      </div>
-    </TooltipProvider>
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'rgba(17, 24, 39, 0.5)',
+    paddingHorizontal: 16,
+  },
+  tablesContainer: {
+    flexDirection: 'row',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  fixedTable: {
+    width: 144,
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+  },
+  scrollableTable: {
+    flex: 1,
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    height: 40,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(55, 65, 81, 0.5)',
+  },
+  headerText: {
+    color: '#9CA3AF',
+    fontSize: 11,
+    fontWeight: '500',
+    textAlign: 'center',
+    flex: 1,
+    minWidth: 30,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    height: 40,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(55, 65, 81, 0.3)',
+  },
+  currentUserRow: {
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderLeftWidth: 2,
+    borderLeftColor: '#10B981',
+  },
+  cellText: {
+    color: 'white',
+    fontSize: 11,
+    textAlign: 'center',
+    flex: 1,
+    minWidth: 30,
+  },
+  currentUserText: {
+    color: '#6EE7B7',
+  },
+  positionCell: {
+    fontWeight: '600',
+  },
+  nameCell: {
+    flex: 1,
+    paddingHorizontal: 8,
+  },
+  winText: {
+    color: '#4ADE80',
+    fontWeight: '500',
+  },
+  drawText: {
+    color: '#9CA3AF',
+  },
+  lossText: {
+    color: '#F87171',
+    fontWeight: '500',
+  },
+  pointsText: {
+    fontWeight: 'bold',
+  },
+  lastFiveContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4,
+    minWidth: 80,
+    paddingHorizontal: 8,
+  },
+  resultIcon: {
+    width: 16,
+    height: 16,
+    borderRadius: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default LeaderboardTable;
