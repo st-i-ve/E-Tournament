@@ -46,4 +46,30 @@ const DecryptedText: React.FC<DecryptedTextProps> = ({
   return <Text style={style}>{displayText}</Text>;
 };
 
-export default DecryptedText;
+// export default DecryptedText;
+// import React from 'react';
+// import { View, StyleSheet } from 'react-native';
+// import DecryptedText from './DecryptedText';
+
+// const App = () => {
+//   return (
+//     <View style={styles.container}>
+//       <DecryptedText text="Secret Message" style={styles.text} interval={30} />
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   text: {
+//     fontSize: 24,
+//     fontWeight: 'bold',
+//     color: '#ffffff',
+//   },
+// });
+
+// export default App;
