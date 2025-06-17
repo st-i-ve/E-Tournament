@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Modal,
+} from 'react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { currentUser, mockMatches, Match } from '@/data/enhancedMockData';
 import MatchCard from './MatchCard';
 import MatchInfoModal from './MatchInfoModal';
@@ -15,6 +16,7 @@ const MinimalCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const userMatches = mockMatches.filter(
     (match) =>
@@ -22,10 +24,6 @@ const MinimalCalendar = () => {
         match.awayTeam === currentUser.teamName) &&
       match.status === 'upcoming'
   );
-
-  console.log('Current date:', currentDate);
-  console.log('User matches:', userMatches);
-  console.log('User team name:', currentUser.teamName);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -49,18 +47,10 @@ const MinimalCalendar = () => {
   };
 
   const getMatchesForDate = (date: Date) => {
-    const matches = userMatches.filter((match) => {
+    return userMatches.filter((match) => {
       const matchDate = new Date(match.scheduledDate);
-      const dateString = date.toDateString();
-      const matchDateString = matchDate.toDateString();
-      console.log(
-        `Comparing ${dateString} with ${matchDateString}:`,
-        dateString === matchDateString
-      );
-      return dateString === matchDateString;
+      return date.toDateString() === matchDate.toDateString();
     });
-    console.log(`Matches for ${date.toDateString()}:`, matches);
-    return matches;
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -80,118 +70,112 @@ const MinimalCalendar = () => {
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <>
-      <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-medium text-white">{formatMonth()}</h2>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigateMonth('prev')}
-              className="text-gray-400 hover:text-white hover:bg-gray-800/50 h-7 w-7 p-0"
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.monthTitle}>{formatMonth()}</Text>
+        <View style={styles.headerControls}>
+          <TouchableOpacity
+            style={styles.navButton}
+            onPress={() => navigateMonth('prev')}
+          >
+            <ChevronLeft size={16} color="#9ca3af" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.todayButton}
+            onPress={() => setCurrentDate(new Date())}
+          >
+            <Text style={styles.todayButtonText}>Today</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navButton}
+            onPress={() => navigateMonth('next')}
+          >
+            <ChevronRight size={16} color="#9ca3af" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Week day headers */}
+      <View style={styles.weekDaysContainer}>
+        {weekDays.map((day) => (
+          <View key={day} style={styles.weekDay}>
+            <Text style={styles.weekDayText}>{day}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Calendar days */}
+      <View style={styles.daysContainer}>
+        {days.map((day, index) => {
+          if (!day)
+            return <View key={`empty-${index}`} style={styles.emptyDay} />;
+
+          const matches = getMatchesForDate(day);
+          const isToday = day.toDateString() === new Date().toDateString();
+          const hasMatches = matches.length > 0;
+
+          return (
+            <TouchableOpacity
+              key={day.toDateString()}
+              style={[
+                styles.day,
+                isToday && styles.todayDay,
+                hasMatches && styles.hasMatchesDay,
+              ]}
+              onPress={() => hasMatches && setSelectedDate(day)}
+              disabled={!hasMatches}
+              activeOpacity={0.7}
             >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setCurrentDate(new Date())}
-              className="text-gray-400 hover:text-white hover:bg-gray-800/50 px-2 h-7 text-xs"
-            >
-              Today
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigateMonth('next')}
-              className="text-gray-400 hover:text-white hover:bg-gray-800/50 h-7 w-7 p-0"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Week day headers - Smaller */}
-        <div className="grid grid-cols-7 gap-1 mb-2">
-          {weekDays.map((day) => (
-            <div
-              key={day}
-              className="p-1 text-center text-xs font-medium text-gray-400"
-            >
-              {day}
-            </div>
-          ))}
-        </div>
-
-        {/* Calendar days - Smaller cells and fonts */}
-        <div className="grid grid-cols-7 gap-1 flex-1">
-          {days.map((day, index) => {
-            if (!day) return <div key={index} className="p-1" />;
-
-            const matches = getMatchesForDate(day);
-            const isToday = day.toDateString() === new Date().toDateString();
-            const hasMatches = matches.length > 0;
-
-            console.log(`Day ${day.getDate()}: hasMatches=${hasMatches}`);
-
-            return (
-              <div
-                key={day.toDateString()}
-                className={`p-1 relative flex items-start justify-start cursor-pointer transition-all hover:bg-gray-800/30 rounded-md min-h-[35px] ${
-                  isToday
-                    ? 'bg-green-500/10'
-                    : hasMatches
-                    ? 'hover:bg-gray-800/20'
-                    : ''
-                }`}
-                onClick={() => hasMatches && setSelectedDate(day)}
+              <Text
+                style={[styles.dayNumber, isToday && styles.todayDayNumber]}
               >
-                <span
-                  className={`text-base font-medium ${
-                    isToday ? 'text-green-400' : 'text-gray-300'
-                  }`}
-                >
-                  {day.getDate()}
-                </span>
-
-                {hasMatches && (
-                  <div className="absolute top-0.5 right-0.5 h-1.5 w-1.5 bg-green-500 rounded-full shadow-lg"></div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                {day.getDate()}
+              </Text>
+              {hasMatches && <View style={styles.matchIndicator} />}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
 
       {/* Match Details Modal */}
-      <Dialog open={!!selectedDate} onOpenChange={() => setSelectedDate(null)}>
-        <DialogContent className="bg-[#1C1C1E] border-gray-700 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-green-400 text-sm">
+      <Modal
+        visible={!!selectedDate}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setSelectedDate(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
               {selectedDate?.toLocaleDateString('en-US', {
                 weekday: 'long',
                 month: 'long',
                 day: 'numeric',
                 year: 'numeric',
               })}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            {selectedDate &&
-              getMatchesForDate(selectedDate).map((match, index) => (
-                <MatchCard
-                  key={`${match.homeTeam}-${match.awayTeam}-${index}`}
-                  match={match}
-                  userTeam={currentUser.teamName}
-                  onInfoClick={setSelectedMatch}
-                  compact
-                />
-              ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+            </Text>
+            <ScrollView>
+              {selectedDate &&
+                getMatchesForDate(selectedDate).map((match, index) => (
+                  <MatchCard
+                    key={`${match.homeTeam}-${match.awayTeam}-${index}`}
+                    match={match}
+                    userTeam={currentUser.teamName}
+                    onInfoClick={setSelectedMatch}
+                    compact
+                  />
+                ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setSelectedDate(null)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Match Info Modal */}
       <MatchInfoModal
@@ -200,8 +184,134 @@ const MinimalCalendar = () => {
         isOpen={!!selectedMatch}
         onClose={() => setSelectedMatch(null)}
       />
-    </>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 12,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  monthTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  headerControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navButton: {
+    width: 28,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  todayButton: {
+    paddingHorizontal: 8,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  todayButtonText: {
+    color: '#9ca3af',
+    fontSize: 12,
+  },
+  weekDaysContainer: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  weekDay: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  weekDayText: {
+    color: '#9ca3af',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  daysContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  emptyDay: {
+    width: '14.28%',
+    aspectRatio: 1,
+    padding: 4,
+  },
+  day: {
+    width: '14.28%',
+    aspectRatio: 1,
+    padding: 4,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    borderRadius: 6,
+  },
+  todayDay: {
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+  },
+  hasMatchesDay: {
+    // Additional styles if needed
+  },
+  dayNumber: {
+    color: '#d1d5db',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  todayDayNumber: {
+    color: '#34d399',
+  },
+  matchIndicator: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    width: 6,
+    height: 6,
+    backgroundColor: '#10b981',
+    borderRadius: 3,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxHeight: '80%',
+    backgroundColor: '#1C1C1E',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#374151',
+  },
+  modalTitle: {
+    color: '#34d399',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  closeButton: {
+    marginTop: 16,
+    padding: 8,
+    backgroundColor: '#374151',
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: '500',
+  },
+});
 
 export default MinimalCalendar;
