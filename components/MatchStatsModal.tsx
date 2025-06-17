@@ -1,18 +1,15 @@
 import React from 'react';
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 import { X } from 'lucide-react-native';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { DetailedMatch } from '@/data/matchStats';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { DetailedMatch } from '@/data/matchStats';
 
 interface MatchStatsModalProps {
   isOpen: boolean;
@@ -77,101 +74,186 @@ const MatchStatsModal = ({
     },
   ];
 
-  const chartConfig = {
-    [userTeamData.name]: { color: '#10b981' },
-    [opponentData.name]: { color: '#6b7280' },
+  const renderCustomizedLabel = ({
+    name,
+    value,
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    index,
+  }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <Text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor="middle"
+        dominantBaseline="central"
+        style={{ fontSize: 10 }}
+      >
+        {`${name}: ${value}%`}
+      </Text>
+    );
+  };
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <View style={styles.tooltip}>
+          <Text style={styles.tooltipText}>
+            {payload[0].name}: {payload[0].value}
+          </Text>
+        </View>
+      );
+    }
+    return null;
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm w-full mx-auto bg-gray-900 border-gray-800 p-3 max-h-[95vh] overflow-y-auto">
-        <DialogTitle className="sr-only">Match Statistics</DialogTitle>
-        <DialogDescription className="sr-only">
-          Detailed match statistics including possession, shots, saves, and
-          passing data
-        </DialogDescription>
+    <Modal
+      visible={isOpen}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <X size={20} color="#9ca3af" />
+          </TouchableOpacity>
 
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-400 hover:text-white z-10"
-        >
-          <X className="h-5 w-5" />
-        </button>
-
-        <div className="space-y-4 mt-4">
-          {/* Possession Chart */}
-          <div className="text-center">
-            <h4 className="text-lg font-semibold text-white mb-3">
-              Possession
-            </h4>
-            <div className="flex justify-center">
-              <ChartContainer config={chartConfig} className="h-40 w-40">
-                <PieChart>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            {/* Possession Chart */}
+            <View style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>Possession</Text>
+              <View style={styles.pieChartContainer}>
+                <PieChart width={200} height={200}>
                   <Pie
                     data={possessionData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={60}
+                    outerRadius={80}
+                    innerRadius={40}
                     dataKey="value"
-                    label={({ name, value }) => `${name}: ${value}%`}
+                    label={renderCustomizedLabel}
+                    labelLine={false}
                   >
                     {possessionData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
                 </PieChart>
-              </ChartContainer>
-            </div>
-          </div>
+              </View>
+            </View>
 
-          {/* Shots & Saves */}
-          <div className="text-center">
-            <h4 className="text-lg font-semibold text-white mb-3">
-              Shots & Saves
-            </h4>
-            <ChartContainer config={chartConfig} className="h-36">
-              <BarChart
-                data={shotsData}
-                margin={{ top: 10, right: 20, left: 20, bottom: 5 }}
-              >
-                <XAxis
-                  dataKey="category"
-                  tick={{ fill: '#9ca3af', fontSize: 10 }}
-                />
-                <YAxis tick={{ fill: '#9ca3af', fontSize: 10 }} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey={userTeamData.name} fill="#10b981" />
-                <Bar dataKey={opponentData.name} fill="#6b7280" />
-              </BarChart>
-            </ChartContainer>
-          </div>
+            {/* Shots & Saves */}
+            <View style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>Shots & Saves</Text>
+              <View style={styles.barChartContainer}>
+                <BarChart
+                  width={300}
+                  height={200}
+                  data={shotsData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <XAxis
+                    dataKey="category"
+                    tick={{ fill: '#9ca3af', fontSize: 10 }}
+                  />
+                  <YAxis tick={{ fill: '#9ca3af', fontSize: 10 }} />
+                  <Bar dataKey={userTeamData.name} fill="#10b981" />
+                  <Bar dataKey={opponentData.name} fill="#6b7280" />
+                </BarChart>
+              </View>
+            </View>
 
-          {/* Passing Statistics */}
-          <div className="text-center">
-            <h4 className="text-lg font-semibold text-white mb-3">
-              Passing Statistics
-            </h4>
-            <ChartContainer config={chartConfig} className="h-36">
-              <BarChart
-                data={passData}
-                margin={{ top: 10, right: 20, left: 20, bottom: 5 }}
-              >
-                <XAxis
-                  dataKey="category"
-                  tick={{ fill: '#9ca3af', fontSize: 10 }}
-                />
-                <YAxis tick={{ fill: '#9ca3af', fontSize: 10 }} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey={userTeamData.name} fill="#10b981" />
-                <Bar dataKey={opponentData.name} fill="#6b7280" />
-              </BarChart>
-            </ChartContainer>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+            {/* Passing Statistics */}
+            <View style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>Passing Statistics</Text>
+              <View style={styles.barChartContainer}>
+                <BarChart
+                  width={300}
+                  height={200}
+                  data={passData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <XAxis
+                    dataKey="category"
+                    tick={{ fill: '#9ca3af', fontSize: 10 }}
+                  />
+                  <YAxis tick={{ fill: '#9ca3af', fontSize: 10 }} />
+                  <Bar dataKey={userTeamData.name} fill="#10b981" />
+                  <Bar dataKey={opponentData.name} fill="#6b7280" />
+                </BarChart>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxHeight: '80%',
+    backgroundColor: '#111827',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#1f2937',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    zIndex: 10,
+  },
+  scrollContent: {
+    paddingTop: 20,
+    paddingBottom: 20,
+  },
+  chartContainer: {
+    marginBottom: 30,
+    alignItems: 'center',
+  },
+  chartTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  pieChartContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  barChartContainer: {
+    alignItems: 'center',
+  },
+  tooltip: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    padding: 8,
+    borderRadius: 4,
+  },
+  tooltipText: {
+    color: 'white',
+    fontSize: 12,
+  },
+});
 
 export default MatchStatsModal;
