@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 
 interface CounterProps {
   value: number;
   onChange: (value: number) => void;
   min?: number;
   max?: number;
-  className?: string;
+  style?: object;
 }
 
 const Counter: React.FC<CounterProps> = ({
@@ -14,8 +16,9 @@ const Counter: React.FC<CounterProps> = ({
   onChange,
   min = 0,
   max = 99,
-  className = '',
+  style = {},
 }) => {
+  const navigation = useNavigation();
   const [displayValue, setDisplayValue] = useState(value);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -62,36 +65,65 @@ const Counter: React.FC<CounterProps> = ({
   };
 
   return (
-    <div
-      className={`flex items-center bg-gray-800/50 rounded-lg overflow-hidden ${className}`}
-    >
-      <button
-        onClick={decrement}
+    <View style={[styles.container, style]}>
+      <TouchableOpacity
+        onPress={decrement}
         disabled={value <= min}
-        className="flex items-center justify-center w-10 h-10 hover:bg-gray-700/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        style={[styles.button, value <= min && styles.disabledButton]}
       >
-        <Minus className="h-3 w-3 text-white" />
-      </button>
+        <Minus size={14} color="#ffffff" />
+      </TouchableOpacity>
 
-      <div className="flex items-center justify-center min-w-[50px] h-10">
-        <span
-          className={`text-lg font-bold text-white transition-all duration-200 ${
-            isAnimating ? 'scale-110 text-green-400' : 'scale-100'
-          }`}
-        >
+      <View style={styles.valueContainer}>
+        <Text style={[styles.valueText, isAnimating && styles.animatingValue]}>
           {displayValue}
-        </span>
-      </div>
+        </Text>
+      </View>
 
-      <button
-        onClick={increment}
+      <TouchableOpacity
+        onPress={increment}
         disabled={value >= max}
-        className="flex items-center justify-center w-10 h-10 hover:bg-gray-700/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        style={[styles.button, value >= max && styles.disabledButton]}
       >
-        <Plus className="h-3 w-3 text-white" />
-      </button>
-    </div>
+        <Plus size={14} color="#ffffff" />
+      </TouchableOpacity>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  button: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  valueContainer: {
+    minWidth: 50,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  valueText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  animatingValue: {
+    transform: [{ scale: 1.1 }],
+    color: '#4ade80',
+  },
+});
 
 export default Counter;
