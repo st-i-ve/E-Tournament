@@ -7,8 +7,8 @@
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
-    "module": "esnext",
+    "moduleResolution": "node16",
+    "module": "node16",
     "jsx": "react-native"
   },
   "include": [
@@ -17,5 +17,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }
