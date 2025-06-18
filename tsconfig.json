@@ -1,6 +1,6 @@
 {
-  "extends": "tsconfig-expo",
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
     "paths": {
       "@/*": ["./*"]
