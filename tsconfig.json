@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "paths": {
-      "@/*": ["./*"]
-    },
+    "forceConsistentCasingInFileNames": true,
+    "module": "node16",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node16",
-    "module": "node16",
-    "jsx": "react-native"
+    "jsx": "react-native",
+    "baseUrl": ".", // ✅ for @/* aliases
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "**/*.ts",
