@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Calendar } from 'lucide-react-native';
-import MinimalCalendar from '../components/MinimalCalendar'; // Adjust path as needed
+import MinimalCalendar from '../components/MinimalCalendar'; //
 
 const FixturesPage = () => {
   const navigation = useNavigation();
