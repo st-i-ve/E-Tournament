@@ -38,7 +38,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0c0c0c',
+    backgroundColor: '#FF0000FF',
   },
   scrollView: {
     flex: 1,
