@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CalendarView from '../../components/CalendarView';
+import CalendarView from '../../trash/components/CalendarView';
 
 const mockMatches = [
   { date: 5, opponent: 'Chelsea FC', isHome: true, time: '15:00' },
@@ -13,7 +13,7 @@ const mockMatches = [
 export default function CalendarScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

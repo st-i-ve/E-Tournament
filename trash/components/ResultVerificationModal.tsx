@@ -20,7 +20,7 @@ import {
   ThumbsUp,
   ThumbsDown,
 } from 'lucide-react-native';
-import Counter from '@/components/Counter';
+import Counter from '@/trash/components/Counter';
 
 interface ResultVerificationModalProps {
   isOpen: boolean;

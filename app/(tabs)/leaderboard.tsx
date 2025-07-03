@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LeaderboardTable from '../../components/LeaderboardTable';
+import LeaderboardTable from '../../trash/components/LeaderboardTable';
 
 const mockTeams = [
   {
@@ -76,7 +76,7 @@ const mockTeams = [
 export default function LeaderboardScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

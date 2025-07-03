@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
-import { CalendarView } from '@/components/CalendarView';
+import { CalendarView } from '@/trash/components/CalendarView';
 
 const CalendarPage = () => {
   return (

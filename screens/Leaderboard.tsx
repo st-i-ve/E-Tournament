@@ -7,13 +7,13 @@ import {
   ScrollView,
 } from 'react-native';
 import { Triangle, Users, Target, Info } from 'lucide-react-native';
-import { Badge } from '@/components/ui/badge';
-import { Select } from '@/components/ui/select';
-import { Tabs } from '@/components/ui/tabs';
-import { Dialog } from '@/components/ui/dialog';
+import { Badge } from '@/trash/components/ui/badge';
+import { Select } from '@/trash/components/ui/select';
+import { Tabs } from '@/trash/components/ui/tabs';
+import { Dialog } from '@/trash/components/ui/dialog';
 import { currentUser, mockTournaments } from '@/data/enhancedMockData';
-import LeagueLeaderboardTable from '@/components/LeagueLeaderboardTable';
-import KnockoutBracket from '@/components/KnockoutBracket';
+import LeagueLeaderboardTable from '@/trash/components/LeagueLeaderboardTable';
+import KnockoutBracket from '@/trash/components/KnockoutBracket';
 
 const LeaderboardPage = () => {
   const [selectedTournament, setSelectedTournament] = useState<string>(

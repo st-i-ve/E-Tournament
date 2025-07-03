@@ -5,11 +5,11 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { currentUser } from '@/data/enhancedMockData';
 import { detailedMatches } from '@/data/matchStats';
 import Header from '@/components/Header';
-import Background from '@/components/reusables/Background';
-import Divider from '@/components/reusables/Divider';
-import PossessionChart from '@/components/reusables/PossessionChart';
-import PerformanceRadarChart from '@/components/reusables/PerformanceRadarChart';
-import BarStatsChart from '@/components/reusables/BarStatsChart';
+import Background from '@/trash/components/reusables/Background';
+import Divider from '@/trash/components/reusables/Divider';
+import PossessionChart from '@/trash/components/reusables/PossessionChart';
+import PerformanceRadarChart from '@/trash/components/reusables/PerformanceRadarChart';
+import BarStatsChart from '@/trash/components/reusables/BarStatsChart';
 
 const MatchStats = () => {
   const navigation = useNavigation();

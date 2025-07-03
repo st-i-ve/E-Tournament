@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Trophy, Calendar, Filter, Search } from 'lucide-react-native';
-import Header from '../components/Header';
-import DetailedMatchCard from '../components/DetailedMatchCard';
+import Header from '../trash/components/Header';
+import DetailedMatchCard from '../trash/components/DetailedMatchCard';
 import { detailedMatches, DetailedMatch } from '../data/matchStats';
 import { currentUser } from '../data/enhancedMockData';
 import { Picker } from '@react-native-picker/picker';

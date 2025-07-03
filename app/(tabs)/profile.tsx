@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ProfileHeader from '../../components/ProfileHeader';
-import StatsGrid from '../../components/StatsGrid';
+import ProfileHeader from '../../trash/components/ProfileHeader';
+import StatsGrid from '../../trash/components/StatsGrid';
 
 const mockProfile = {
   username: 'Alex Morgan',
-  avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400',
+  avatar:
+    'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400',
   rating: 1847,
   peerRating: 4.2,
 };
@@ -23,7 +24,7 @@ const mockStats = [
 export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

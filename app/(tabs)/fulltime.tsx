@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import GlassCard from '../../components/GlassCard';
+import GlassCard from '../../trash/components/GlassCard';
 import { Calendar, MapPin, Target, Users } from 'lucide-react-native';
 import { MotiView } from 'moti';
 

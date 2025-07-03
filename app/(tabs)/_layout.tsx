@@ -1,4 +1,4 @@
-import { AnimatedTabIcon } from '@/components/AnimatedTabIcon';
+import { AnimatedTabIcon } from '@/trash/components/AnimatedTabIcon';
 import { Tabs } from 'expo-router';
 import {
   User,
@@ -53,6 +53,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="fixtures"
         options={{
+          href: null,
           title: 'Fixtures',
           tabBarIcon: ({ color, focused }) => (
             <AnimatedTabIcon focused={focused}>
@@ -65,6 +66,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="leaderboard"
         options={{
+          href: null,
           title: 'Leaderboard',
           tabBarIcon: ({ color, focused }) => (
             <AnimatedTabIcon focused={focused}>
@@ -76,6 +78,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="fulltime"
         options={{
+          href: null,
           title: 'Fulltime',
           tabBarIcon: ({ color, focused }) => (
             <AnimatedTabIcon focused={focused}>
@@ -87,6 +90,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
+          href: null,
           title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
             <AnimatedTabIcon focused={focused}>

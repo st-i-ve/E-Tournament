@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import NextMatchCard from '../../components/NextMatchCard';
-import RecentResultsCarousel from '../../components/RecentResultsCarousel';
-import QuickActions from '../../components/QuickActions';
+import NextMatchCard from '../../trash/components/NextMatchCard';
+import RecentResultsCarousel from '../../trash/components/RecentResultsCarousel';
+import QuickActions from '../../trash/components/QuickActions';
 
 const mockNextMatch = {
   opponent: 'FC Barcelona',
@@ -51,7 +51,7 @@ const mockRecentResults = [
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

@@ -14,14 +14,14 @@ import {
   mockTournaments,
   recentMatches,
 } from '@/data/enhancedMockData';
-import { Separator } from '@/components/ui/separator';
-import TournamentCard from '@/components/TournamentCard';
-import QuickActionButton from '@/components/QuickActionButton';
-import RecentMatchCard from '@/components/RecentMatchCard';
-import CreateTournamentModal from '@/components/CreateTournamentModal';
-import JoinTournamentModal from '@/components/JoinTournamentModal';
-import DecryptedText from '@/components/DecryptedText';
-import MinimalTournamentCard from '@/components/MinimalTournamentCard';
+import { Separator } from '@/trash/components/ui/separator';
+import TournamentCard from '@/trash/components/TournamentCard';
+import QuickActionButton from '@/trash/components/QuickActionButton';
+import RecentMatchCard from '@/trash/components/RecentMatchCard';
+import CreateTournamentModal from '@/trash/components/CreateTournamentModal';
+import JoinTournamentModal from '@/trash/components/JoinTournamentModal';
+import DecryptedText from '@/trash/components/DecryptedText';
+import MinimalTournamentCard from '@/trash/components/MinimalTournamentCard';
 import {
   Calendar,
   Plus,

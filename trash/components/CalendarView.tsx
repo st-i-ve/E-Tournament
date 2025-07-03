@@ -20,9 +20,9 @@ import {
   List,
 } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/trash/components/ui/button';
+import { Badge } from '@/trash/components/ui/badge';
+import { Card, CardContent } from '@/trash/components/ui/card';
 import { currentUser, mockMatches, Match } from '@/data/enhancedMockData';
 import MatchCard from './MatchCard';
 import MatchInfoModal from './MatchInfoModal';

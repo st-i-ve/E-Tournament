@@ -18,7 +18,7 @@ import {
   AlertCircle,
   Check,
 } from 'lucide-react-native';
-import Counter from '@/components/Counter';
+import Counter from '@/trash/components/Counter';
 
 interface ResultSubmissionModalProps {
   isOpen: boolean;

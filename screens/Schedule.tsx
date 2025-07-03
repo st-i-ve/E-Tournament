@@ -18,9 +18,9 @@ import {
   X,
 } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import MatchCard from '@/components/MatchCard';
-import MatchInfoModal from '@/components/MatchInfoModal';
-import DetailedMatchCard from '@/components/DetailedMatchCard';
+import MatchCard from '@/trash/components/MatchCard';
+import MatchInfoModal from '@/trash/components/MatchInfoModal';
+import DetailedMatchCard from '@/trash/components/DetailedMatchCard';
 import {
   currentUser,
   mockMatches,

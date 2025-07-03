@@ -16,7 +16,7 @@ import {
   Globe,
 } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Switch } from '@/components/ui/switch';
+import { Switch } from '@/trash/components/ui/switch';
 
 const SettingsPage = () => {
   const navigation = useNavigation();
