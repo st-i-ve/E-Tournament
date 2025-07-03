@@ -1,91 +1,59 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LeaderboardTable from '../../trash/components/LeaderboardTable';
+import { Trophy, ChevronDown, Info } from 'lucide-react-native';
+import { LeaderboardTable } from '@/components/LeaderboardTable';
 
-const mockTeams = [
-  {
-    rank: 1,
-    name: 'Arsenal FC',
-    played: 28,
-    wins: 20,
-    draws: 5,
-    losses: 3,
-    goalsFor: 65,
-    goalsAgainst: 25,
-    points: 65,
-  },
-  {
-    rank: 2,
-    name: 'Manchester City',
-    played: 28,
-    wins: 19,
-    draws: 6,
-    losses: 3,
-    goalsFor: 70,
-    goalsAgainst: 28,
-    points: 63,
-  },
-  {
-    rank: 3,
-    name: 'Alex Morgan',
-    played: 28,
-    wins: 18,
-    draws: 4,
-    losses: 6,
-    goalsFor: 58,
-    goalsAgainst: 32,
-    points: 58,
-    isCurrentUser: true,
-  },
-  {
-    rank: 4,
-    name: 'Liverpool FC',
-    played: 28,
-    wins: 16,
-    draws: 8,
-    losses: 4,
-    goalsFor: 55,
-    goalsAgainst: 30,
-    points: 56,
-  },
-  {
-    rank: 5,
-    name: 'Chelsea FC',
-    played: 28,
-    wins: 15,
-    draws: 7,
-    losses: 6,
-    goalsFor: 48,
-    goalsAgainst: 35,
-    points: 52,
-  },
-  {
-    rank: 6,
-    name: 'Newcastle United',
-    played: 28,
-    wins: 14,
-    draws: 9,
-    losses: 5,
-    goalsFor: 45,
-    goalsAgainst: 33,
-    points: 51,
-  },
-];
+export default function LeaderboardTab() {
+  const [selectedLeague, setSelectedLeague] = useState('Premier League Champions');
 
-export default function LeaderboardScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Premier League</Text>
-          <Text style={styles.subtitle}>Season 2023/24</Text>
+          <TouchableOpacity style={styles.leagueSelector}>
+            <Trophy color="#22c55e" size={16} />
+            <Text style={styles.leagueName}>{selectedLeague}</Text>
+            <ChevronDown color="#9ca3af" size={16} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.infoButton}>
+            <Info color="#9ca3af" size={16} />
+          </TouchableOpacity>
         </View>
-        <LeaderboardTable teams={mockTeams} />
+
+        {/* League Table Title */}
+        <View style={styles.titleContainer}>
+          <Text style={styles.tableTitle}>League Table</Text>
+        </View>
+
+        {/* Enhanced Leaderboard Table */}
+        <View style={styles.tableSection}>
+          <LeaderboardTable />
+        </View>
+
+        {/* Legend */}
+        <View style={styles.legend}>
+          <Text style={styles.legendTitle}>Competition Qualification</Text>
+          <View style={styles.legendItems}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendColor, { backgroundColor: '#ffd700' }]} />
+              <Text style={styles.legendText}>1st - Champion</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendColor, { backgroundColor: '#22c55e' }]} />
+              <Text style={styles.legendText}>2-4 - Champions League</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendColor, { backgroundColor: '#f97316' }]} />
+              <Text style={styles.legendText}>5-6 - Europa League</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendColor, { backgroundColor: '#ef4444' }]} />
+              <Text style={styles.legendText}>7-8 - Relegation</Text>
+            </View>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -94,27 +62,77 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0c0c0c',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 20,
-    paddingTop: 10,
+    backgroundColor: '#0a0a0a',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    padding: 16,
+    paddingBottom: 8,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+  leagueSelector: {
+    backgroundColor: '#1f2937',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    flex: 1,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#374151',
+  },
+  leagueName: {
     color: '#ffffff',
-    marginBottom: 4,
+    fontSize: 13,
+    fontFamily: 'Inter-Medium',
+    marginLeft: 6,
+    marginRight: 6,
+    flex: 1,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#cccccc',
+  infoButton: {
+    padding: 6,
+  },
+  titleContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  tableTitle: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontFamily: 'Inter-Bold',
+  },
+  tableSection: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  legend: {
+    padding: 16,
+    marginTop: 16,
+  },
+  legendTitle: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontFamily: 'Inter-SemiBold',
+    marginBottom: 10,
+  },
+  legendItems: {
+    gap: 6,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  legendColor: {
+    width: 10,
+    height: 10,
+    borderRadius: 2,
+    marginRight: 6,
+  },
+  legendText: {
+    color: '#9ca3af',
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
   },
 });
