@@ -20,4 +20,6 @@
     "nativewind-env.d.ts"
   ],
   "extends": "expo/tsconfig.base"
+  ],
+  "extends": "expo/tsconfig.base"
 }
