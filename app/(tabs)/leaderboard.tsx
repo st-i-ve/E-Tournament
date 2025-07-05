@@ -24,7 +24,7 @@ export default function LeaderboardTab() {
 
         {/* League Table Title */}
         <View style={styles.titleContainer}>
-          <Text style={styles.tableTitle}>League Table</Text>
+          <Text style={styles.tableTitle}>League Table.</Text>
         </View>
 
         {/* Enhanced Leaderboard Table */}
