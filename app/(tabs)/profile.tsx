@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Settings, Bell, Target, Trophy, TrendingUp, Award } from 'lucide-react-native';
+import { User, Settings, Bell, Target, Trophy, TrendingUp, Award, ChevronRight } from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import CountUp from '@/components/CountUp';
+import { router } from 'expo-router';
 
 export default function ProfileTab() {
   // Mock data for demonstration
@@ -52,6 +53,14 @@ export default function ProfileTab() {
 
   const pendingCount = 3;
 
+  const handleNavigateToPendingActions = () => {
+    router.push('/pending-actions');
+  };
+
+  const handleNavigateToSettings = () => {
+    router.push('/settings');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Geometric background elements */}
@@ -90,13 +99,13 @@ export default function ProfileTab() {
             </View>
           </View>
           <View style={styles.headerActions}>
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity style={styles.actionButton} onPress={handleNavigateToPendingActions}>
               <Bell color="#9ca3af" size={18} />
               <View style={styles.notificationBadge}>
                 <Text style={styles.badgeText}>{pendingCount}</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity style={styles.actionButton} onPress={handleNavigateToSettings}>
               <Settings color="#9ca3af" size={18} />
             </TouchableOpacity>
           </View>
@@ -111,6 +120,44 @@ export default function ProfileTab() {
             <Text style={styles.userName}>google_user</Text>
             <Text style={styles.userTeam}>PSG</Text>
           </View>
+        </View>
+
+        {/* Navigation Cards */}
+        <View style={styles.navigationSection}>
+          <TouchableOpacity style={styles.navigationCard} onPress={handleNavigateToPendingActions}>
+            <View style={styles.navigationCardContent}>
+              <View style={styles.navigationCardLeft}>
+                <View style={styles.navigationCardIcon}>
+                  <Bell color="#ef4444" size={16} />
+                </View>
+                <View style={styles.navigationCardInfo}>
+                  <Text style={styles.navigationCardTitle}>Pending Actions</Text>
+                  <Text style={styles.navigationCardSubtitle}>Match results to submit or verify</Text>
+                </View>
+              </View>
+              <View style={styles.navigationCardRight}>
+                <Badge style={styles.navigationCardBadge}>
+                  {pendingCount}
+                </Badge>
+                <ChevronRight color="#9ca3af" size={16} />
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navigationCard} onPress={handleNavigateToSettings}>
+            <View style={styles.navigationCardContent}>
+              <View style={styles.navigationCardLeft}>
+                <View style={styles.navigationCardIcon}>
+                  <Settings color="#8b5cf6" size={16} />
+                </View>
+                <View style={styles.navigationCardInfo}>
+                  <Text style={styles.navigationCardTitle}>Settings</Text>
+                  <Text style={styles.navigationCardSubtitle}>Customize your app experience</Text>
+                </View>
+              </View>
+              <ChevronRight color="#9ca3af" size={16} />
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Overview Stats */}
@@ -426,6 +473,62 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Inter-Medium',
     marginTop: 2,
+  },
+  navigationSection: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
+    zIndex: 10,
+  },
+  navigationCard: {
+    backgroundColor: '#1f2937',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#374151',
+  },
+  navigationCardContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+  },
+  navigationCardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
+  },
+  navigationCardIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#374151',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navigationCardInfo: {
+    flex: 1,
+  },
+  navigationCardTitle: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+  },
+  navigationCardSubtitle: {
+    color: '#9ca3af',
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
+    marginTop: 2,
+  },
+  navigationCardRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navigationCardBadge: {
+    backgroundColor: '#ef4444',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
   section: {
     paddingHorizontal: 16,

@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, ChevronLeft, ChevronRight, Eye } from 'lucide-react-native';
+import { MinimalCalendar } from '../../components/MinimalCalendar';
+import { Button } from '@/components/ui/button';
+import { router } from 'expo-router';
 
 export default function FixturesTab() {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 1)); // July 2025
@@ -59,6 +62,10 @@ export default function FixturesTab() {
     return `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
   };
 
+  const handleViewAllGames = () => {
+    router.push('/schedule');
+  };
+
   const days = getDaysInMonth(currentDate);
 
   return (
@@ -108,76 +115,13 @@ export default function FixturesTab() {
               <Calendar color="#22c55e" size={16} />
               <Text style={styles.calendarTitle}>Calendar View</Text>
             </View>
-            <TouchableOpacity style={styles.viewAllButton}>
+            <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAllGames}>
               <Eye color="#ffffff" size={12} />
               <Text style={styles.viewAllText}>View All Games</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Calendar Navigation */}
-          <View style={styles.calendarNavigation}>
-            <Text style={styles.monthYear}>{formatMonth()}</Text>
-            <View style={styles.navigationButtons}>
-              <TouchableOpacity 
-                style={styles.navButton} 
-                onPress={() => navigateMonth('prev')}
-              >
-                <ChevronLeft color="#ffffff" size={16} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.todayButton}>
-                <Text style={styles.todayText}>Today</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.navButton} 
-                onPress={() => navigateMonth('next')}
-              >
-                <ChevronRight color="#ffffff" size={16} />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Week day headers */}
-          <View style={styles.weekHeader}>
-            {daysOfWeek.map((day) => (
-              <Text key={day} style={styles.weekDay}>
-                {day}
-              </Text>
-            ))}
-          </View>
-
-          {/* Calendar grid */}
-          <View style={styles.calendarGrid}>
-            {Array.from({ length: Math.ceil(days.length / 7) }).map((_, weekIndex) => (
-              <View key={weekIndex} style={styles.weekRow}>
-                {days.slice(weekIndex * 7, (weekIndex + 1) * 7).map((date, dayIndex) => (
-                  <TouchableOpacity 
-                    key={dayIndex} 
-                    style={[
-                      styles.dayCell,
-                      date && isToday(date) && styles.todayCell,
-                      date && hasMatch(date) && styles.matchCell,
-                    ]}
-                    onPress={() => date && hasMatch(date) && setSelectedDate(date)}
-                  >
-                    {date && (
-                      <>
-                        <Text 
-                          style={[
-                            styles.dayText,
-                            date.getMonth() !== currentDate.getMonth() && styles.otherMonthText,
-                            isToday(date) && styles.todayText,
-                          ]}
-                        >
-                          {date.getDate()}
-                        </Text>
-                        {hasMatch(date) && <View style={styles.matchIndicator} />}
-                      </>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            ))}
-          </View>
+          <MinimalCalendar />
         </View>
 
         {/* Upcoming Matches */}
@@ -333,93 +277,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Inter-SemiBold',
     marginLeft: 4,
-  },
-  calendarNavigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  monthYear: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontFamily: 'Inter-Bold',
-  },
-  navigationButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  navButton: {
-    padding: 6,
-  },
-  todayButton: {
-    backgroundColor: '#374151',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  todayText: {
-    color: '#ffffff',
-    fontSize: 10,
-    fontFamily: 'Inter-Medium',
-  },
-  weekHeader: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-  weekDay: {
-    flex: 1,
-    textAlign: 'center',
-    color: '#9ca3af',
-    fontSize: 10,
-    fontFamily: 'Inter-Medium',
-  },
-  calendarGrid: {
-    gap: 4,
-  },
-  weekRow: {
-    flexDirection: 'row',
-    marginBottom: 4,
-  },
-  dayCell: {
-    flex: 1,
-    minHeight: 32,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    position: 'relative',
-    borderRadius: 6,
-    margin: 1,
-    padding: 4,
-  },
-  todayCell: {
-    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-  },
-  matchCell: {
-    backgroundColor: 'rgba(34, 197, 94, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.2)',
-  },
-  dayText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
-  },
-  otherMonthText: {
-    color: '#4b5563',
-  },
-  todayText: {
-    color: '#22c55e',
-    fontFamily: 'Inter-Bold',
-  },
-  matchIndicator: {
-    position: 'absolute',
-    top: 2,
-    right: 2,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#22c55e',
   },
   matchesSection: {
     paddingHorizontal: 16,
