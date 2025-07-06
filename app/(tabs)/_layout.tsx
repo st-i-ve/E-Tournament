@@ -11,20 +11,21 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#22c55e',
         tabBarInactiveTintColor: '#6b7280',
         tabBarLabelStyle: styles.tabLabel,
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Home color={color} size={size} />
-          ),
+          popToTopOnBlur: true,
+          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="fixtures"
         options={{
           title: 'Fixtures',
+          popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <Calendar color={color} size={size} />
           ),
@@ -34,15 +35,14 @@ export default function TabLayout() {
         name="leaderboard"
         options={{
           title: 'Leaderboard',
-          tabBarIcon: ({ color, size }) => (
-            <Trophy color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <Trophy color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
           title: 'Team Chat',
+          popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconContainer}>
               <MessageSquare color={color} size={size} />
@@ -57,6 +57,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
+          popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconContainer}>
               <User color={color} size={size} />
