@@ -22,7 +22,7 @@ export default function CustomTabBar(props: BottomTabBarProps) {
 
 const styles = StyleSheet.create({
   gradientBorder: {
-    paddingTop: 1.5, // thickness of the "border"
+    paddingTop:0.3, // thickness of the "border"
    
   },
   innerTabBar: {
