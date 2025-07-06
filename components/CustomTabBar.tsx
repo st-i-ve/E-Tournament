@@ -1,14 +1,27 @@
-// components/CustomTabBar.tsx
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BottomTabBar } from '@react-navigation/bottom-tabs';
 
+const screenWidth = Dimensions.get('window').width;
+
 export default function CustomTabBar(props: BottomTabBarProps) {
+  const { state } = props;
+  const activeIndex = state.index;
+  const tabCount = state.routes.length;
+
+  // Calculate position of active tab center (0 to 1)
+  const activePosition = (activeIndex + 0.5) / tabCount;
+
   return (
     <LinearGradient
-      colors={['#03FF6C', '#00FFD0']} // your gradient colors
+      colors={['black', '#03FF6C', 'black']} // fade in/out
+      locations={[
+        Math.max(0, activePosition - 0.2),
+        activePosition,
+        Math.min(1, activePosition + 0.2),
+      ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={styles.gradientBorder}
@@ -22,12 +35,13 @@ export default function CustomTabBar(props: BottomTabBarProps) {
 
 const styles = StyleSheet.create({
   gradientBorder: {
-    paddingTop:0.3, // thickness of the "border"
-   
+    padding: 1.5,
+  
   },
   innerTabBar: {
-    backgroundColor: '#000000FF',
-    marginBottom:-2,
-
+    backgroundColor: '#0E0E0EFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
   },
 });
