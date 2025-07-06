@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Calendar, Eye, Check, X } from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
+import { router } from 'expo-router';
 
 interface DetailedMatch {
   match_id: string;
@@ -61,10 +62,14 @@ export const DetailedMatchCard: React.FC<DetailedMatchCardProps> = ({
   const ResultIcon = result.icon;
   const matchDate = new Date(match.timestamp);
 
+  const handleViewStats = () => {
+    router.push(`/fixtures/match-stats?matchId=${match.match_id}`);
+  };
+
   return (
     <TouchableOpacity 
       style={[styles.container, getResultColor()]}
-      onPress={() => onViewDetails(match)}
+      onPress={handleViewStats}
       activeOpacity={0.8}
     >
       <View style={styles.header}>

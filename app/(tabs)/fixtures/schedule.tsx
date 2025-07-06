@@ -70,6 +70,14 @@ const mockTournaments = [
     participants: ['user-1'],
   },
 ];
+const handleViewMatchStats = (match: any) => {
+
+    router.push('/fixtures/match-stats');
+
+    // params: {
+    //   matchId: match.match_id,
+    // },
+};
 
 export default function SchedulePage() {
   const [selectedTournament, setSelectedTournament] = useState<string>('all');
@@ -212,6 +220,7 @@ export default function SchedulePage() {
                 {/* Completed matches */}
                 {matches.completed.map((match, index) => (
                   <View key={`completed-${index}`} style={styles.matchRow}>
+                    
                     <CheckCircle2 color="#22c55e" size={16} style={styles.matchIcon} />
                     <View style={styles.matchCardContainer}>
                       <DetailedMatchCard
