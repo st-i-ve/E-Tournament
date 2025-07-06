@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Upload, CircleCheck as CheckCircle, Clock, CircleAlert as AlertCircle, Bell } from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { ResultSubmissionModal } from '@/components/ResultSubmissionModal';
 import { ResultVerificationModal } from '@/components/ResultVerificationModal';
 import { router } from 'expo-router';

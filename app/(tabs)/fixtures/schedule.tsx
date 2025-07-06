@@ -2,8 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Clock, Trophy, Calendar, Filter, CircleCheck as CheckCircle2, Circle, X, ChevronLeft } from 'lucide-react-native';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
 import { MatchCard } from '@/components/MatchCard';
 import { MatchInfoModal } from '@/components/MatchInfoModal';
 import { DetailedMatchCard } from '@/components/DetailedMatchCard';
