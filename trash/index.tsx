@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, ChevronLeft, ChevronRight, Eye } from 'lucide-react-native';
-import { MinimalCalendar } from '../../../components/MinimalCalendar';
+import { MinimalCalendar } from '../components/MinimalCalendar';
 import { Button } from '@/components/ui/button';
 import { router } from 'expo-router';
 
@@ -18,18 +12,8 @@ export default function FixturesTab() {
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   // Mock match data - days with matches
@@ -42,19 +26,19 @@ export default function FixturesTab() {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-
+    
     const days = [];
-
+    
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-
+    
     // Add all days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
-
+    
     return days;
   };
 
@@ -70,10 +54,8 @@ export default function FixturesTab() {
   };
 
   const hasMatch = (date: Date) => {
-    return (
-      date.getMonth() === currentDate.getMonth() &&
-      matchDays.includes(date.getDate())
-    );
+    return date.getMonth() === currentDate.getMonth() && 
+           matchDays.includes(date.getDate());
   };
 
   const formatMonth = () => {
@@ -92,55 +74,25 @@ export default function FixturesTab() {
       <View style={styles.backgroundElements}>
         {/* Triangles */}
         <View style={[styles.triangle, { top: 80, left: 40 }]} />
-        <View
-          style={[
-            styles.triangle,
-            { top: 200, right: 80, transform: [{ rotate: '12deg' }] },
-          ]}
-        />
+        <View style={[styles.triangle, { top: 200, right: 80, transform: [{ rotate: '12deg' }] }]} />
         <View style={[styles.triangle, { bottom: 200, left: 100 }]} />
-
+        
         {/* Circles */}
-        <View
-          style={[
-            styles.circle,
-            { top: 150, left: 120, width: 48, height: 48 },
-          ]}
-        />
-        <View
-          style={[
-            styles.circle,
-            { bottom: 250, right: 100, width: 32, height: 32 },
-          ]}
-        />
-        <View
-          style={[styles.circle, { top: 400, left: 80, width: 24, height: 24 }]}
-        />
-
+        <View style={[styles.circle, { top: 150, left: 120, width: 48, height: 48 }]} />
+        <View style={[styles.circle, { bottom: 250, right: 100, width: 32, height: 32 }]} />
+        <View style={[styles.circle, { top: 400, left: 80, width: 24, height: 24 }]} />
+        
         {/* Rectangles */}
-        <View
-          style={[
-            styles.rectangle,
-            { top: 300, right: 40, width: 48, height: 32 },
-          ]}
-        />
-        <View
-          style={[
-            styles.rectangle,
-            { bottom: 80, left: 200, width: 32, height: 48 },
-          ]}
-        />
-
+        <View style={[styles.rectangle, { top: 300, right: 40, width: 48, height: 32 }]} />
+        <View style={[styles.rectangle, { bottom: 80, left: 200, width: 32, height: 48 }]} />
+        
         {/* Lines */}
         <View style={[styles.verticalLine, { left: '25%' }]} />
         <View style={[styles.horizontalLine, { top: '33%' }]} />
         <View style={[styles.horizontalLine, { top: '66%' }]} />
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={styles.scrollView}
-      >
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -151,9 +103,7 @@ export default function FixturesTab() {
             </View>
             <View style={styles.headerInfo}>
               <Text style={styles.headerTitle}>Fixtures</Text>
-              <Text style={styles.headerSubtitle}>
-                Your upcoming matches and tournament schedule
-              </Text>
+              <Text style={styles.headerSubtitle}>Your upcoming matches and tournament schedule</Text>
             </View>
           </View>
         </View>
@@ -165,10 +115,7 @@ export default function FixturesTab() {
               <Calendar color="#22c55e" size={16} />
               <Text style={styles.calendarTitle}>Calendar View</Text>
             </View>
-            <TouchableOpacity
-              style={styles.viewAllButton}
-              onPress={handleViewAllGames}
-            >
+            <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAllGames}>
               <Eye color="#ffffff" size={12} />
               <Text style={styles.viewAllText}>View All Games</Text>
             </TouchableOpacity>

@@ -2,8 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Clock, Trophy, Calendar, Filter, CircleCheck as CheckCircle2, Circle, X, ChevronLeft } from 'lucide-react-native';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
 import { MatchCard } from '@/components/MatchCard';
 import { MatchInfoModal } from '@/components/MatchInfoModal';
 import { DetailedMatchCard } from '@/components/DetailedMatchCard';
@@ -226,7 +225,7 @@ export default function SchedulePage() {
             </View>
           ))}
 
-          {Object.keys(groupedMatches).length === 0 ? (
+          {Object.keys(groupedMatches).length === 0 && (
             <View style={styles.emptyState}>
               <Calendar color="#6b7280" size={64} />
               <Text style={styles.emptyStateTitle}>No matches found</Text>
@@ -237,7 +236,7 @@ export default function SchedulePage() {
                 }
               </Text>
             </View>
-          ) : null}
+          )}
         </View>
 
         {/* Bottom spacing */}
