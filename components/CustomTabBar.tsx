@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
   },
   innerTabBar: {
     backgroundColor: '#000000FF',
+    marginBottom:-2,
 
   },
 });
