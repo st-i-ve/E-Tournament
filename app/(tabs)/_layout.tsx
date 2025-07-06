@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Calendar, Trophy, MessageSquare, User } from 'lucide-react-native';
+import {  Calendar, Trophy, MessageSquare, User, UserRound, MousePointer2, Crown, CalendarCheck, MessageCircle } from 'lucide-react-native';
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function TabLayout() {
@@ -18,7 +18,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           popToTopOnBlur: true,
-          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <MousePointer2 color={color} size={size} />,
         }}
       />
       <Tabs.Screen
@@ -27,7 +27,7 @@ export default function TabLayout() {
           title: 'Fixtures',
           popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
-            <Calendar color={color} size={size} />
+            <CalendarCheck color={color} size={size} />
           ),
         }}
       />
@@ -35,7 +35,7 @@ export default function TabLayout() {
         name="leaderboard"
         options={{
           title: 'Leaderboard',
-          tabBarIcon: ({ color, size }) => <Trophy color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <Crown color={color} size={size} />,
         }}
       />
       <Tabs.Screen
@@ -45,7 +45,7 @@ export default function TabLayout() {
           popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconContainer}>
-              <MessageSquare color={color} size={size} />
+              <MessageCircle color={color} size={size} />
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>3</Text>
               </View>
@@ -60,7 +60,7 @@ export default function TabLayout() {
           popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconContainer}>
-              <User color={color} size={size} />
+              <UserRound color={color} size={size} />
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>3</Text>
               </View>
