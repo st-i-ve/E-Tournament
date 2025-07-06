@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import CountUp from '@/components/CountUp';
 import { router } from 'expo-router';
+import { Link } from 'expo-router';
+
 
 export default function ProfileTab() {
   // Mock data for demonstration
@@ -53,13 +55,9 @@ export default function ProfileTab() {
 
   const pendingCount = 3;
 
-  const handleNavigateToPendingActions = () => {
-    router.push('/pending-actions');
-  };
 
-  const handleNavigateToSettings = () => {
-    router.push('/settings');
-  };
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -67,18 +65,45 @@ export default function ProfileTab() {
       <View style={styles.backgroundElements}>
         {/* Triangles */}
         <View style={[styles.triangle, { top: 80, left: 40 }]} />
-        <View style={[styles.triangle, { top: 200, right: 80, transform: [{ rotate: '12deg' }] }]} />
+        <View
+          style={[
+            styles.triangle,
+            { top: 200, right: 80, transform: [{ rotate: '12deg' }] },
+          ]}
+        />
         <View style={[styles.triangle, { bottom: 200, left: 100 }]} />
-        
+
         {/* Circles */}
-        <View style={[styles.circle, { top: 150, left: 120, width: 48, height: 48 }]} />
-        <View style={[styles.circle, { bottom: 250, right: 100, width: 32, height: 32 }]} />
-        <View style={[styles.circle, { top: 400, left: 80, width: 24, height: 24 }]} />
-        
+        <View
+          style={[
+            styles.circle,
+            { top: 150, left: 120, width: 48, height: 48 },
+          ]}
+        />
+        <View
+          style={[
+            styles.circle,
+            { bottom: 250, right: 100, width: 32, height: 32 },
+          ]}
+        />
+        <View
+          style={[styles.circle, { top: 400, left: 80, width: 24, height: 24 }]}
+        />
+
         {/* Rectangles */}
-        <View style={[styles.rectangle, { top: 300, right: 40, width: 48, height: 32 }]} />
-        <View style={[styles.rectangle, { bottom: 80, left: 200, width: 32, height: 48 }]} />
-        
+        <View
+          style={[
+            styles.rectangle,
+            { top: 300, right: 40, width: 48, height: 32 },
+          ]}
+        />
+        <View
+          style={[
+            styles.rectangle,
+            { bottom: 80, left: 200, width: 32, height: 48 },
+          ]}
+        />
+
         {/* Lines */}
         <View style={[styles.verticalLine, { left: '25%' }]} />
         <View style={[styles.horizontalLine, { top: '33%' }]} />
@@ -95,19 +120,27 @@ export default function ProfileTab() {
             </View>
             <View style={styles.headerInfo}>
               <Text style={styles.headerTitle}>Profile</Text>
-              <Text style={styles.headerSubtitle}>Your tournament stats and performance</Text>
+              <Text style={styles.headerSubtitle}>
+                Your tournament stats and performance
+              </Text>
             </View>
           </View>
           <View style={styles.headerActions}>
-            <TouchableOpacity style={styles.actionButton} onPress={handleNavigateToPendingActions}>
-              <Bell color="#9ca3af" size={18} />
-              <View style={styles.notificationBadge}>
-                <Text style={styles.badgeText}>{pendingCount}</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} onPress={handleNavigateToSettings}>
-              <Settings color="#9ca3af" size={18} />
-            </TouchableOpacity>
+            <Link href="/profile/pending-actions" asChild>
+              <TouchableOpacity
+                style={styles.actionButton}            >
+                <Bell color="#9ca3af" size={18} />
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.badgeText}>{pendingCount}</Text>
+                </View>
+              </TouchableOpacity>
+            </Link>
+            
+            <Link href="/profile/settings" asChild>
+              <TouchableOpacity style={styles.actionButton}>
+                <Settings color="#9ca3af" size={18} />
+              </TouchableOpacity>
+            </Link>
           </View>
         </View>
 
@@ -122,44 +155,6 @@ export default function ProfileTab() {
           </View>
         </View>
 
-        {/* Navigation Cards */}
-        <View style={styles.navigationSection}>
-          <TouchableOpacity style={styles.navigationCard} onPress={handleNavigateToPendingActions}>
-            <View style={styles.navigationCardContent}>
-              <View style={styles.navigationCardLeft}>
-                <View style={styles.navigationCardIcon}>
-                  <Bell color="#ef4444" size={16} />
-                </View>
-                <View style={styles.navigationCardInfo}>
-                  <Text style={styles.navigationCardTitle}>Pending Actions</Text>
-                  <Text style={styles.navigationCardSubtitle}>Match results to submit or verify</Text>
-                </View>
-              </View>
-              <View style={styles.navigationCardRight}>
-                <Badge style={styles.navigationCardBadge}>
-                  {pendingCount}
-                </Badge>
-                <ChevronRight color="#9ca3af" size={16} />
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navigationCard} onPress={handleNavigateToSettings}>
-            <View style={styles.navigationCardContent}>
-              <View style={styles.navigationCardLeft}>
-                <View style={styles.navigationCardIcon}>
-                  <Settings color="#8b5cf6" size={16} />
-                </View>
-                <View style={styles.navigationCardInfo}>
-                  <Text style={styles.navigationCardTitle}>Settings</Text>
-                  <Text style={styles.navigationCardSubtitle}>Customize your app experience</Text>
-                </View>
-              </View>
-              <ChevronRight color="#9ca3af" size={16} />
-            </View>
-          </TouchableOpacity>
-        </View>
-
         {/* Overview Stats */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
@@ -168,26 +163,26 @@ export default function ProfileTab() {
           </View>
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
-              <CountUp 
-                end={userStats.totalGoals} 
-                duration={1500} 
+              <CountUp
+                end={userStats.totalGoals}
+                duration={1500}
                 style={styles.statValue}
               />
               <Text style={styles.statLabel}>Total Goals</Text>
             </View>
             <View style={styles.statCard}>
-              <CountUp 
-                end={userStats.tournaments} 
-                duration={1500} 
+              <CountUp
+                end={userStats.tournaments}
+                duration={1500}
                 style={styles.statValue}
               />
               <Text style={styles.statLabel}>Tournaments</Text>
             </View>
             <View style={styles.statCard}>
-              <CountUp 
-                end={userStats.winRate} 
-                duration={1500} 
-                suffix="%" 
+              <CountUp
+                end={userStats.winRate}
+                duration={1500}
+                suffix="%"
                 style={styles.statValue}
               />
               <Text style={styles.statLabel}>Win Rate</Text>
@@ -214,26 +209,31 @@ export default function ProfileTab() {
                   </Text>
                 </View>
                 <View style={styles.tournamentBadges}>
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     style={[
                       styles.positionBadge,
                       tournament.position === 1 && styles.goldBadge,
-                      tournament.position <= 3 && tournament.position > 1 && styles.greenBadge,
+                      tournament.position <= 3 &&
+                        tournament.position > 1 &&
+                        styles.greenBadge,
                     ]}
                     textStyle={[
                       tournament.position === 1 && styles.goldText,
-                      tournament.position <= 3 && tournament.position > 1 && styles.greenText,
+                      tournament.position <= 3 &&
+                        tournament.position > 1 &&
+                        styles.greenText,
                     ]}
                   >
-                    {tournament.position === 1 ? '1st' :
-                     tournament.position === 2 ? '2nd' :
-                     tournament.position === 3 ? '3rd' :
-                     `${tournament.position}th`}
+                    {tournament.position === 1
+                      ? '1st'
+                      : tournament.position === 2
+                      ? '2nd'
+                      : tournament.position === 3
+                      ? '3rd'
+                      : `${tournament.position}th`}
                   </Badge>
-                  <Badge style={styles.statusBadge}>
-                    {tournament.status}
-                  </Badge>
+                  <Badge style={styles.statusBadge}>{tournament.status}</Badge>
                 </View>
               </View>
             ))}
@@ -249,7 +249,7 @@ export default function ProfileTab() {
             <TrendingUp color="#22c55e" size={16} />
             <Text style={styles.sectionTitle}>Performance Analysis</Text>
           </View>
-          
+
           {/* Strengths */}
           <View style={styles.performanceSection}>
             <View style={styles.performanceHeader}>
@@ -273,7 +273,9 @@ export default function ProfileTab() {
           <View style={styles.performanceSection}>
             <View style={styles.performanceHeader}>
               <Award color="#f97316" size={12} />
-              <Text style={[styles.performanceTitle, { color: '#f97316' }]}>Areas for Improvement</Text>
+              <Text style={[styles.performanceTitle, { color: '#f97316' }]}>
+                Areas for Improvement
+              </Text>
             </View>
             <View style={styles.performanceList}>
               {weaknesses.map((weakness, index) => (
@@ -302,8 +304,12 @@ export default function ProfileTab() {
                   <achievement.icon color="#22c55e" size={16} />
                 </View>
                 <View style={styles.achievementInfo}>
-                  <Text style={styles.achievementTitle}>{achievement.title}</Text>
-                  <Text style={styles.achievementDescription}>{achievement.description}</Text>
+                  <Text style={styles.achievementTitle}>
+                    {achievement.title}
+                  </Text>
+                  <Text style={styles.achievementDescription}>
+                    {achievement.description}
+                  </Text>
                 </View>
               </View>
             ))}
