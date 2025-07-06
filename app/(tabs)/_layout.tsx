@@ -1,10 +1,12 @@
 import { Tabs } from 'expo-router';
 import {  Calendar, Trophy, MessageSquare, User, UserRound, MousePointer2, Crown, CalendarCheck, MessageCircle } from 'lucide-react-native';
 import { View, Text, StyleSheet } from 'react-native';
+import CustomTabBar from '@/components/CustomTabBar';
 
 export default function TabLayout() {
   return (
     <Tabs
+      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
@@ -18,7 +20,9 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           popToTopOnBlur: true,
-          tabBarIcon: ({ color, size }) => <MousePointer2 color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => (
+            <MousePointer2 color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -74,12 +78,18 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#0a0a0a',
-    borderTopColor: '#1f2937',
-    borderTopWidth: 1,
+    backgroundColor: '#0E0E0EFF',
+    
+    borderColor:"#03FF6CFF",
+    borderTopWidth:0.5,
+
     paddingTop: 6,
     paddingBottom: 6,
     height: 70,
+   
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   tabLabel: {
     fontFamily: 'Inter-Medium',
