@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, ChevronLeft, ChevronRight, Eye } from 'lucide-react-native';
-import { MinimalCalendar } from '../../components/MinimalCalendar';
+import { MinimalCalendar } from '../../../components/MinimalCalendar';
 import { Button } from '@/components/ui/button';
 import { router } from 'expo-router';
 
@@ -63,7 +63,7 @@ export default function FixturesTab() {
   };
 
   const handleViewAllGames = () => {
-    router.push('/schedule');
+    router.push('/fixtures/schedule');
   };
 
   const days = getDaysInMonth(currentDate);
