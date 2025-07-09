@@ -2,17 +2,76 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Calendar, Trophy, Star, User, Lock } from 'lucide-react-native';
+import { Trophy, Mail } from 'lucide-react-native';
+import { useAuth } from '@/contexts/AuthContext';
+import { router } from 'expo-router';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isFacebookLoading, setIsFacebookLoading] = useState(false);
+  const { login, isAuthenticated } = useAuth();
+
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/(tabs)');
+    }
+  }, [isAuthenticated]);
+
+  const handleGoogleLogin = async () => {
+    setIsGoogleLoading(true);
+    try {
+      // Simulate OAuth login - replace with actual Google OAuth implementation
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const userData = {
+        id: 'google_' + Date.now(),
+        username: 'google_user',
+        email: 'user@gmail.com',
+        teamName: '',
+        teamColor: '',
+        profilePicture: 'https://via.placeholder.com/100',
+      };
+      
+      login(userData);
+      router.replace('/(tabs)');
+    } catch (error) {
+      Alert.alert('Login Failed', 'Unable to login with Google. Please try again.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    setIsFacebookLoading(true);
+    try {
+      // Simulate OAuth login - replace with actual Facebook OAuth implementation
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const userData = {
+        id: 'facebook_' + Date.now(),
+        username: 'facebook_user',
+        email: 'user@facebook.com',
+        teamName: '',
+        teamColor: '',
+        profilePicture: 'https://via.placeholder.com/100',
+      };
+      
+      login(userData);
+      router.replace('/(tabs)');
+    } catch (error) {
+      Alert.alert('Login Failed', 'Unable to login with Facebook. Please try again.');
+    } finally {
+      setIsFacebookLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,47 +104,60 @@ export default function LoginScreen() {
         {/* Logo or App Name */}
         <View style={styles.logoContainer}>
           <Trophy color="#22c55e" size={48} />
-          <Text style={styles.appName}>GameHub</Text>
+          <Text style={styles.appName}>E-Tournament</Text>
+          <Text style={styles.subtitle}>Welcome back! Sign in to continue</Text>
         </View>
 
-        {/* Login Form */}
+        {/* OAuth Login Buttons */}
         <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <User color="#9ca3af" size={20} style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#9ca3af"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
-          <View style={styles.inputGroup}>
-            <Lock color="#9ca3af" size={20} style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#9ca3af"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
-
-          <TouchableOpacity style={styles.loginButton}>
-            <Text style={styles.loginButtonText}>Log In</Text>
+          <TouchableOpacity 
+            style={[styles.oauthButton, styles.googleButton]} 
+            onPress={handleGoogleLogin}
+            disabled={isGoogleLoading || isFacebookLoading}
+          >
+            {isGoogleLoading ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <>
+                <View style={styles.googleIcon}>
+                  <Text style={styles.googleIconText}>G</Text>
+                </View>
+                <Text style={styles.oauthButtonText}>Continue with Google</Text>
+              </>
+            )}
           </TouchableOpacity>
 
-          <View style={styles.linksContainer}>
-            <TouchableOpacity>
-              <Text style={styles.linkText}>Forgot Password?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.linkText}>Sign Up</Text>
-            </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.oauthButton, styles.facebookButton]} 
+            onPress={handleFacebookLogin}
+            disabled={isGoogleLoading || isFacebookLoading}
+          >
+            {isFacebookLoading ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <>
+                <View style={styles.facebookIcon}>
+                  <Text style={styles.facebookIconText}>f</Text>
+                </View>
+                <Text style={styles.oauthButtonText}>Continue with Facebook</Text>
+              </>
+            )}
+          </TouchableOpacity>
+
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
           </View>
+
+          <TouchableOpacity 
+            style={styles.signUpLink}
+            onPress={() => router.push('/signup')}
+          >
+            <Text style={styles.signUpText}>
+              Don't have an account? <Text style={styles.linkText}>Sign Up</Text>
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -139,7 +211,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 48,
   },
   appName: {
     color: '#ffffff',
@@ -147,46 +219,92 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
     marginTop: 8,
   },
+  subtitle: {
+    color: '#9ca3af',
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    marginTop: 8,
+    textAlign: 'center',
+  },
   form: {
     gap: 16,
   },
-  inputGroup: {
+  oauthButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 52,
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    color: '#ffffff',
-    fontSize: 16,
-    fontFamily: 'Inter-Regular',
-  },
-  loginButton: {
-    backgroundColor: '#22c55e',
+    justifyContent: 'center',
     paddingVertical: 16,
     borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 8,
+    gap: 12,
+    marginBottom: 8,
   },
-  loginButtonText: {
+  googleButton: {
+    backgroundColor: '#1f2937',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  facebookButton: {
+    backgroundColor: '#1877f2',
+  },
+  googleIcon: {
+    width: 24,
+    height: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  googleIconText: {
+    color: '#1f2937',
+    fontSize: 14,
+    fontFamily: 'Inter-Bold',
+  },
+  facebookIcon: {
+    width: 24,
+    height: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  facebookIconText: {
+    color: '#1877f2',
+    fontSize: 16,
+    fontFamily: 'Inter-Bold',
+  },
+  oauthButtonText: {
     color: '#ffffff',
     fontSize: 16,
     fontFamily: 'Inter-Medium',
   },
-  linksContainer: {
+  divider: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
+    alignItems: 'center',
+    marginVertical: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  dividerText: {
+    color: '#9ca3af',
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    marginHorizontal: 16,
+  },
+  signUpLink: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  signUpText: {
+    color: '#9ca3af',
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
   },
   linkText: {
     color: '#22c55e',
-    fontSize: 13,
-    fontFamily: 'Inter-Regular',
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
   },
 });

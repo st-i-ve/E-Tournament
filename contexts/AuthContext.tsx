@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface User {
   id: string;
@@ -16,45 +17,72 @@ interface AuthContextType {
   login: (userData: User) => void;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('user');
-    const selectedTeam = localStorage.getItem('selectedTeam');
-    
-    if (storedUser && selectedTeam) {
-      const userData = JSON.parse(storedUser);
-      const teamData = JSON.parse(selectedTeam);
-      setUser({
-        ...userData,
-        teamName: teamData.name,
-        teamColor: teamData.color
-      });
-    }
+    // Check if user is stored in AsyncStorage
+    const loadStoredUser = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem('user');
+        const selectedTeam = await AsyncStorage.getItem('selectedTeam');
+        
+        if (storedUser && selectedTeam) {
+          const userData = JSON.parse(storedUser);
+          const teamData = JSON.parse(selectedTeam);
+          setUser({
+            ...userData,
+            teamName: teamData.name,
+            teamColor: teamData.color
+          });
+        } else if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Error loading stored user:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadStoredUser();
   }, []);
 
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+  const login = async (userData: User) => {
+    try {
+      setUser(userData);
+      await AsyncStorage.setItem('user', JSON.stringify(userData));
+    } catch (error) {
+      console.error('Error storing user data:', error);
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('selectedTeam');
+  const logout = async () => {
+    try {
+      setUser(null);
+      await AsyncStorage.removeItem('user');
+      await AsyncStorage.removeItem('selectedTeam');
+    } catch (error) {
+      console.error('Error removing user data:', error);
+    }
   };
 
-  const updateUser = (userData: Partial<User>) => {
+  const updateUser = async (userData: Partial<User>) => {
     if (user) {
-      const updatedUser = { ...user, ...userData };
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      try {
+        const updatedUser = { ...user, ...userData };
+        setUser(updatedUser);
+        await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+      } catch (error) {
+        console.error('Error updating user data:', error);
+      }
     }
   };
 
@@ -64,7 +92,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       isAuthenticated: !!user,
       login,
       logout,
-      updateUser
+      updateUser,
+      isLoading
     }}>
       {children}
     </AuthContext.Provider>
