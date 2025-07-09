@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MessageSquare, Send, Smile, Paperclip, MoveVertical as MoreVertical, Users, Clock } from 'lucide-react-native';
+import { MessageSquare, Send, Smile, Paperclip, MoveVertical as MoreVertical, Users, Clock, Zap } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
-// Mock chat list data
+// Mock chat list data with user avatars and online status
 const mockChats = [
   {
     id: '1',
@@ -12,7 +13,10 @@ const mockChats = [
     lastMessageTime: '2:38 PM',
     unreadCount: 3,
     participants: 8,
-    type: 'tournament'
+    type: 'tournament',
+    avatar: 'CE',
+    color: '#00d4ff',
+    isOnline: true
   },
   {
     id: '2',
@@ -21,7 +25,10 @@ const mockChats = [
     lastMessageTime: 'Yesterday',
     unreadCount: 0,
     participants: 12,
-    type: 'team'
+    type: 'team',
+    avatar: 'PS',
+    color: '#ff6b35',
+    isOnline: true
   },
   {
     id: '3',
@@ -30,7 +37,10 @@ const mockChats = [
     lastMessageTime: '2 days ago',
     unreadCount: 1,
     participants: 16,
-    type: 'tournament'
+    type: 'tournament',
+    avatar: 'SL',
+    color: '#7c3aed',
+    isOnline: false
   }
 ];
 
@@ -38,7 +48,7 @@ export default function ChatTab() {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [message, setMessage] = useState('');
 
-  // Mock messages for individual chat
+  // Mock messages for individual chat with avatars and colors
   const mockMessages = [
     {
       id: '1',
@@ -46,6 +56,9 @@ export default function ChatTab() {
       message: 'Hey everyone! Ready for tonight\'s match?',
       time: '2:30 PM',
       isOwn: false,
+      avatar: 'PR',
+      color: '#ff6b35',
+      isOnline: true
     },
     {
       id: '2',
@@ -53,6 +66,9 @@ export default function ChatTab() {
       message: 'Absolutely! Let\'s dominate the field 🔥',
       time: '2:32 PM',
       isOwn: true,
+      avatar: 'GU',
+      color: '#00d4ff',
+      isOnline: true
     },
     {
       id: '3',
@@ -60,6 +76,9 @@ export default function ChatTab() {
       message: 'What formation are we running today?',
       time: '2:35 PM',
       isOwn: false,
+      avatar: 'LS',
+      color: '#7c3aed',
+      isOnline: true
     },
     {
       id: '4',
@@ -67,6 +86,9 @@ export default function ChatTab() {
       message: 'Coach mentioned 4-3-3, aggressive attacking',
       time: '2:36 PM',
       isOwn: true,
+      avatar: 'GU',
+      color: '#00d4ff',
+      isOnline: true
     },
     {
       id: '5',
@@ -74,6 +96,9 @@ export default function ChatTab() {
       message: 'Perfect! I\'ve been practicing my headers all week',
       time: '2:38 PM',
       isOwn: false,
+      avatar: 'DE',
+      color: '#22c55e',
+      isOnline: false
     },
   ];
 
@@ -124,11 +149,20 @@ export default function ChatTab() {
           {mockMessages.map((msg) => (
             <View key={msg.id} style={[styles.messageRow, msg.isOwn && styles.ownMessageRow]}>
               {!msg.isOwn && (
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>{msg.user.charAt(0).toUpperCase()}</Text>
+                <View style={styles.avatarContainer}>
+                  <LinearGradient
+                    colors={[msg.color, `${msg.color}80`]}
+                    style={styles.avatar}
+                  >
+                    <Text style={styles.avatarText}>{msg.avatar}</Text>
+                  </LinearGradient>
+                  {msg.isOnline && <View style={styles.onlineIndicator} />}
                 </View>
               )}
-              <View style={[styles.messageBubble, msg.isOwn && styles.ownMessageBubble]}>
+              <LinearGradient
+                colors={msg.isOwn ? ['#00d4ff', '#0ea5e9'] : ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.05)']}
+                style={[styles.messageBubble, msg.isOwn && styles.ownMessageBubble]}
+              >
                 {!msg.isOwn && <Text style={styles.userName}>{msg.user}</Text>}
                 <Text style={[styles.messageText, msg.isOwn && styles.ownMessageText]}>
                   {msg.message}
@@ -136,10 +170,16 @@ export default function ChatTab() {
                 <Text style={[styles.messageTime, msg.isOwn && styles.ownMessageTime]}>
                   {msg.time}
                 </Text>
-              </View>
+              </LinearGradient>
               {msg.isOwn && (
-                <View style={[styles.avatar, styles.ownAvatar]}>
-                  <Text style={styles.avatarText}>G</Text>
+                <View style={styles.avatarContainer}>
+                  <LinearGradient
+                    colors={[msg.color, `${msg.color}80`]}
+                    style={[styles.avatar, styles.ownAvatar]}
+                  >
+                    <Text style={styles.avatarText}>{msg.avatar}</Text>
+                  </LinearGradient>
+                  {msg.isOnline && <View style={styles.onlineIndicator} />}
                 </View>
               )}
             </View>
@@ -147,12 +187,26 @@ export default function ChatTab() {
           
           {/* Typing indicator */}
           <View style={styles.typingIndicator}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>P</Text>
+            <View style={styles.avatarContainer}>
+              <LinearGradient
+                colors={['#ff6b35', '#ff6b3580']}
+                style={styles.avatar}
+              >
+                <Text style={styles.avatarText}>PR</Text>
+              </LinearGradient>
+              <View style={styles.onlineIndicator} />
             </View>
-            <View style={styles.typingBubble}>
+            <LinearGradient
+              colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.05)']}
+              style={styles.typingBubble}
+            >
+              <View style={styles.typingDots}>
+                <View style={[styles.typingDot, { animationDelay: '0ms' }]} />
+                <View style={[styles.typingDot, { animationDelay: '150ms' }]} />
+                <View style={[styles.typingDot, { animationDelay: '300ms' }]} />
+              </View>
               <Text style={styles.typingText}>Phoenix_Rising is typing...</Text>
-            </View>
+            </LinearGradient>
           </View>
         </ScrollView>
 
@@ -235,20 +289,30 @@ export default function ChatTab() {
                 onPress={() => handleChatSelect(chat.id)}
                 activeOpacity={0.7}
               >
-                <View style={styles.chatItemContent}>
+                <LinearGradient
+                  colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.02)']}
+                  style={styles.chatItemContent}
+                >
                   <View style={styles.chatAvatarContainer}>
-                    <View style={styles.chatAvatar}>
-                      <MessageSquare color="#22c55e" size={20} />
-                    </View>
+                    <LinearGradient
+                      colors={[chat.color, `${chat.color}80`]}
+                      style={styles.chatAvatar}
+                    >
+                      <Text style={styles.chatAvatarText}>{chat.avatar}</Text>
+                    </LinearGradient>
+                    {chat.isOnline && <View style={styles.chatOnlineIndicator} />}
                     {chat.unreadCount > 0 && (
-                      <View style={styles.unreadBadge}>
+                      <LinearGradient
+                        colors={['#00ff88', '#00d4ff']}
+                        style={styles.unreadBadge}
+                      >
                         <Text style={styles.unreadBadgeText}>{chat.unreadCount}</Text>
-                      </View>
+                      </LinearGradient>
                     )}
                   </View>
                   
                   <View style={styles.chatDetails}>
-                    <View style={styles.chatHeader}>
+                    <View style={styles.chatHeaderRow}>
                       <Text style={styles.chatName}>{chat.name}</Text>
                       <Text style={styles.chatTime}>{chat.lastMessageTime}</Text>
                     </View>
@@ -258,14 +322,18 @@ export default function ChatTab() {
                     </Text>
                     
                     <View style={styles.chatMeta}>
-                      <Users color="#6b7280" size={12} />
+                      <Users color="#00d4ff" size={12} />
                       <Text style={styles.participantCount}>{chat.participants} members</Text>
-                      <View style={styles.chatTypeBadge}>
+                      <LinearGradient
+                        colors={chat.type === 'tournament' ? ['#7c3aed', '#a855f7'] : ['#ff6b35', '#f97316']}
+                        style={styles.chatTypeBadge}
+                      >
                         <Text style={styles.chatTypeText}>{chat.type}</Text>
-                      </View>
+                      </LinearGradient>
+                      {chat.type === 'tournament' && <Zap color="#fbbf24" size={10} />}
                     </View>
                   </View>
-                </View>
+                </LinearGradient>
               </TouchableOpacity>
               
               {index < mockChats.length - 1 && (
@@ -384,12 +452,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   chatItem: {
-    paddingVertical: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
   },
   chatItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#00d4ff',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   chatAvatarContainer: {
     position: 'relative',
@@ -398,22 +475,52 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    borderWidth: 2,
-    borderColor: 'rgba(34, 197, 94, 0.5)',
-    backgroundColor: 'rgba(17, 24, 39, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  chatAvatarText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontFamily: 'Inter-Bold',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  chatOnlineIndicator: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#00ff88',
+    borderWidth: 2,
+    borderColor: '#0a0a0a',
+    shadowColor: '#00ff88',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
   },
   unreadBadge: {
     position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: '#22c55e',
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
+    top: -4,
+    right: -4,
+    borderRadius: 12,
+    minWidth: 24,
+    height: 24,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#0a0a0a',
+    shadowColor: '#00ff88',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
   },
   unreadBadgeText: {
     color: '#ffffff',
@@ -424,7 +531,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
   },
-  chatHeader: {
+  chatHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -432,20 +539,24 @@ const styles = StyleSheet.create({
   },
   chatName: {
     color: '#ffffff',
-    fontSize: 13,
-    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    fontFamily: 'Inter-Bold',
     flex: 1,
+    textShadowColor: 'rgba(0,212,255,0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   chatTime: {
-    color: '#6b7280',
-    fontSize: 10,
-    fontFamily: 'Inter-Regular',
+    color: '#00d4ff',
+    fontSize: 11,
+    fontFamily: 'Inter-Medium',
   },
   lastMessage: {
-    color: '#9ca3af',
-    fontSize: 11,
+    color: '#d1d5db',
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
-    marginBottom: 4,
+    marginBottom: 6,
+    opacity: 0.8,
   },
   chatMeta: {
     flexDirection: 'row',
@@ -453,21 +564,25 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   participantCount: {
-    color: '#6b7280',
+    color: '#00d4ff',
     fontSize: 10,
-    fontFamily: 'Inter-Regular',
+    fontFamily: 'Inter-Medium',
   },
   chatTypeBadge: {
-    backgroundColor: 'rgba(17, 24, 39, 0.5)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-    marginLeft: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    marginLeft: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   chatTypeText: {
-    color: '#6b7280',
+    color: '#ffffff',
     fontSize: 9,
-    fontFamily: 'Inter-Regular',
+    fontFamily: 'Inter-Bold',
+    textTransform: 'uppercase',
   },
   separator: {
     height: 1,
@@ -542,59 +657,99 @@ const styles = StyleSheet.create({
   ownMessageRow: {
     flexDirection: 'row-reverse',
   },
-  avatar: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#374151',
-    justifyContent: 'center',
-    alignItems: 'center',
+  avatarContainer: {
+    position: 'relative',
     marginHorizontal: 6,
   },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
   ownAvatar: {
-    backgroundColor: '#22c55e',
+    // No additional styles needed as gradient handles the appearance
+  },
+  onlineIndicator: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#00ff88',
+    borderWidth: 2,
+    borderColor: '#0a0a0a',
+    shadowColor: '#00ff88',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 3,
   },
   avatarText: {
     color: '#ffffff',
     fontSize: 12,
-    fontFamily: 'Inter-SemiBold',
+    fontFamily: 'Inter-Bold',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   messageBubble: {
     maxWidth: '70%',
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    padding: 10,
-    borderBottomLeftRadius: 3,
+    borderRadius: 16,
+    padding: 12,
+    borderBottomLeftRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
   ownMessageBubble: {
-    backgroundColor: '#22c55e',
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 3,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 4,
+    borderColor: 'rgba(255,255,255,0.2)',
+    shadowColor: '#00d4ff',
+    shadowOpacity: 0.3,
   },
   userName: {
-    color: '#9ca3af',
+    color: '#00d4ff',
     fontSize: 10,
-    fontFamily: 'Inter-SemiBold',
-    marginBottom: 3,
+    fontFamily: 'Inter-Bold',
+    marginBottom: 4,
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
   messageText: {
     color: '#ffffff',
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: 'Inter-Regular',
-    lineHeight: 16,
+    lineHeight: 18,
   },
   ownMessageText: {
     color: '#ffffff',
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
   messageTime: {
-    color: '#6b7280',
+    color: '#9ca3af',
     fontSize: 9,
     fontFamily: 'Inter-Regular',
-    marginTop: 3,
+    marginTop: 4,
     alignSelf: 'flex-start',
+    opacity: 0.8,
   },
   ownMessageTime: {
-    color: 'rgba(255,255,255,0.7)',
+    color: 'rgba(255,255,255,0.8)',
     alignSelf: 'flex-end',
   },
   typingIndicator: {
@@ -604,22 +759,44 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   typingBubble: {
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    padding: 10,
-    borderBottomLeftRadius: 3,
+    borderRadius: 16,
+    padding: 12,
+    borderBottomLeftRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  typingDots: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 4,
+  },
+  typingDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#00d4ff',
+    opacity: 0.6,
   },
   typingText: {
-    color: '#9ca3af',
+    color: '#d1d5db',
     fontSize: 10,
     fontFamily: 'Inter-Regular',
     fontStyle: 'italic',
+    opacity: 0.8,
   },
   inputContainer: {
     padding: 16,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#1f2937',
+    borderTopColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(17, 24, 39, 0.95)',
+    backdropFilter: 'blur(10px)',
   },
   inputRow: {
     flexDirection: 'row',
@@ -635,22 +812,43 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     color: '#ffffff',
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: 'Inter-Regular',
     maxHeight: 80,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(31, 41, 55, 0.8)',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    marginHorizontal: 8,
   },
   emojiButton: {
     padding: 6,
   },
   sendButton: {
     backgroundColor: '#374151',
-    borderRadius: 16,
-    padding: 6,
-    marginLeft: 6,
+    borderRadius: 24,
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   sendButtonActive: {
     backgroundColor: '#22c55e',
+    shadowColor: '#00d4ff',
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 6,
   },
 });
