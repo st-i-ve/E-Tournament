@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Palette, Bell, Shield, User, Globe } from 'lucide-react-native';
+import { ChevronLeft, Palette, Bell, Shield, User, Globe, LogOut } from 'lucide-react-native';
 import { Button } from '@/components/ui/button';
 import { router } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function SettingsPage() {
   const [selectedTheme, setSelectedTheme] = useState('forest');
   const [notifications, setNotifications] = useState(true);
   const [matchReminders, setMatchReminders] = useState(true);
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/login');
+  };
 
   const themeOptions = [
     { id: 'green', name: 'Emerald Green', color: '#22c55e', available: true },
@@ -172,6 +179,13 @@ export default function SettingsPage() {
                 <View style={styles.menuItemRight}>
                   <Text style={styles.menuItemValue}>English</Text>
                   <Text style={styles.menuItemArrow}>→</Text>
+                </View>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.logoutItem} onPress={handleLogout}>
+                <View style={styles.menuItemContent}>
+                  <LogOut color="#ef4444" size={16} />
+                  <Text style={styles.logoutText}>Log Out</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -413,5 +427,19 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 80,
+  },
+  logoutItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  logoutText: {
+    color: '#ef4444',
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
   },
 });
