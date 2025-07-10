@@ -133,14 +133,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   fixedTable: {
-    width: 144,
+    width: '25%',
     backgroundColor: 'rgba(31, 41, 55, 0.5)',
     borderTopLeftRadius: 12,
     borderBottomLeftRadius: 12,
     overflow: 'hidden',
   },
   scrollableTable: {
-    flex: 1,
+    width: '75%',
     backgroundColor: 'rgba(31, 41, 55, 0.5)',
     borderTopRightRadius: 12,
     borderBottomRightRadius: 12,
