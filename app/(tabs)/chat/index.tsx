@@ -109,13 +109,13 @@ const ChatListScreen = () => {
     <ChatListItem
       avatar={
         <View style={{
-          width: 40,
-          height: 40,
-          borderRadius: 20,
+          width: "100%",
+          height: "100%",
+          borderRadius: "50%",
           backgroundColor: '#000',
           justifyContent: 'center',
           alignItems: 'center',
-          borderWidth: 1,
+          borderWidth: 0.8,
           borderColor: '#25D366',
         }}>
           <Text style={{ color: '#25D366', fontWeight: '600', fontSize: 14 }}>{getInitials(item.name)}</Text>
