@@ -17,7 +17,7 @@ const teams = [
   { pos: 8, name: 'united_star', mp: 8, w: 0, d: 1, l: 7, pts: 3, last5: ['L', 'L', 'L', 'D', 'L'], isCurrentUser: false },
 ];
 
-const truncateName = (name: string, maxLength: number = 10) => {
+const truncateName = (name: string, maxLength: number = 15) => {
   if (name.length <= maxLength) return name;
   return name.substring(0, maxLength) + '...';
 };
@@ -26,92 +26,71 @@ export const LeaderboardTable: React.FC = () => {
   return (
     <TooltipProvider>
       <View style={styles.container}>
-        <View style={styles.tableContainer}>
-          {/* Fixed Table - Position and Player */}
-          <View style={styles.fixedTable}>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead style={styles.posColumn} align="center">Pos</TableHead>
-                  <TableHead style={styles.playerColumn} align="left">Player</TableHead>
+        <ScrollArea horizontal showsHorizontalScrollIndicator={false}>
+          <Table style={styles.unifiedTable}>
+            <TableHeader>
+              <TableRow>
+                <TableHead style={styles.posColumn} align="center">Pos</TableHead>
+                <TableHead style={styles.playerColumn} align="left">Player</TableHead>
+                <TableHead style={styles.statColumn} align="center">MP</TableHead>
+                <TableHead style={styles.statColumn} align="center">W</TableHead>
+                <TableHead style={styles.statColumn} align="center">D</TableHead>
+                <TableHead style={styles.statColumn} align="center">L</TableHead>
+                <TableHead style={styles.statColumn} align="center">Pts</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {teams.map((team) => (
+                <TableRow key={team.pos} isHighlighted={team.isCurrentUser}>
+                  <TableCell 
+                    style={styles.posColumn} 
+                    align="center"
+                    textStyle={[
+                      styles.positionText,
+                      team.isCurrentUser ? styles.highlightedText : undefined
+                    ].filter(Boolean)}
+                  >
+                    {team.pos}
+                  </TableCell>
+                  <TableCell style={styles.playerColumn} align="left">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TouchableOpacity>
+                          <Text style={[
+                            styles.playerText,
+                            team.isCurrentUser ? styles.highlightedText : undefined
+                          ].filter(Boolean)}>
+                            {truncateName(team.name)}
+                          </Text>
+                        </TouchableOpacity>
+                      </TooltipTrigger>
+                      {team.name.length > 10 && (
+                        <TooltipContent>
+                          <Text style={styles.tooltipText}>{team.name}</Text>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell style={styles.statColumn} align="center" textStyle={styles.statText}>
+                    {team.mp}
+                  </TableCell>
+                  <TableCell style={styles.statColumn} align="center" textStyle={styles.winText}>
+                    {team.w}
+                  </TableCell>
+                  <TableCell style={styles.statColumn} align="center" textStyle={styles.statText}>
+                    {team.d}
+                  </TableCell>
+                  <TableCell style={styles.statColumn} align="center" textStyle={styles.lossText}>
+                    {team.l}
+                  </TableCell>
+                  <TableCell style={styles.statColumn} align="center" textStyle={styles.pointsText}>
+                    {team.pts}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {teams.map((team) => (
-                  <TableRow key={team.pos} isHighlighted={team.isCurrentUser}>
-                    <TableCell 
-                      style={styles.posColumn} 
-                      align="center"
-                      textStyle={[
-                        styles.positionText,
-                        team.isCurrentUser && styles.highlightedText
-                      ]}
-                    >
-                      {team.pos}
-                    </TableCell>
-                    <TableCell style={styles.playerColumn} align="left">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <TouchableOpacity>
-                            <Text style={[
-                              styles.playerText,
-                              team.isCurrentUser && styles.highlightedText
-                            ]}>
-                              {truncateName(team.name)}
-                            </Text>
-                          </TouchableOpacity>
-                        </TooltipTrigger>
-                        {team.name.length > 10 && (
-                          <TooltipContent>
-                            <Text style={styles.tooltipText}>{team.name}</Text>
-                          </TooltipContent>
-                        )}
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </View>
-
-          {/* Scrollable Table - Stats and Last 5 */}
-          <View style={styles.scrollableTable}>
-            <ScrollArea horizontal showsHorizontalScrollIndicator={false}>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead style={styles.statColumn} align="center">MP</TableHead>
-                    <TableHead style={styles.statColumn} align="center">W</TableHead>
-                    <TableHead style={styles.statColumn} align="center">D</TableHead>
-                    <TableHead style={styles.statColumn} align="center">L</TableHead>
-                    <TableHead style={styles.statColumn} align="center">Pts</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {teams.map((team) => (
-                    <TableRow key={team.pos} isHighlighted={team.isCurrentUser}>
-                      <TableCell style={styles.statColumn} align="center" textStyle={styles.statText}>
-                        {team.mp}
-                      </TableCell>
-                      <TableCell style={styles.statColumn} align="center" textStyle={styles.winText}>
-                        {team.w}
-                      </TableCell>
-                      <TableCell style={styles.statColumn} align="center" textStyle={styles.statText}>
-                        {team.d}
-                      </TableCell>
-                      <TableCell style={styles.statColumn} align="center" textStyle={styles.lossText}>
-                        {team.l}
-                      </TableCell>
-                      <TableCell style={styles.statColumn} align="center" textStyle={styles.pointsText}>
-                        {team.pts}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-          </View>
-        </View>
+              ))}
+            </TableBody>
+          </Table>
+        </ScrollArea>
       </View>
     </TooltipProvider>
   );
@@ -121,35 +100,20 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: -20,
   },
-  tableContainer: {
-    flexDirection: 'row',
-  },
-  fixedTable: {
-    width: '40%',
+  unifiedTable: {
+    minWidth: '100%',
     backgroundColor: 'rgba(31, 41, 55, 0.5)',
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
-    overflow: 'hidden',
-  },
-  scrollableTable: {
-    width: '60%',
-    backgroundColor: 'rgba(31, 41, 55, 0.5)',
-    borderTopRightRadius: 12,
-    borderBottomRightRadius: 12,
-    overflow: 'hidden',
   },
   posColumn: {
-    width: 40,
+    width: "10%",
   },
   playerColumn: {
     flex: 1,
+    minWidth: "30%",
     paddingLeft: 8,
   },
   statColumn: {
-    width: 40,
-  },
-  last5Column: {
-    width: 80,
+    width: "12%",
   },
   positionText: {
     fontFamily: 'Inter-SemiBold',
