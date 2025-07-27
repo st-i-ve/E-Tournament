@@ -92,9 +92,9 @@ export default function LoginScreen() {
             onPress={handleGoogleLogin}
             disabled={isGoogleLoading || isFacebookLoading}
           >
-            <View style={[styles.buttonContent, isGoogleLoading && styles.buttonDisabled]}>
+            <View style={[styles.buttonContent, styles.googleButton, isGoogleLoading && styles.buttonDisabled]}>
               {isGoogleLoading ? (
-                <ActivityIndicator color="#25D366" size="small" />
+                <ActivityIndicator color="#ffffff" size="small" />
               ) : (
                 <>
                   <View style={styles.googleIcon}>
@@ -127,18 +127,9 @@ export default function LoginScreen() {
 
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
+            <Text style={styles.dividerText}>Choose your preferred login method</Text>
             <View style={styles.dividerLine} />
           </View>
-
-          <TouchableOpacity 
-            style={styles.signUpLink}
-            onPress={() => router.push('/signup')}
-          >
-            <Text style={styles.signUpText}>
-              New to gaming tournaments? <Text style={styles.linkText}>Join Now</Text>
-            </Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -200,9 +191,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     gap: 12,
   },
+  googleButton: {
+    backgroundColor: '#25D366',
+    borderColor: '#25D366',
+  },
   facebookButton: {
-    backgroundColor: '#1877f2',
-    borderColor: '#1877f2',
+    backgroundColor: '#25D366',
+    borderColor: '#25D366',
   },
   buttonDisabled: {
     opacity: 0.6,

@@ -10,6 +10,7 @@ import {
 import { router } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 import { ChatListItem } from '../../../components/ChatListItem';
+import { Background } from '../../../components/Background';
 
 interface Chat {
   id: string;
@@ -93,18 +94,8 @@ const ChatListScreen = () => {
   };
 
   const getAvatarColor = (name: string) => {
-    const colors = [
-      '#ff6b6b',
-      '#4ecdc4', 
-      '#45b7d1',
-      '#96ceb4',
-      '#feca57',
-      '#ff9ff3',
-      '#54a0ff',
-      '#5f27cd',
-    ];
-    const index = name.charCodeAt(0) % colors.length;
-    return colors[index];
+    // Always return black background for consistent theming
+    return '#000';
   };
 
   const handleChatPress = (chatId: string) => {
@@ -121,11 +112,13 @@ const ChatListScreen = () => {
           width: 40,
           height: 40,
           borderRadius: 20,
-          backgroundColor: getAvatarColor(item.name),
+          backgroundColor: '#000',
           justifyContent: 'center',
           alignItems: 'center',
+          borderWidth: 1,
+          borderColor: '#25D366',
         }}>
-          <Text style={{ color: '#fff', fontWeight: '600', fontSize: 14 }}>{getInitials(item.name)}</Text>
+          <Text style={{ color: '#25D366', fontWeight: '600', fontSize: 14 }}>{getInitials(item.name)}</Text>
         </View>
       }
       name={item.name}
@@ -139,6 +132,14 @@ const ChatListScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Background 
+        triangleCount={1}
+        circleCount={2}
+        rectangleCount={1}
+        borderOpacity={0.03}
+        lineOpacity={0.02}
+        color="#25D366"
+      />
       <SafeAreaView style={styles.safeArea}>
         {/* Chat List */}
         <FlatList
