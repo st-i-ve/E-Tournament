@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   SafeAreaView,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import { router } from 'expo-router';
-import { MessageCircle, Plus, Search } from 'lucide-react-native';
+import { Plus } from 'lucide-react-native';
 import { ChatListItem } from '../../../components/ChatListItem';
 
 interface Chat {
@@ -84,8 +83,6 @@ const mockChats: Chat[] = [
 ];
 
 const ChatListScreen = () => {
-  const [search, setSearch] = useState('');
-
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -109,12 +106,6 @@ const ChatListScreen = () => {
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
   };
-
-  const filteredChats = mockChats.filter(
-    (chat) =>
-      chat.name.toLowerCase().includes(search.toLowerCase()) ||
-      chat.lastMessage.toLowerCase().includes(search.toLowerCase())
-  );
 
   const handleChatPress = (chatId: string) => {
     router.push({
@@ -149,27 +140,9 @@ const ChatListScreen = () => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <MessageCircle size={24} color="#25D366" />
-            <Text style={styles.headerTitle}>Chats</Text>
-          </View>
-          <View style={styles.searchContainer}>
-            <Search size={18} color="#666" style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchBar}
-              placeholder="Search chats..."
-              placeholderTextColor="#666"
-              value={search}
-              onChangeText={setSearch}
-            />
-          </View>
-        </View>
-
         {/* Chat List */}
         <FlatList
-          data={filteredChats}
+          data={mockChats}
           renderItem={renderChatItem}
           keyExtractor={(item) => item.id}
           style={styles.chatList}
@@ -193,40 +166,6 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
-    backgroundColor: '#000',
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  headerTitle: {
-    color: '#ffffff',
-    fontSize: 24,
-    fontWeight: '700',
-    marginLeft: 12,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#111',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchBar: {
-    flex: 1,
-    paddingVertical: 12,
-    color: '#fff',
-    fontSize: 16,
   },
   chatList: {
     flex: 1,
