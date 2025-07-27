@@ -76,13 +76,13 @@ export const Background: React.FC<BackgroundProps> = ({
 
     // Generate line positions - fewer and more strategic
     const verticalLinePositions = showVerticalLines ? [
-      '25%',
-      '75%',
+      screenWidth * 0.25,
+      screenWidth * 0.75,
     ] : [];
 
     const horizontalLinePositions = showHorizontalLines ? [
-      '33%',
-      '66%',
+      screenHeight * 0.33,
+      screenHeight * 0.66,
     ] : [];
 
     return {
