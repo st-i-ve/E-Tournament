@@ -3,12 +3,24 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Trophy, ChevronDown, Info } from 'lucide-react-native';
 import { LeaderboardTable } from '@/components/LeaderboardTable';
+import { Background } from '@/components/Background';
 
 export default function LeaderboardTab() {
   const [selectedLeague, setSelectedLeague] = useState('Premier League Champions');
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Geometric background elements */}
+      <Background 
+        triangleCount={2}
+        circleCount={3}
+        rectangleCount={2}
+        borderOpacity={0.1}
+        lineOpacity={0.05}
+        color="#22c55e"
+        seed={42} // Fixed seed for consistent layout
+      />
+      
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
