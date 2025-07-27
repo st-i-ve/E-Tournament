@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
-  Pressable,
   SafeAreaView,
+  TextInput,
+  Animated,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { MessageCircle, Users } from 'lucide-react-native';
+import { MessageCircle, Plus, Archive, Pin } from 'lucide-react-native';
+import { ChatListItem } from '../../../components/ChatListItem';
+import { Button } from '../../../components/ui/button';
 
 interface Chat {
   id: string;
@@ -83,6 +89,11 @@ const mockChats: Chat[] = [
 ];
 
 const ChatListScreen = () => {
+  const [search, setSearch] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
+  const [archivedChats, setArchivedChats] = useState<Chat[]>([]);
+  const [pinnedChats, setPinnedChats] = useState<string[]>(['1']); // Example: pin chat with id '1'
+
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -107,72 +118,59 @@ const ChatListScreen = () => {
     return colors[index];
   };
 
+  const filteredChats = mockChats.filter(
+    (chat) =>
+      chat.name.toLowerCase().includes(search.toLowerCase()) ||
+      chat.lastMessage.toLowerCase().includes(search.toLowerCase())
+  );
+  const pinned = filteredChats.filter((c) => pinnedChats.includes(c.id));
+  const regular = filteredChats.filter((c) => !pinnedChats.includes(c.id));
+
   const handleChatPress = (chatId: string) => {
-    router.push(`/chat/${chatId}`);
+    router.push({
+      pathname: '/chat',
+      params: { chatId },
+    });
   };
 
-  const renderChatItem = ({ item }: { item: Chat }) => {
-    const avatarColors = getAvatarColor(item.name);
-    
-    return (
-      <Pressable
-        style={styles.chatItem}
-        onPress={() => handleChatPress(item.id)}
-      >
-        <LinearGradient
-          colors={['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.02)']}
-          style={styles.chatItemGradient}
-        >
-          {/* Avatar */}
-          <View style={styles.avatarContainer}>
-            <LinearGradient
-              colors={avatarColors}
-              style={styles.avatar}
-            >
-              <Text style={styles.avatarText}>
-                {getInitials(item.name)}
-              </Text>
-              {item.isOnline && <View style={styles.onlineIndicator} />}
-            </LinearGradient>
-          </View>
+  const handleArchive = (chatId: string) => {
+    const chat = mockChats.find((c) => c.id === chatId);
+    if (chat) {
+      setArchivedChats((prev) => [...prev, chat]);
+    }
+  };
 
-          {/* Chat Content */}
-          <View style={styles.chatContent}>
-            <View style={styles.chatHeader}>
-              <View style={styles.nameContainer}>
-                <Text style={styles.chatName}>{item.name}</Text>
-                {item.type === 'tournament' && (
-                  <View style={styles.tournamentBadge}>
-                    <Users size={12} color="#00ff88" />
-                    <Text style={styles.participantCount}>
-                      {item.participantCount}
-                    </Text>
-                  </View>
-                )}
-              </View>
-              <Text style={styles.timestamp}>{item.timestamp}</Text>
-            </View>
-            
-            <View style={styles.messageContainer}>
-              <Text style={styles.lastMessage} numberOfLines={1}>
-                {item.lastMessage}
-              </Text>
-              {item.unreadCount > 0 && (
-                <LinearGradient
-                  colors={['#00ff88', '#00d4ff']}
-                  style={styles.unreadBadge}
-                >
-                  <Text style={styles.unreadCount}>
-                    {item.unreadCount > 99 ? '99+' : item.unreadCount}
-                  </Text>
-                </LinearGradient>
-              )}
-            </View>
-          </View>
-        </LinearGradient>
-      </Pressable>
+  const handlePin = (chatId: string) => {
+    setPinnedChats((prev) =>
+      prev.includes(chatId) ? prev.filter((id) => id !== chatId) : [chatId, ...prev]
     );
   };
+
+  const renderChatItem = ({ item }: { item: Chat }) => (
+    <ChatListItem
+      avatar={
+        <View style={{
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          backgroundColor: '#23232b',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <Text style={{ color: '#fff', fontWeight: '600', fontSize: 16 }}>{getInitials(item.name)}</Text>
+        </View>
+      }
+      name={item.name}
+      lastMessage={item.lastMessage}
+      timestamp={item.timestamp}
+      unreadCount={item.unreadCount}
+      isOnline={item.isOnline}
+      pinned={pinnedChats.includes(item.id)}
+      onPress={() => handleChatPress(item.id)}
+      onSwipeLeft={() => handleArchive(item.id)}
+      onSwipeRight={() => handlePin(item.id)}
+    />
+  );
 
   return (
     <LinearGradient
@@ -183,26 +181,155 @@ const ChatListScreen = () => {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <MessageCircle size={24} color="#00ff88" />
-            <Text style={styles.headerTitle}>Messages</Text>
+            <MessageCircle size={24} color="#25D366" />
+            <Text style={styles.headerTitle}>Chats</Text>
           </View>
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search..."
+            placeholderTextColor="#a1a1aa"
+            value={search}
+            onChangeText={setSearch}
+          />
         </View>
-
-        {/* Chat List */}
+        {/* Archived Section */}
+        {archivedChats.length > 0 && !showArchived && (
+          <TouchableOpacity style={styles.archivedBar} onPress={() => setShowArchived(true)}>
+            <Archive color="#25D366" size={18} />
+            <Text style={styles.archivedText}>Archived Chats ({archivedChats.length})</Text>
+          </TouchableOpacity>
+        )}
+        {showArchived && (
+          <View style={styles.archivedSection}>
+            <View style={styles.archivedHeader}>
+              <Text style={styles.archivedTitle}>Archived</Text>
+              <Button variant="ghost" size="sm" onPress={() => setShowArchived(false)}>Hide</Button>
+            </View>
+            <FlatList
+              data={archivedChats}
+              renderItem={renderChatItem}
+              keyExtractor={(item) => item.id}
+              style={styles.chatList}
+              contentContainerStyle={styles.chatListContent}
+            />
+          </View>
+        )}
+        {/* Pinned Chats */}
+        {pinned.length > 0 && (
+          <FlatList
+            data={pinned}
+            renderItem={renderChatItem}
+            keyExtractor={(item) => item.id}
+            style={styles.chatList}
+            contentContainerStyle={styles.chatListContent}
+          />
+        )}
+        {/* Regular Chats */}
         <FlatList
-          data={mockChats}
+          data={regular}
           renderItem={renderChatItem}
           keyExtractor={(item) => item.id}
           style={styles.chatList}
-          showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.chatListContent}
+          showsVerticalScrollIndicator={false}
         />
+        {/* Floating New Chat Button */}
+        <TouchableOpacity style={styles.fab} onPress={() => {}}>
+          <LinearGradient colors={["#25D366", "#128C7E"]} style={styles.fabInner}>
+            <Plus color="#fff" size={28} />
+          </LinearGradient>
+        </TouchableOpacity>
       </SafeAreaView>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  chatItemMinimal: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#18181b',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    minHeight: 64,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  avatarContainerMinimal: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#23232b',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    position: 'relative',
+  },
+  avatarTextMinimal: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  onlineIndicatorMinimal: {
+    position: 'absolute',
+    bottom: 6,
+    right: 6,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#22c55e',
+    borderWidth: 2,
+    borderColor: '#18181b',
+  },
+  chatContentMinimal: {
+    flex: 1,
+    justifyContent: 'center',
+    minWidth: 0,
+  },
+  chatHeaderMinimal: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 2,
+  },
+  chatNameMinimal: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 15,
+    flex: 1,
+    marginRight: 8,
+  },
+  timestampMinimal: {
+    color: '#a1a1aa',
+    fontSize: 11,
+    fontWeight: '400',
+    marginLeft: 8,
+  },
+  lastMessageMinimal: {
+    color: '#a1a1aa',
+    fontSize: 13,
+    fontWeight: '400',
+    flexShrink: 1,
+  },
+  unreadBadgeMinimal: {
+    backgroundColor: '#22c55e',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
+    paddingHorizontal: 6,
+  },
+  unreadCountMinimal: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 12,
+  },
   container: {
     flex: 1,
   },
@@ -218,7 +345,6 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
   headerTitle: {
     color: '#ffffff',
@@ -227,23 +353,23 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 255, 136, 0.3)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
+    marginLeft: 12,
   },
   chatList: {
     flex: 1,
   },
   chatListContent: {
     padding: 16,
-    gap: 8,
   },
   chatItem: {
     borderRadius: 16,
     overflow: 'hidden',
+    marginBottom: 8,
   },
   chatItemGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    gap: 12,
   },
   avatarContainer: {
     position: 'relative',
@@ -278,6 +404,7 @@ const styles = StyleSheet.create({
   },
   chatContent: {
     flex: 1,
+    marginLeft: 12,
   },
   chatHeader: {
     flexDirection: 'row',
@@ -288,7 +415,6 @@ const styles = StyleSheet.create({
   nameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
     flex: 1,
   },
   chatName: {
@@ -303,12 +429,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 8,
-    gap: 2,
+    marginLeft: 8,
   },
   participantCount: {
     color: '#00ff88',
     fontSize: 10,
     fontFamily: 'Inter-Medium',
+    marginLeft: 2,
   },
   timestamp: {
     color: '#999999',
@@ -339,6 +466,66 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 11,
     fontFamily: 'Inter-Bold',
+  },
+  searchBar: {
+    backgroundColor: '#27272a',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginTop: 12,
+    color: '#fff',
+    fontSize: 16,
+  },
+  archivedBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(37, 211, 102, 0.1)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  archivedText: {
+    color: '#25D366',
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 8,
+  },
+  archivedSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingVertical: 8,
+  },
+  archivedHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+  },
+  archivedTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  fabInner: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

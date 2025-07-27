@@ -85,7 +85,6 @@ export const LeaderboardTable: React.FC = () => {
                     <TableHead style={styles.statColumn} align="center">D</TableHead>
                     <TableHead style={styles.statColumn} align="center">L</TableHead>
                     <TableHead style={styles.statColumn} align="center">Pts</TableHead>
-                    <TableHead style={styles.last5Column} align="center">Last 5</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -105,13 +104,6 @@ export const LeaderboardTable: React.FC = () => {
                       </TableCell>
                       <TableCell style={styles.statColumn} align="center" textStyle={styles.pointsText}>
                         {team.pts}
-                      </TableCell>
-                      <TableCell style={styles.last5Column} align="center">
-                        <View style={styles.last5Container}>
-                          {team.last5.map((result, index) => (
-                            <GameResultIcon key={index} result={result as 'W' | 'L' | 'D'} />
-                          ))}
-                        </View>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -133,14 +125,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   fixedTable: {
-    width: '25%',
+    width: '40%',
     backgroundColor: 'rgba(31, 41, 55, 0.5)',
     borderTopLeftRadius: 12,
     borderBottomLeftRadius: 12,
     overflow: 'hidden',
   },
   scrollableTable: {
-    width: '75%',
+    width: '60%',
     backgroundColor: 'rgba(31, 41, 55, 0.5)',
     borderTopRightRadius: 12,
     borderBottomRightRadius: 12,
