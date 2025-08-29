@@ -7,7 +7,6 @@ import {
   UserPlus, 
   Mail, 
   Gamepad2, 
-  Circle, 
   MessageSquare,
   QrCode,
   Search
@@ -18,8 +17,6 @@ import type { FriendUser, FriendListItem } from '@/types/firebase';
 
 export default function FriendsPage() {
   const [friends, setFriends] = useState<FriendListItem[]>([]);
-  const [onlineFriends, setOnlineFriends] = useState<FriendListItem[]>([]);
-  const [offlineFriends, setOfflineFriends] = useState<FriendListItem[]>([]);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [pendingInvites, setPendingInvites] = useState(0);
 
@@ -94,8 +91,6 @@ export default function FriendsPage() {
     ];
 
     setFriends(mockFriends);
-    setOnlineFriends(mockFriends.filter(f => f.user.isOnline));
-    setOfflineFriends(mockFriends.filter(f => !f.user.isOnline));
     setPendingRequests(2); // mock pending requests
     setPendingInvites(1); // mock pending invites
   };
@@ -109,34 +104,25 @@ export default function FriendsPage() {
   };
 
   const renderFriendItem = ({ item }: { item: FriendListItem }) => {
-    const { user, canInvite, lastActivity } = item;
+    const { user, canInvite } = item;
     const statusColor = user.isOnline ? '#22c55e' : '#6b7280';
-    const gameStatusText = user.gameStatus === 'in-game' ? 'In Game' : 
-                          user.gameStatus === 'away' ? 'Away' : 'Available';
 
     return (
       <TouchableOpacity style={styles.friendItem}>
         <View style={styles.friendInfo}>
           {/* avatar */}
-          <View style={[styles.avatar, { borderColor: statusColor }]}>
+          <View style={styles.avatar}>
             <Text style={styles.avatarText}>
               {user.displayName.charAt(0).toUpperCase()}
             </Text>
-            <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+            {user.isOnline && (
+              <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+            )}
           </View>
 
           {/* friend details */}
           <View style={styles.friendDetails}>
-            <Text style={styles.friendName}>{user.displayName}</Text>
             <Text style={styles.friendUsername}>@{user.username}</Text>
-            <Text style={styles.friendStatus}>{lastActivity}</Text>
-            {user.isOnline && (
-              <Text style={[styles.gameStatus, { 
-                color: user.gameStatus === 'in-game' ? '#f59e0b' : '#22c55e' 
-              }]}>
-                {gameStatusText}
-              </Text>
-            )}
           </View>
         </View>
 
@@ -179,7 +165,7 @@ export default function FriendsPage() {
               <Text style={styles.pageTitle}>Friends</Text>
             </View>
             <Text style={styles.subtitle}>
-              {friends.length} friends • {onlineFriends.length} online
+              {friends.length} friends
             </Text>
           </View>
         </View>
@@ -219,38 +205,11 @@ export default function FriendsPage() {
 
           <Separator style={styles.separator} />
 
-          {/* online friends */}
-          {onlineFriends.length > 0 && (
+          {/* friends list */}
+          {friends.length > 0 && (
             <View style={styles.section}>
-              <View style={styles.sectionHeaderWithBadge}>
-                <View style={styles.sectionHeader}>
-                  <Circle size={16} color="#22c55e" fill="#22c55e" />
-                  <Text style={styles.sectionTitle}>Online ({onlineFriends.length})</Text>
-                </View>
-              </View>
-              
               <FlatList
-                data={onlineFriends}
-                renderItem={renderFriendItem}
-                keyExtractor={(item) => item.user.id}
-                scrollEnabled={false}
-                style={styles.friendsList}
-              />
-            </View>
-          )}
-
-          {/* offline friends */}
-          {offlineFriends.length > 0 && (
-            <View style={styles.section}>
-              <View style={styles.sectionHeaderWithBadge}>
-                <View style={styles.sectionHeader}>
-                  <Circle size={16} color="#6b7280" />
-                  <Text style={styles.sectionTitle}>Offline ({offlineFriends.length})</Text>
-                </View>
-              </View>
-              
-              <FlatList
-                data={offlineFriends}
+                data={friends}
                 renderItem={renderFriendItem}
                 keyExtractor={(item) => item.user.id}
                 scrollEnabled={false}
@@ -365,23 +324,7 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 24,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionHeaderWithBadge: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontFamily: 'Inter-Medium',
-    marginLeft: 8,
-  },
+
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -439,27 +382,10 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     flex: 1,
   },
-  friendName: {
+  friendUsername: {
     color: '#ffffff',
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-  },
-  friendUsername: {
-    color: '#9ca3af',
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    marginTop: 2,
-  },
-  friendStatus: {
-    color: '#6b7280',
-    fontSize: 12,
-    fontFamily: 'Inter-Regular',
-    marginTop: 4,
-  },
-  gameStatus: {
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
-    marginTop: 2,
   },
   friendActions: {
     flexDirection: 'row',
