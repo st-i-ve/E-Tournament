@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Check, Clock, Gamepad2, Trophy, Users, X } from 'lucide-react-native';
+import { Check, Timer, Gamepad2, Trophy, Users, X } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { GameInviteWithUser } from '@/types/firebase';
 
@@ -213,7 +213,7 @@ export default function InvitesPage() {
               isExpiring && styles.expiringCountdown,
             ]}
           >
-            <Clock color={isExpiring ? '#ef4444' : '#f59e0b'} size={16} />
+            <Timer color={isExpiring ? '#ef4444' : '#f59e0b'} size={16} />
             <Text
               style={[
                 styles.countdownText,
