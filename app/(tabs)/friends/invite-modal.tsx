@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { ArrowLeft, Gamepad2, Trophy, Users, Send } from 'lucide-react-native';
+import { Gamepad2, Trophy, Users, Send } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { FriendUser } from '@/types/firebase';
 
@@ -287,15 +287,6 @@ export default function InviteModal() {
 
   return (
     <SafeAreaView style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={step === 'friends' ? handleClose : handleBack}>
-            <ArrowLeft color="#ffffff" size={24} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Send Game Invite</Text>
-          <View style={styles.placeholder} />
-        </View>
-
         {/* Progress Indicator */}
         <View style={styles.progressContainer}>
           <View style={styles.progressBar}>
@@ -349,26 +340,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#111827',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1f2937',
-  },
-  backButton: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontFamily: 'Inter-SemiBold',
-    color: '#ffffff',
-  },
-  placeholder: {
-    width: 32,
-  },
+
   progressContainer: {
     paddingHorizontal: 20,
     paddingVertical: 16,

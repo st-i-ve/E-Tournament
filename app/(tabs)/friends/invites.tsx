@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Check, X, Clock, Gamepad2, Trophy, Users } from 'lucide-react-native';
+import { Check, Clock, Gamepad2, Trophy, Users } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { GameInviteWithUser } from '@/types/firebase';
 
@@ -239,18 +239,6 @@ export default function InvitesPage() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <X color="#ffffff" size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Game Invites</Text>
-        <View style={styles.placeholder} />
-      </View>
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.invitesSection}>
           {gameInvites.length > 0 ? (
@@ -291,26 +279,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#111827',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1f2937',
-  },
-  backButton: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontFamily: 'Inter-SemiBold',
-    color: '#ffffff',
-  },
-  placeholder: {
-    width: 32,
-  },
+
   content: {
     flex: 1,
     paddingHorizontal: 20,

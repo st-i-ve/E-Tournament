@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Search, QrCode, UserPlus, X } from 'lucide-react-native';
+import { Search, QrCode, UserPlus } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { User } from '@/types/firebase';
 
@@ -134,18 +134,6 @@ export default function AddFriendPage() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <X color="#ffffff" size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Add Friends</Text>
-        <View style={styles.placeholder} />
-      </View>
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Search Section */}
         <View style={styles.searchSection}>
@@ -218,26 +206,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#111827',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1f2937',
-  },
-  backButton: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontFamily: 'Inter-SemiBold',
-    color: '#ffffff',
-  },
-  placeholder: {
-    width: 32,
-  },
+
   content: {
     flex: 1,
     paddingHorizontal: 20,
