@@ -104,18 +104,20 @@ const mockOutgoingRequests: FriendRequestWithUser[] = [
 ];
 
 export default function RequestsPage() {
-  const [incomingRequests, setIncomingRequests] = useState(mockIncomingRequests);
-  const [outgoingRequests, setOutgoingRequests] = useState(mockOutgoingRequests);
-  const [activeTab, setActiveTab] = useState<'incoming' | 'outgoing'>('incoming');
+  const [incomingRequests, setIncomingRequests] =
+    useState(mockIncomingRequests);
+  const [outgoingRequests, setOutgoingRequests] =
+    useState(mockOutgoingRequests);
+  const [activeTab, setActiveTab] = useState<'incoming' | 'outgoing'>(
+    'incoming'
+  );
 
   // TODO: Firebase - Implement accept friend request
   const handleAcceptRequest = async (requestId: string) => {
-    Alert.alert(
-      'Friend Request Accepted',
-      'You are now friends!',
-      [{ text: 'OK' }]
-    );
-    setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
+    Alert.alert('Friend Request Accepted', 'You are now friends!', [
+      { text: 'OK' },
+    ]);
+    setIncomingRequests((prev) => prev.filter((req) => req.id !== requestId));
   };
 
   // TODO: Firebase - Implement decline friend request
@@ -125,7 +127,7 @@ export default function RequestsPage() {
       'The friend request has been declined.',
       [{ text: 'OK' }]
     );
-    setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
+    setIncomingRequests((prev) => prev.filter((req) => req.id !== requestId));
   };
 
   // TODO: Firebase - Implement cancel outgoing request
@@ -135,13 +137,15 @@ export default function RequestsPage() {
       'Your friend request has been cancelled.',
       [{ text: 'OK' }]
     );
-    setOutgoingRequests(prev => prev.filter(req => req.id !== requestId));
+    setOutgoingRequests((prev) => prev.filter((req) => req.id !== requestId));
   };
 
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
+    const diffInMinutes = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60)
+    );
+
     if (diffInMinutes < 60) {
       return `${diffInMinutes}m ago`;
     } else if (diffInMinutes < 1440) {
@@ -155,21 +159,32 @@ export default function RequestsPage() {
     <View key={request.id} style={styles.requestCard}>
       <View style={styles.userInfo}>
         <View style={styles.avatarContainer}>
-          <View style={[styles.avatar, { backgroundColor: request.fromUser.isOnline ? '#22c55e' : '#6b7280' }]}>
+          <View
+            style={[
+              styles.avatar,
+              {
+                backgroundColor: request.fromUser.isOnline
+                  ? '#22c55e'
+                  : '#6b7280',
+              },
+            ]}
+          >
             <Text style={styles.avatarText}>
               {request.fromUser.displayName.charAt(0).toUpperCase()}
             </Text>
           </View>
           {request.fromUser.isOnline && <View style={styles.onlineIndicator} />}
         </View>
-        
+
         <View style={styles.userDetails}>
           <Text style={styles.userName}>{request.fromUser.displayName}</Text>
           <Text style={styles.userUsername}>@{request.fromUser.username}</Text>
-          <Text style={styles.requestTime}>{formatTimeAgo(request.createdAt)}</Text>
+          <Text style={styles.requestTime}>
+            {formatTimeAgo(request.createdAt)}
+          </Text>
         </View>
       </View>
-      
+
       <View style={styles.actionButtons}>
         <TouchableOpacity
           style={styles.acceptButton}
@@ -191,24 +206,35 @@ export default function RequestsPage() {
     <View key={request.id} style={styles.requestCard}>
       <View style={styles.userInfo}>
         <View style={styles.avatarContainer}>
-          <View style={[styles.avatar, { backgroundColor: request.toUser!.isOnline ? '#22c55e' : '#6b7280' }]}>
+          <View
+            style={[
+              styles.avatar,
+              {
+                backgroundColor: request.toUser!.isOnline
+                  ? '#22c55e'
+                  : '#6b7280',
+              },
+            ]}
+          >
             <Text style={styles.avatarText}>
               {request.toUser!.displayName.charAt(0).toUpperCase()}
             </Text>
           </View>
           {request.toUser!.isOnline && <View style={styles.onlineIndicator} />}
         </View>
-        
+
         <View style={styles.userDetails}>
           <Text style={styles.userName}>{request.toUser!.displayName}</Text>
           <Text style={styles.userUsername}>@{request.toUser!.username}</Text>
           <View style={styles.pendingContainer}>
             <Clock color="#f59e0b" size={14} />
-            <Text style={styles.pendingText}>Pending • {formatTimeAgo(request.createdAt)}</Text>
+            <Text style={styles.pendingText}>
+              Pending • {formatTimeAgo(request.createdAt)}
+            </Text>
           </View>
         </View>
       </View>
-      
+
       <TouchableOpacity
         style={styles.cancelButton}
         onPress={() => handleCancelRequest(request.id)}
@@ -226,7 +252,12 @@ export default function RequestsPage() {
           style={[styles.tab, activeTab === 'incoming' && styles.activeTab]}
           onPress={() => setActiveTab('incoming')}
         >
-          <Text style={[styles.tabText, activeTab === 'incoming' && styles.activeTabText]}>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === 'incoming' && styles.activeTabText,
+            ]}
+          >
             Incoming ({incomingRequests.length})
           </Text>
         </TouchableOpacity>
@@ -234,7 +265,12 @@ export default function RequestsPage() {
           style={[styles.tab, activeTab === 'outgoing' && styles.activeTab]}
           onPress={() => setActiveTab('outgoing')}
         >
-          <Text style={[styles.tabText, activeTab === 'outgoing' && styles.activeTabText]}>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === 'outgoing' && styles.activeTabText,
+            ]}
+          >
             Outgoing ({outgoingRequests.length})
           </Text>
         </TouchableOpacity>

@@ -210,7 +210,7 @@ export default function FriendsPage() {
               <View style={styles.emptyStateActions}>
                 <TouchableOpacity 
                   style={styles.primaryButton}
-                  onPress={() => router.push('/friends/add-friend')}
+                  onPress={() => router.push('/(tabs)/friends/add-friend')}
                 >
                   <Text style={styles.primaryButtonText}>Add Friend</Text>
                 </TouchableOpacity>
@@ -225,7 +225,7 @@ export default function FriendsPage() {
       {/* floating add friend button */}
       <TouchableOpacity 
         style={styles.floatingButton}
-        onPress={() => router.push('/friends/add-friend')}
+        onPress={() => router.push('/(tabs)/friends/add-friend')}
       >
         <UserPlus size={24} color="#ffffff" />
       </TouchableOpacity>

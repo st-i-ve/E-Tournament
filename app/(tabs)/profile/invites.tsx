@@ -118,7 +118,9 @@ export default function InvitesPage() {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
       // remove expired invites
-      setGameInvites(prev => prev.filter(invite => invite.expiresAt > new Date()));
+      setGameInvites((prev) =>
+        prev.filter((invite) => invite.expiresAt > new Date())
+      );
     }, 1000);
 
     return () => clearInterval(timer);
@@ -126,7 +128,7 @@ export default function InvitesPage() {
 
   // TODO: Firebase - Implement accept game invite
   const handleAcceptInvite = async (inviteId: string) => {
-    const invite = gameInvites.find(inv => inv.id === inviteId);
+    const invite = gameInvites.find((inv) => inv.id === inviteId);
     if (!invite) return;
 
     Alert.alert(
@@ -134,29 +136,27 @@ export default function InvitesPage() {
       `You've accepted ${invite.fromUser.displayName}'s invite to play ${invite.gameType}!`,
       [{ text: 'OK' }]
     );
-    setGameInvites(prev => prev.filter(inv => inv.id !== inviteId));
+    setGameInvites((prev) => prev.filter((inv) => inv.id !== inviteId));
   };
 
   // TODO: Firebase - Implement decline game invite
   const handleDeclineInvite = async (inviteId: string) => {
-    Alert.alert(
-      'Game Invite Declined',
-      'The game invite has been declined.',
-      [{ text: 'OK' }]
-    );
-    setGameInvites(prev => prev.filter(inv => inv.id !== inviteId));
+    Alert.alert('Game Invite Declined', 'The game invite has been declined.', [
+      { text: 'OK' },
+    ]);
+    setGameInvites((prev) => prev.filter((inv) => inv.id !== inviteId));
   };
 
   const formatCountdown = (expiresAt: Date) => {
     const timeLeft = expiresAt.getTime() - currentTime.getTime();
-    
+
     if (timeLeft <= 0) {
       return 'Expired';
     }
 
     const minutes = Math.floor(timeLeft / (1000 * 60));
     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-    
+
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
@@ -173,27 +173,53 @@ export default function InvitesPage() {
     if (isExpired) return null;
 
     return (
-      <View key={invite.id} style={[styles.inviteCard, isExpiring && styles.expiringCard]}>
+      <View
+        key={invite.id}
+        style={[styles.inviteCard, isExpiring && styles.expiringCard]}
+      >
         <View style={styles.inviteHeader}>
           <View style={styles.userInfo}>
             <View style={styles.avatarContainer}>
-              <View style={[styles.avatar, { backgroundColor: invite.fromUser.isOnline ? '#22c55e' : '#6b7280' }]}>
+              <View
+                style={[
+                  styles.avatar,
+                  {
+                    backgroundColor: invite.fromUser.isOnline
+                      ? '#22c55e'
+                      : '#6b7280',
+                  },
+                ]}
+              >
                 <Text style={styles.avatarText}>
                   {invite.fromUser.displayName.charAt(0).toUpperCase()}
                 </Text>
               </View>
-              {invite.fromUser.isOnline && <View style={styles.onlineIndicator} />}
+              {invite.fromUser.isOnline && (
+                <View style={styles.onlineIndicator} />
+              )}
             </View>
-            
+
             <View style={styles.userDetails}>
               <Text style={styles.userName}>{invite.fromUser.displayName}</Text>
-              <Text style={styles.inviteText}>wants to play {invite.gameType}</Text>
+              <Text style={styles.inviteText}>
+                wants to play {invite.gameType}
+              </Text>
             </View>
           </View>
-          
-          <View style={[styles.countdownContainer, isExpiring && styles.expiringCountdown]}>
+
+          <View
+            style={[
+              styles.countdownContainer,
+              isExpiring && styles.expiringCountdown,
+            ]}
+          >
             <Clock color={isExpiring ? '#ef4444' : '#f59e0b'} size={16} />
-            <Text style={[styles.countdownText, isExpiring && styles.expiringCountdownText]}>
+            <Text
+              style={[
+                styles.countdownText,
+                isExpiring && styles.expiringCountdownText,
+              ]}
+            >
               {formatCountdown(invite.expiresAt)}
             </Text>
           </View>
@@ -263,9 +289,15 @@ export default function InvitesPage() {
         <View style={styles.infoSection}>
           <Text style={styles.sectionTitle}>How it works</Text>
           <View style={styles.infoCard}>
-            <Text style={styles.infoText}>• Game invites expire after 10 minutes</Text>
-            <Text style={styles.infoText}>• Accept invites to start playing immediately</Text>
-            <Text style={styles.infoText}>• Tournament invites give you ranking points</Text>
+            <Text style={styles.infoText}>
+              • Game invites expire after 10 minutes
+            </Text>
+            <Text style={styles.infoText}>
+              • Accept invites to start playing immediately
+            </Text>
+            <Text style={styles.infoText}>
+              • Tournament invites give you ranking points
+            </Text>
             <Text style={styles.infoText}>• Casual games are just for fun</Text>
           </View>
         </View>
