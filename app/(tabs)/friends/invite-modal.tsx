@@ -6,10 +6,9 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
-  Modal,
   Alert,
 } from 'react-native';
-import { X, Gamepad2, Trophy, Users, Send } from 'lucide-react-native';
+import { ArrowLeft, Gamepad2, Trophy, Users, Send } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { FriendUser } from '@/types/firebase';
 
@@ -86,12 +85,7 @@ const gameTypes = [
   'Valorant',
 ];
 
-interface InviteModalProps {
-  visible: boolean;
-  onClose: () => void;
-}
-
-export default function InviteModal({ visible, onClose }: InviteModalProps) {
+export default function InviteModal() {
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const [selectedGame, setSelectedGame] = useState<string>('');
   const [inviteType, setInviteType] = useState<'casual' | 'tournament'>('casual');
@@ -153,7 +147,7 @@ export default function InviteModal({ visible, onClose }: InviteModalProps) {
     setSelectedGame('');
     setInviteType('casual');
     setStep('friends');
-    onClose();
+    router.back();
   };
 
   const renderFriendSelection = () => (
@@ -292,17 +286,11 @@ export default function InviteModal({ visible, onClose }: InviteModalProps) {
   );
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
-      onRequestClose={handleClose}
-    >
-      <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={step === 'friends' ? handleClose : handleBack}>
-            <X color="#ffffff" size={24} />
+            <ArrowLeft color="#ffffff" size={24} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Send Game Invite</Text>
           <View style={styles.placeholder} />
@@ -352,8 +340,7 @@ export default function InviteModal({ visible, onClose }: InviteModalProps) {
             </TouchableOpacity>
           )}
         </View>
-      </SafeAreaView>
-    </Modal>
+    </SafeAreaView>
   );
 }
 

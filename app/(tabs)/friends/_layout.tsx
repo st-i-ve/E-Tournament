@@ -68,11 +68,10 @@ export default function FriendsLayout() {
         }} 
       />
       
-      {/* invite modal */}
+      {/* invite screen */}
       <Stack.Screen 
         name="invite-modal" 
         options={{ 
-          presentation: 'modal',
           title: 'Send Game Invite',
           headerStyle: {
             backgroundColor: '#0a0a0a',
