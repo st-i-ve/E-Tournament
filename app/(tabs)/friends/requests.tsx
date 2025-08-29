@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Check, UserPlus, UserMinus } from 'lucide-react-native';
+import { Check, UserPlus, UserMinus, X } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { FriendRequestWithUser } from '@/types/firebase';
 

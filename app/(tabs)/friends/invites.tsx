@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Check, Clock, Gamepad2, Trophy, Users } from 'lucide-react-native';
+import { Check, Clock, Gamepad2, Trophy, Users, X } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { GameInviteWithUser } from '@/types/firebase';
 
