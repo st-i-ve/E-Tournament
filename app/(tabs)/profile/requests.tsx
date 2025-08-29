@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Check, UserPlus, UserMinus, X } from 'lucide-react-native';
+import { Check, UserPlus, UserMinus, X, Timer } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { FriendRequestWithUser } from '@/types/firebase';
 
@@ -227,7 +227,7 @@ export default function RequestsPage() {
           <Text style={styles.userName}>{request.toUser!.displayName}</Text>
           <Text style={styles.userUsername}>@{request.toUser!.username}</Text>
           <View style={styles.pendingContainer}>
-            <Clock color="#f59e0b" size={14} />
+            <Timer color="#f59e0b" size={14} />
             <Text style={styles.pendingText}>
               Pending • {formatTimeAgo(request.createdAt)}
             </Text>

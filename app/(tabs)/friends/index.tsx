@@ -13,12 +13,14 @@ import {
 } from 'lucide-react-native';
 import { QuickActionButton } from '@/components/QuickActionButton';
 import { Separator } from '@/components/ui/separator';
+import { AddFriendModal } from '@/components/AddFriendModal';
 import type { FriendUser, FriendListItem } from '@/types/firebase';
 
 export default function FriendsPage() {
   const [friends, setFriends] = useState<FriendListItem[]>([]);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [pendingInvites, setPendingInvites] = useState(0);
+  const [showAddFriendModal, setShowAddFriendModal] = useState(false);
 
   // TODO: replace with firebase real-time listeners
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function FriendsPage() {
   const handleInviteFriend = (friendId: string) => {
     // TODO: firebase - open invite modal with friend data
     router.push({
-      pathname: '/friends/invite-modal',
+      pathname: '/(tabs)/profile/invite-modal',
       params: { friendId }
     });
   };
@@ -209,11 +211,11 @@ export default function FriendsPage() {
               </Text>
               <View style={styles.emptyStateActions}>
                 <TouchableOpacity 
-                  style={styles.primaryButton}
-                  onPress={() => router.push('/(tabs)/friends/add-friend')}
-                >
-                  <Text style={styles.primaryButtonText}>Add Friend</Text>
-                </TouchableOpacity>
+                style={styles.primaryButton}
+                onPress={() => setShowAddFriendModal(true)}
+              >
+                <Text style={styles.primaryButtonText}>Add Friend</Text>
+              </TouchableOpacity>
               </View>
             </View>
           )}
@@ -225,10 +227,16 @@ export default function FriendsPage() {
       {/* floating add friend button */}
       <TouchableOpacity 
         style={styles.floatingButton}
-        onPress={() => router.push('/(tabs)/friends/add-friend')}
+        onPress={() => setShowAddFriendModal(true)}
       >
         <UserPlus size={24} color="#ffffff" />
       </TouchableOpacity>
+
+      {/* add friend modal */}
+      <AddFriendModal 
+        visible={showAddFriendModal}
+        onClose={() => setShowAddFriendModal(false)}
+      />
     </SafeAreaView>
 
   );
