@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Settings, Bell, Target, Trophy, TrendingUp, Award, ChevronRight } from 'lucide-react-native';
+import { User, Settings, Bell, Target, Trophy, TrendingUp, Award, ChevronRight, UserPlus } from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -126,6 +126,15 @@ export default function ProfileTab() {
             </View>
           </View>
           <View style={styles.headerActions}>
+            <Link href="/(tabs)/friends/requests" asChild>
+              <TouchableOpacity style={styles.actionButton}>
+                <UserPlus color="#9ca3af" size={18} />
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.badgeText}>3</Text>
+                </View>
+              </TouchableOpacity>
+            </Link>
+            
             <Link href="/profile/pending-actions" asChild>
               <TouchableOpacity
                 style={styles.actionButton}            >

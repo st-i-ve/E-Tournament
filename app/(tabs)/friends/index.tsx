@@ -171,28 +171,9 @@ export default function FriendsPage() {
         </View>
 
         <View style={styles.content}>
-          {/* quick actions */}
+          {/* game invites action */}
           <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Quick Actions</Text>
-            </View>
-            
             <View style={styles.actionsGrid}>
-              <QuickActionButton
-                icon={UserPlus}
-                title="Add Friend"
-                subtitle="Search or scan QR"
-                onPress={() => router.push('/friends/add-friend')}
-              />
-              
-              <QuickActionButton
-                icon={Mail}
-                title="Requests"
-                subtitle={`${pendingRequests} pending`}
-                onPress={() => router.push('/friends/requests')}
-                badge={pendingRequests > 0 ? pendingRequests.toString() : undefined}
-              />
-              
               <QuickActionButton
                 icon={Gamepad2}
                 title="Game Invites"
@@ -240,7 +221,16 @@ export default function FriendsPage() {
           <View style={styles.bottomSpacing} />
         </View>
       </ScrollView>
+
+      {/* floating add friend button */}
+      <TouchableOpacity 
+        style={styles.floatingButton}
+        onPress={() => router.push('/friends/add-friend')}
+      >
+        <UserPlus size={24} color="#ffffff" />
+      </TouchableOpacity>
     </SafeAreaView>
+
   );
 }
 
@@ -308,13 +298,13 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     color: '#ffffff',
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: 'Inter-Bold',
     marginLeft: 12,
   },
   subtitle: {
     color: '#9ca3af',
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
   },
   content: {
@@ -384,7 +374,7 @@ const styles = StyleSheet.create({
   },
   friendUsername: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Inter-Medium',
   },
   friendActions: {
@@ -440,5 +430,24 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 80,
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#22c55e',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
 });
