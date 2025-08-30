@@ -170,22 +170,27 @@ export default function FriendsPage() {
               {friends.length} friends
             </Text>
           </View>
+          
+          {/* game requests button */}
+          <TouchableOpacity 
+            style={styles.gameRequestsButton}
+            onPress={() => {
+              console.log('Game requests button pressed');
+              router.push('/friends/invites');
+            }}
+            activeOpacity={0.8}
+          >
+            <Gamepad2 size={20} color="#ffffff" />
+            {pendingInvites > 0 && (
+              <View style={styles.requestsBadge}>
+                <Text style={styles.requestsBadgeText}>{pendingInvites}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
 
         <View style={styles.content}>
-          {/* game invites action */}
-          <View style={styles.section}>
-            <View style={styles.actionsGrid}>
-              <QuickActionButton
-                icon={Gamepad2}
-                title="Game Invites"
-                subtitle={`${pendingInvites} waiting`}
-                onPress={() => router.push('/friends/invites')}
-                badge={pendingInvites > 0 ? pendingInvites.toString() : undefined}
-              />
-            </View>
-          </View>
-
+         
           <Separator style={styles.separator} />
 
           {/* friends list */}
@@ -302,6 +307,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 8,
+    position: 'relative',
   },
   headerContent: {
     padding: 24,
@@ -466,5 +472,41 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
+  },
+  gameRequestsButton: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2.5,
+  },
+  requestsBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#ef4444',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#0a0a0a',
+  },
+  requestsBadgeText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontFamily: 'Inter-Bold',
   },
 });
