@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Search, QrCode, UserPlus, X } from 'lucide-react-native';
-import { User } from '@/types/firebase';
+import { FriendUser } from '@/types/firebase';
 
 interface AddFriendModalProps {
   visible: boolean;
@@ -18,32 +18,27 @@ interface AddFriendModalProps {
 }
 
 // mock search results for now
-const mockSearchResults: User[] = [
+const mockSearchResults: FriendUser[] = [
   {
-    uid: 'user1',
+    id: 'user1',
+    username: 'johndoe',
+    userCode: '123456',
     email: 'john.doe@example.com',
     displayName: 'John Doe',
-    username: 'johndoe',
-    profilePicture: null,
     isOnline: true,
     lastSeen: new Date(),
+    friends: [],
+    incomingFriendRequests: [],
+    outgoingFriendRequests: [],
     createdAt: new Date(),
     updatedAt: new Date(),
-    friends: [],
-    blockedUsers: [],
-    gameStats: {
-      gamesPlayed: 25,
-      gamesWon: 18,
-      winRate: 72,
-      currentStreak: 3,
-      bestStreak: 8,
-    },
+    gameStatus: 'available',
   },
 ];
 
 export function AddFriendModal({ visible, onClose }: AddFriendModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [searchResults, setSearchResults] = useState<FriendUser[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
   const handleSearch = async (query: string) => {
@@ -137,7 +132,7 @@ export function AddFriendModal({ visible, onClose }: AddFriendModalProps) {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Search Results</Text>
               {searchResults.map((user) => (
-                <View key={user.uid} style={styles.userCard}>
+                <View key={user.id} style={styles.userCard}>
                   <View style={styles.userInfo}>
                     <View style={styles.avatarContainer}>
                       <View style={[styles.avatar, { backgroundColor: '#22c55e' }]}>
@@ -151,13 +146,13 @@ export function AddFriendModal({ visible, onClose }: AddFriendModalProps) {
                       <Text style={styles.userName}>{user.displayName || user.username}</Text>
                       <Text style={styles.userUsername}>@{user.username}</Text>
                       <Text style={styles.userStats}>
-                        {user.gameStats.gamesPlayed} games • {user.gameStats.winRate}% win rate
+                        Status: {user.gameStatus || 'available'}
                       </Text>
                     </View>
                   </View>
                   <TouchableOpacity
                     style={styles.addButton}
-                    onPress={() => handleSendFriendRequest(user.uid)}
+                    onPress={() => handleSendFriendRequest(user.id)}
                   >
                     <UserPlus size={20} color="#ffffff" />
                   </TouchableOpacity>

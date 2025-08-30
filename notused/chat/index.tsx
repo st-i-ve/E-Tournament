@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Plus } from 'lucide-react-native';
-import { ChatListItem } from '../../../components/ChatListItem';
-import { Background } from '../../../components/Background';
+import { ChatListItem } from '../../components/ChatListItem';
+import { Background } from '../../components/Background';
 
 interface Chat {
   id: string;

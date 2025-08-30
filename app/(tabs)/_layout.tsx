@@ -1,5 +1,5 @@
 import { Tabs, router } from 'expo-router';
-import {  Calendar, Trophy, MessageSquare, User, UserRound, MousePointer2, Crown, CalendarCheck, MessageCircle, Users } from 'lucide-react-native';
+import {  UserRound, MousePointer2, Crown, CalendarCheck, MessageCircle, Users } from 'lucide-react-native';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import CustomTabBar from '@/components/CustomTabBar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -75,21 +75,6 @@ export default function TabLayout() {
               {/* TODO: Firebase - Replace with real friend request count */}
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>2</Text>
-              </View>
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="chat"
-        options={{
-          title: 'Team Chat',
-          popToTopOnBlur: true,
-          tabBarIcon: ({ color, size }) => (
-            <View style={styles.iconContainer}>
-              <MessageCircle color={color} size={size} />
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>3</Text>
               </View>
             </View>
           ),
