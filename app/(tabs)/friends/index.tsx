@@ -159,34 +159,36 @@ export default function FriendsPage() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-        {/* header */}
+        {/* Header */}
         <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <View style={styles.titleContainer}>
-              <Users size={24} color="#22c55e" />
-              <Text style={styles.pageTitle}>Friends</Text>
+          <View style={styles.headerLeft}>
+            <View style={styles.friendsIcon}>
+              <View style={styles.pierceCircle} />
+              <View style={styles.pierceTriangle} />
             </View>
-            <Text style={styles.subtitle}>
-              {friends.length} friends
-            </Text>
+            <View style={styles.headerInfo}>
+              <Text style={styles.headerTitle}>Friends</Text>
+              <Text style={styles.headerSubtitle}>
+                Connect with other players
+              </Text>
+            </View>
           </View>
-          
-          {/* game requests button */}
-          <TouchableOpacity 
-            style={styles.gameRequestsButton}
-            onPress={() => {
-              console.log('Game requests button pressed');
-              router.push('/friends/invites');
-            }}
-            activeOpacity={0.8}
-          >
-            <Gamepad2 size={20} color="#ffffff" />
-            {pendingInvites > 0 && (
-              <View style={styles.requestsBadge}>
-                <Text style={styles.requestsBadgeText}>{pendingInvites}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => {
+                console.log('Game requests pressed');
+                router.push('/friends/invites');
+              }}
+            >
+              <Gamepad2 color="#9ca3af" size={18} />
+              {pendingInvites > 0 && (
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.badgeText}>{pendingInvites}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.content}>
@@ -306,29 +308,91 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   header: {
-    marginBottom: 8,
-    position: 'relative',
-  },
-  headerContent: {
-    padding: 24,
-    paddingBottom: 16,
-  },
-  titleContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    padding: 16,
+    paddingBottom: 8,
+    zIndex: 10,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
+    gap: 16,
+  },
+  friendsIcon: {
+    width: 32,
+    height: 32,
+    marginTop: 4,
+    position: 'relative',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
   },
-  pageTitle: {
+  pierceCircle: {
+    position: 'absolute',
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderColor: '#22c55e',
+    borderRadius: 12,
+  },
+  pierceTriangle: {
+    position: 'absolute',
+    width: 1,
+    height: 10,
+    borderLeftWidth: 10,
+    borderRightWidth:10,
+    borderBottomWidth: 10,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: '#22c55e',
+    top:20,
+    left: 6,
+  },
+  headerInfo: {
+    flex: 1,
+  },
+  headerTitle: {
     color: '#ffffff',
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Inter-Bold',
-    marginLeft: 12,
+    lineHeight: 20,
   },
-  subtitle: {
-    color: '#9ca3af',
-    fontSize: 12,
+  headerSubtitle: {
+    color: '#6b7280',
+    fontSize: 10,
     fontFamily: 'Inter-Regular',
+    marginTop: 2,
+    lineHeight: 14,
   },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+    backgroundColor:'transparent',
+  },
+  actionButton: {
+    position: 'relative',
+    padding: 8,
+    backgroundColor: 'transparent',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: '#ef4444',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    color: '#ffffff',
+    fontSize: 9,
+    fontFamily: 'Inter-Bold',
+  },
+
   content: {
     padding: 16,
     paddingTop: 8,
@@ -407,7 +471,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#1f2937',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -472,41 +536,5 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
-  },
-  gameRequestsButton: {
-    position: 'absolute',
-    top: 24,
-    right: 24,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 2.5,
-  },
-  requestsBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: '#ef4444',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#0a0a0a',
-  },
-  requestsBadgeText: {
-    color: '#ffffff',
-    fontSize: 10,
-    fontFamily: 'Inter-Bold',
   },
 });
