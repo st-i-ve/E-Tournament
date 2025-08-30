@@ -190,13 +190,13 @@ export default function RequestsPage() {
           style={styles.acceptButton}
           onPress={() => handleAcceptRequest(request.id)}
         >
-          <Check color="#ffffff" size={18} />
+          <Check color="#4DBB21FF" size={18} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.declineButton}
           onPress={() => handleDeclineRequest(request.id)}
         >
-          <X color="#ffffff" size={18} />
+          <X color="#FF5F5FFF" size={18} />
         </TouchableOpacity>
       </View>
     </View>
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1f2937',
     marginHorizontal: 16,
     marginTop: 8,
-    borderRadius: 8,
+    borderRadius: 25,
     padding: 4,
   },
   tab: {
@@ -525,22 +525,22 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     flexDirection: 'row',
-    gap: 6,
+    gap: 1,
   },
   acceptButton: {
-    backgroundColor: '#22c55e',
+    backgroundColor: 'transparent',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
   },
   declineButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: 'transparent',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
   },
   cancelButton: {
-    backgroundColor: '#374151',
+    backgroundColor: '#6E1515FF',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
