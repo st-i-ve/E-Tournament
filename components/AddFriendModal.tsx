@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   searchContainer: {
+    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#1f2937',
@@ -241,6 +242,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   qrButton: {
+    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
