@@ -201,62 +201,51 @@ export default function InvitesPage() {
 
             <View style={styles.userDetails}>
               <Text style={styles.userName}>{invite.fromUser.displayName}</Text>
-              <Text style={styles.inviteText}>
-                wants to play {invite.gameType}
-              </Text>
             </View>
           </View>
 
-          <View
-            style={[
-              styles.countdownContainer,
-              isExpiring && styles.expiringCountdown,
-            ]}
-          >
-            <Timer color={isExpiring ? '#ef4444' : '#f59e0b'} size={16} />
-            <Text
+          <View style={styles.headerRight}>
+            {invite.tournamentId ? (
+              <View style={styles.tournamentIcon}>
+                <Trophy color="#f59e0b" size={16} />
+              </View>
+            ) : (
+              <View style={styles.casualIcon}>
+                <Users color="#49F751FF" size={16} />
+              </View>
+            )}
+            <View
               style={[
-                styles.countdownText,
-                isExpiring && styles.expiringCountdownText,
+                styles.countdownContainer,
+                isExpiring && styles.expiringCountdown,
               ]}
             >
-              {formatCountdown(invite.expiresAt)}
-            </Text>
+              <Timer color={isExpiring ? '#ef4444' : '#f59e0b'} size={16} />
+              <Text
+                style={[
+                  styles.countdownText,
+                  isExpiring && styles.expiringCountdownText,
+                ]}
+              >
+                {formatCountdown(invite.expiresAt)}
+              </Text>
+            </View>
           </View>
         </View>
 
-        <View style={styles.gameInfo}>
-          <View style={styles.gameDetails}>
-            {getGameIcon(invite.gameType)}
-            <Text style={styles.gameType}>{invite.gameType}</Text>
-            {invite.tournamentId ? (
-              <View style={styles.tournamentBadge}>
-                <Trophy color="#f59e0b" size={14} />
-                <Text style={styles.tournamentText}>Tournament</Text>
-              </View>
-            ) : (
-              <View style={styles.casualBadge}>
-                <Users color="#6b7280" size={14} />
-                <Text style={styles.casualText}>Casual</Text>
-              </View>
-            )}
-          </View>
-        </View>
 
         <View style={styles.actionButtons}>
           <TouchableOpacity
             style={styles.declineButton}
             onPress={() => handleDeclineInvite(invite.id)}
           >
-            <X color="#ffffff" size={18} />
-            <Text style={styles.declineButtonText}>Decline</Text>
+            <X color="#FF5050FF" size={20} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.acceptButton}
             onPress={() => handleAcceptInvite(invite.id)}
           >
-            <Check color="#ffffff" size={18} />
-            <Text style={styles.acceptButtonText}>Accept</Text>
+            <Check color="#ffffff" size={20} />
           </TouchableOpacity>
         </View>
       </View>
@@ -485,11 +474,26 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
   },
-  inviteText: {
-    fontSize: 10,
-    fontFamily: 'Inter-Regular',
-    color: '#9ca3af',
-    marginTop: 1,
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  tournamentIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF00',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  casualIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#37415100',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   countdownContainer: {
     flexDirection: 'row',
@@ -525,67 +529,26 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     flex: 1,
   },
-  tournamentBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#451a03',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 12,
-  },
-  tournamentText: {
-    fontSize: 10,
-    fontFamily: 'Inter-Medium',
-    color: '#f59e0b',
-    marginLeft: 3,
-  },
-  casualBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#374151',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 12,
-  },
-  casualText: {
-    fontSize: 10,
-    fontFamily: 'Inter-Medium',
-    color: '#6b7280',
-    marginLeft: 3,
-  },
+
   actionButtons: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 2,
   },
   acceptButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#22C55E00',
     justifyContent: 'center',
-    backgroundColor: '#22c55e',
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  acceptButtonText: {
-    fontSize: 10,
-    fontFamily: 'Inter-SemiBold',
-    color: '#ffffff',
-    marginLeft: 6,
+    alignItems: 'center',
   },
   declineButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#EF444400',
     justifyContent: 'center',
-    backgroundColor: '#ef4444',
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  declineButtonText: {
-    fontSize: 10,
-    fontFamily: 'Inter-SemiBold',
-    color: '#ffffff',
-    marginLeft: 6,
+    alignItems: 'center',
   },
   emptyState: {
     alignItems: 'center',
