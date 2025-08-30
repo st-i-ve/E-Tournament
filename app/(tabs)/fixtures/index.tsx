@@ -152,7 +152,10 @@ export default function FixturesTab() {
             <View style={styles.headerInfo}>
               <Text style={styles.headerTitle}>Fixtures</Text>
               <Text style={styles.headerSubtitle}>
-                Your upcoming matches and tournament schedule
+                Your upcoming matches
+              </Text>
+              <Text style={styles.headerSubtitle}>
+                lets see wh comes up next on your fixture
               </Text>
             </View>
           </View>
@@ -266,8 +269,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   calendarIcon: {
-    width: 24,
-    height: 24,
+    width: 23,
+    height: 23,
     borderWidth: 2,
     borderColor: '#22c55e',
     borderRadius: 12,
@@ -276,7 +279,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   calendarLine: {
-    width: 12,
+    width: 30,
     height: 2,
     backgroundColor: '#22c55e',
     transform: [{ rotate: '45deg' }],

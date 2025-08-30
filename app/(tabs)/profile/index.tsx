@@ -167,25 +167,7 @@ export default function ProfileTab() {
         {/* Notifications Section */}
         <View style={styles.navigationSection}>
           <Link href="/(tabs)/profile/invites" asChild>
-            <TouchableOpacity style={styles.navigationCard}>
-              <View style={styles.navigationCardContent}>
-                <View style={styles.navigationCardLeft}>
-                  <View style={styles.navigationCardIcon}>
-                    <UserPlus color="#22c55e" size={16} />
-                  </View>
-                  <View style={styles.navigationCardInfo}>
-                    <Text style={styles.navigationCardTitle}>Outgoing Friend Requests</Text>
-                    <Text style={styles.navigationCardSubtitle}>Manage your sent requests</Text>
-                  </View>
-                </View>
-                <View style={styles.navigationCardRight}>
-                  <Badge style={styles.navigationCardBadge}>
-                    <Text style={styles.badgeText}>2</Text>
-                  </Badge>
-                  <ChevronRight color="#9ca3af" size={16} />
-                </View>
-              </View>
-            </TouchableOpacity>
+            
           </Link>
         </View>
 

@@ -151,14 +151,32 @@ export default function FriendsPage() {
       {/* geometric background elements */}
       <View style={styles.backgroundElements}>
         <View style={[styles.triangle, { top: 80, left: 40 }]} />
-        <View style={[styles.triangle, { top: 200, right: 80, transform: [{ rotate: '12deg' }] }]} />
-        <View style={[styles.circle, { top: 150, left: 120, width: 48, height: 48 }]} />
-        <View style={[styles.rectangle, { top: 300, right: 40, width: 48, height: 32 }]} />
+        <View
+          style={[
+            styles.triangle,
+            { top: 200, right: 80, transform: [{ rotate: '12deg' }] },
+          ]}
+        />
+        <View
+          style={[
+            styles.circle,
+            { top: 150, left: 120, width: 48, height: 48 },
+          ]}
+        />
+        <View
+          style={[
+            styles.rectangle,
+            { top: 300, right: 40, width: 48, height: 32 },
+          ]}
+        />
         <View style={[styles.verticalLine, { left: '25%' }]} />
         <View style={[styles.horizontalLine, { top: '33%' }]} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollView}
+      >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -171,10 +189,13 @@ export default function FriendsPage() {
               <Text style={styles.headerSubtitle}>
                 Connect with other players
               </Text>
+              <Text style={styles.headerSubtitle}>
+                lets see whose up for a match
+              </Text>
             </View>
           </View>
           <View style={styles.headerActions}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.actionButton}
               onPress={() => {
                 console.log('Game requests pressed');
@@ -192,7 +213,6 @@ export default function FriendsPage() {
         </View>
 
         <View style={styles.content}>
-         
           <Separator style={styles.separator} />
 
           {/* friends list */}
@@ -217,16 +237,16 @@ export default function FriendsPage() {
                 Start building your gaming network by adding friends
               </Text>
               <View style={styles.emptyStateActions}>
-                <TouchableOpacity 
-                style={styles.primaryButton}
-                onPress={() => {
-                  console.log('Primary button pressed');
-                  setShowAddFriendModal(true);
-                }}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.primaryButtonText}>Add Friend</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  onPress={() => {
+                    console.log('Primary button pressed');
+                    setShowAddFriendModal(true);
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.primaryButtonText}>Add Friend</Text>
+                </TouchableOpacity>
               </View>
             </View>
           )}
@@ -236,7 +256,7 @@ export default function FriendsPage() {
       </ScrollView>
 
       {/* floating add friend button */}
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.floatingButton}
         onPress={() => {
           console.log('Floating button pressed');
@@ -248,12 +268,11 @@ export default function FriendsPage() {
       </TouchableOpacity>
 
       {/* add friend modal */}
-      <AddFriendModal 
+      <AddFriendModal
         visible={showAddFriendModal}
         onClose={() => setShowAddFriendModal(false)}
       />
     </SafeAreaView>
-
   );
 }
 
@@ -342,12 +361,12 @@ const styles = StyleSheet.create({
     width: 1,
     height: 10,
     borderLeftWidth: 10,
-    borderRightWidth:10,
+    borderRightWidth: 10,
     borderBottomWidth: 10,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
     borderBottomColor: '#22c55e',
-    top:20,
+    top: 20,
     left: 6,
   },
   headerInfo: {
@@ -369,12 +388,14 @@ const styles = StyleSheet.create({
   headerActions: {
     flexDirection: 'row',
     gap: 8,
-    backgroundColor:'transparent',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
   actionButton: {
     position: 'relative',
     padding: 8,
     backgroundColor: 'transparent',
+    borderWidth: 0,
   },
   notificationBadge: {
     position: 'absolute',

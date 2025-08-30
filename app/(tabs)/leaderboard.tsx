@@ -36,7 +36,8 @@ export default function LeaderboardTab() {
             </View>
             <View style={styles.headerInfo}>
               <Text style={styles.headerTitle}>Leaderboard</Text>
-              <Text style={styles.headerSubtitle}>Track your ranking and tournament performance</Text>
+              <Text style={styles.headerSubtitle}>Track your ranking </Text>
+              <Text style={styles.headerSubtitle}>and tournament performance</Text>
             </View>
           </View>
           <View style={styles.headerActions}>
