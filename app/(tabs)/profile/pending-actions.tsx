@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Upload, CircleCheck as CheckCircle, Clock, CircleAlert as AlertCircle, Bell } from 'lucide-react-native';
+import { ChevronLeft, Upload, CircleCheck as CheckCircle, Clock, CircleAlert as AlertCircle, Bell, X } from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
 import { ResultSubmissionModal } from '@/components/ResultSubmissionModal';
 import { ResultVerificationModal } from '@/components/ResultVerificationModal';
@@ -149,12 +149,22 @@ export default function PendingActionsPage() {
           ) : (
             mockPendingActions.map((action, index) => (
               <View key={action.id}>
-                <TouchableOpacity 
-                  style={styles.actionItem}
-                  onPress={() => handleActionClick(action)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.actionContent}>
+                <View style={styles.actionItem}>
+                  {/* Pending indicator - top left */}
+                  <View style={styles.pendingIndicator}>
+                    <Text style={styles.pendingText}>pending</Text>
+                  </View>
+                  
+                  {/* X button - top right */}
+                  <TouchableOpacity style={styles.closeButton}>
+                    <X color="#ef4444" size={14} />
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={styles.actionContent}
+                    onPress={() => handleActionClick(action)}
+                    activeOpacity={0.7}
+                  >
                     <View style={styles.actionIcon}>
                       {getActionIcon(action.type)}
                     </View>
@@ -166,17 +176,8 @@ export default function PendingActionsPage() {
                         {action.tournament}
                       </Text>
                     </View>
-                  </View>
-                  
-                  <View style={styles.actionMeta}>
-                    {action.deadline && (
-                      <Text style={styles.deadlineText}>
-                        {formatDeadline(action.deadline)}
-                      </Text>
-                    )}
-                    {getPriorityDot(action.priority)}
-                  </View>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                </View>
                 
                 {index < mockPendingActions.length - 1 && (
                   <View style={styles.separator} />
@@ -311,22 +312,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   actionItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
+    backgroundColor: '#1f2937',
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+    position: 'relative',
+    minHeight: 60,
   },
   actionContent: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
     gap: 12,
+    marginTop: 16,
   },
   actionIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#1f2937',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#374151',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -335,34 +341,35 @@ const styles = StyleSheet.create({
   },
   actionText: {
     color: '#ffffff',
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Inter-SemiBold',
   },
   tournamentText: {
     color: '#9ca3af',
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: 'Inter-Regular',
     marginTop: 2,
   },
-  actionMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  pendingIndicator: {
+    position: 'absolute',
+    top: 8,
+    left: 10,
   },
-  deadlineText: {
-    color: '#9ca3af',
-    fontSize: 10,
+  pendingText: {
+    fontSize: 9,
     fontFamily: 'Inter-Regular',
+    color: '#f59e0b',
   },
-  priorityDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+  closeButton: {
+    position: 'absolute',
+    top: 8,
+    right: 10,
+    padding: 2,
   },
   separator: {
     height: 1,
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-    marginVertical: 4,
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    marginVertical: 2,
   },
   emptyState: {
     alignItems: 'center',

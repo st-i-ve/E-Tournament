@@ -8,12 +8,12 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Check, Timer, Gamepad2, Trophy, Users, X, ChevronLeft } from 'lucide-react-native';
+import { Check, Timer, Gamepad2, Trophy, Users, X, ChevronLeft, UserMinus } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { GameInviteWithUser } from '@/types/firebase';
 
 // TODO: Firebase - Replace with real game invites data
-const mockGameInvites: GameInviteWithUser[] = [
+const mockReceivedInvites: GameInviteWithUser[] = [
   {
     id: 'invite1',
     fromUserId: 'user1',
@@ -109,8 +109,75 @@ const mockGameInvites: GameInviteWithUser[] = [
   },
 ];
 
+const mockSentInvites: GameInviteWithUser[] = [
+  {
+    id: 'sent1',
+    fromUserId: 'currentUser',
+    toUserId: 'user4',
+    gameType: 'FIFA 24',
+    tournamentId: 'tournament3',
+    status: 'pending',
+    expiresAt: new Date(Date.now() + 240000), // 4 minutes from now
+    createdAt: new Date(Date.now() - 90000), // 1.5 minutes ago
+    updatedAt: new Date(Date.now() - 90000),
+    toUser: {
+      uid: 'user4',
+      email: 'emma.davis@example.com',
+      displayName: 'Emma Davis',
+      username: 'emmad',
+      profilePicture: null,
+      isOnline: true,
+      lastSeen: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      friends: [],
+      blockedUsers: [],
+      gameStats: {
+        gamesPlayed: 25,
+        gamesWon: 18,
+        winRate: 72,
+        currentStreak: 3,
+        bestStreak: 7,
+      },
+    },
+  },
+  {
+    id: 'sent2',
+    fromUserId: 'currentUser',
+    toUserId: 'user5',
+    gameType: 'Rocket League',
+    tournamentId: null,
+    status: 'pending',
+    expiresAt: new Date(Date.now() + 360000), // 6 minutes from now
+    createdAt: new Date(Date.now() - 45000), // 45 seconds ago
+    updatedAt: new Date(Date.now() - 45000),
+    toUser: {
+      uid: 'user5',
+      email: 'james.wilson@example.com',
+      displayName: 'James Wilson',
+      username: 'jamesw',
+      profilePicture: null,
+      isOnline: false,
+      lastSeen: new Date(Date.now() - 600000), // 10 min ago
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      friends: [],
+      blockedUsers: [],
+      gameStats: {
+        gamesPlayed: 38,
+        gamesWon: 22,
+        winRate: 58,
+        currentStreak: 0,
+        bestStreak: 4,
+      },
+    },
+  },
+];
+
 export default function InvitesPage() {
-  const [gameInvites, setGameInvites] = useState(mockGameInvites);
+  const [receivedInvites, setReceivedInvites] = useState(mockReceivedInvites);
+  const [sentInvites, setSentInvites] = useState(mockSentInvites);
+  const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // update timer every second
@@ -118,7 +185,10 @@ export default function InvitesPage() {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
       // remove expired invites
-      setGameInvites((prev) =>
+      setReceivedInvites((prev) =>
+        prev.filter((invite) => invite.expiresAt > new Date())
+      );
+      setSentInvites((prev) =>
         prev.filter((invite) => invite.expiresAt > new Date())
       );
     }, 1000);
@@ -128,7 +198,7 @@ export default function InvitesPage() {
 
   // TODO: Firebase - Implement accept game invite
   const handleAcceptInvite = async (inviteId: string) => {
-    const invite = gameInvites.find((inv) => inv.id === inviteId);
+    const invite = receivedInvites.find((inv) => inv.id === inviteId);
     if (!invite) return;
 
     Alert.alert(
@@ -136,7 +206,7 @@ export default function InvitesPage() {
       `You've accepted ${invite.fromUser.displayName}'s invite to play ${invite.gameType}!`,
       [{ text: 'OK' }]
     );
-    setGameInvites((prev) => prev.filter((inv) => inv.id !== inviteId));
+    setReceivedInvites((prev) => prev.filter((inv) => inv.id !== inviteId));
   };
 
   // TODO: Firebase - Implement decline game invite
@@ -144,7 +214,17 @@ export default function InvitesPage() {
     Alert.alert('Game Invite Declined', 'The game invite has been declined.', [
       { text: 'OK' },
     ]);
-    setGameInvites((prev) => prev.filter((inv) => inv.id !== inviteId));
+    setReceivedInvites((prev) => prev.filter((inv) => inv.id !== inviteId));
+  };
+
+  // TODO: Firebase - Implement cancel sent invite
+  const handleCancelInvite = async (inviteId: string) => {
+    Alert.alert(
+      'Invite Cancelled',
+      'Your game invite has been cancelled.',
+      [{ text: 'OK' }]
+    );
+    setSentInvites((prev) => prev.filter((inv) => inv.id !== inviteId));
   };
 
   const formatCountdown = (expiresAt: Date) => {
@@ -165,7 +245,7 @@ export default function InvitesPage() {
     return <Gamepad2 color="#22c55e" size={20} />;
   };
 
-  const renderGameInvite = (invite: GameInviteWithUser) => {
+  const renderReceivedInvite = (invite: GameInviteWithUser) => {
     const timeLeft = invite.expiresAt.getTime() - currentTime.getTime();
     const isExpiring = timeLeft <= 60000; // less than 1 minute
     const isExpired = timeLeft <= 0;
@@ -177,75 +257,140 @@ export default function InvitesPage() {
         key={invite.id}
         style={[styles.inviteCard, isExpiring && styles.expiringCard]}
       >
-        <View style={styles.inviteHeader}>
-          <View style={styles.userInfo}>
-            <View style={styles.avatarContainer}>
-              <View
-                style={[
-                  styles.avatar,
-                  {
-                    backgroundColor: invite.fromUser.isOnline
-                      ? '#22c55e'
-                      : '#6b7280',
-                  },
-                ]}
-              >
-                <Text style={styles.avatarText}>
-                  {invite.fromUser.displayName.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-              {invite.fromUser.isOnline && (
-                <View style={styles.onlineIndicator} />
-              )}
-            </View>
-
-            <View style={styles.userDetails}>
-              <Text style={styles.userName}>{invite.fromUser.displayName}</Text>
-            </View>
-          </View>
-
-          <View style={styles.headerRight}>
-            {invite.tournamentId ? (
-              <View style={styles.tournamentIcon}>
-                <Trophy color="#f59e0b" size={16} />
-              </View>
-            ) : (
-              <View style={styles.casualIcon}>
-                <Users color="#49F751FF" size={16} />
-              </View>
-            )}
+        <View style={styles.userInfo}>
+          <View style={styles.avatarContainer}>
             <View
               style={[
-                styles.countdownContainer,
-                isExpiring && styles.expiringCountdown,
+                styles.avatar,
+                {
+                  backgroundColor: invite.fromUser.isOnline
+                    ? '#22c55e'
+                    : '#6b7280',
+                },
               ]}
             >
-              <Timer color={isExpiring ? '#ef4444' : '#f59e0b'} size={16} />
-              <Text
-                style={[
-                  styles.countdownText,
-                  isExpiring && styles.expiringCountdownText,
-                ]}
-              >
-                {formatCountdown(invite.expiresAt)}
+              <Text style={styles.avatarText}>
+                {invite.fromUser.displayName.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+            {invite.fromUser.isOnline && (
+              <View style={styles.onlineIndicator} />
+            )}
+          </View>
+
+          <View style={styles.userDetails}>
+            <Text style={styles.userName}>{invite.fromUser.displayName}</Text>
+            <Text style={styles.userUsername}>@{invite.fromUser.username}</Text>
+            <View style={styles.gameInfo}>
+              <View style={styles.gameDetails}>
+                {invite.tournamentId ? (
+                  <Trophy color="#f59e0b" size={14} />
+                ) : (
+                  <Users color="#49F751FF" size={14} />
+                )}
+              </View>
+            </View>
+          </View>
+         </View>
+
+         <View style={styles.timerContainer}>
+           <View
+             style={[
+               styles.countdownContainer,
+               isExpiring && styles.expiringCountdown,
+             ]}
+           >
+             <Timer color={isExpiring ? '#ef4444' : '#f59e0b'} size={12} />
+             <Text
+               style={[
+                 styles.countdownText,
+                 isExpiring && styles.expiringCountdownText,
+               ]}
+             >
+               {formatCountdown(invite.expiresAt)}
+             </Text>
+           </View>
+         </View>
+
+         <View style={styles.actionButtons}>
+           <TouchableOpacity
+             style={styles.acceptButton}
+             onPress={() => handleAcceptInvite(invite.id)}
+           >
+             <Check color="#4DBB21FF" size={18} />
+           </TouchableOpacity>
+           <TouchableOpacity
+             style={styles.declineButton}
+             onPress={() => handleDeclineInvite(invite.id)}
+           >
+             <X color="#FF5F5FFF" size={18} />
+           </TouchableOpacity>
+         </View>
+
+      </View>
+    );
+  };
+
+  const renderSentInvite = (invite: GameInviteWithUser) => {
+    const timeLeft = invite.expiresAt.getTime() - currentTime.getTime();
+    const isExpiring = timeLeft <= 60000; // less than 1 minute
+    const isExpired = timeLeft <= 0;
+
+    if (isExpired) return null;
+
+    return (
+      <View
+        key={invite.id}
+        style={[styles.inviteCard, isExpiring && styles.expiringCard]}
+      >
+        <View style={styles.userInfo}>
+          <View style={styles.avatarContainer}>
+            <View
+              style={[
+                styles.avatar,
+                {
+                  backgroundColor: invite.toUser!.isOnline
+                    ? '#22c55e'
+                    : '#6b7280',
+                },
+              ]}
+            >
+              <Text style={styles.avatarText}>
+                {invite.toUser!.displayName.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+            {invite.toUser!.isOnline && (
+              <View style={styles.onlineIndicator} />
+            )}
+          </View>
+
+          <View style={styles.userDetails}>
+            <Text style={styles.userName}>{invite.toUser!.displayName}</Text>
+            <Text style={styles.userUsername}>@{invite.toUser!.username}</Text>
+            <View style={styles.gameInfo}>
+              <View style={styles.gameDetails}>
+                {invite.tournamentId ? (
+                  <Trophy color="#f59e0b" size={14} />
+                ) : (
+                  <Users color="#49F751FF" size={14} />
+                )}
+              </View>
+            </View>
+            <View style={styles.pendingContainer}>
+              <Timer color="#f59e0b" size={12} />
+              <Text style={styles.pendingText}>
+                Pending • {formatCountdown(invite.expiresAt)}
               </Text>
             </View>
           </View>
         </View>
 
-
-        <View style={styles.actionButtons}>
+        <View style={styles.sentActionButtons}>
           <TouchableOpacity
-            style={styles.declineButton}
-            onPress={() => handleDeclineInvite(invite.id)}
+            style={styles.cancelButton}
+            onPress={() => handleCancelInvite(invite.id)}
           >
-            <X color="#FF5050FF" size={20} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.acceptButton}
-            onPress={() => handleAcceptInvite(invite.id)}
-          >
-            <Check color="#ffffff" size={20} />
+            <X color="#ef4444" size={18} />
           </TouchableOpacity>
         </View>
       </View>
@@ -290,25 +435,66 @@ export default function InvitesPage() {
           </View>
         </View>
 
+        {/* Tab Selector */}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'received' && styles.activeTab]}
+            onPress={() => setActiveTab('received')}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === 'received' && styles.activeTabText,
+              ]}
+            >
+              Received ({receivedInvites.length})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'sent' && styles.activeTab]}
+            onPress={() => setActiveTab('sent')}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === 'sent' && styles.activeTabText,
+              ]}
+            >
+              Sent ({sentInvites.length})
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.content}>
-        <View style={styles.invitesSection}>
-          {gameInvites.length > 0 ? (
-            <>
-              <Text style={styles.sectionTitle}>
-                Active Invites ({gameInvites.length})
-              </Text>
-              {gameInvites.map(renderGameInvite)}
-            </>
+          {activeTab === 'received' ? (
+            <View style={styles.invitesSection}>
+              {receivedInvites.length > 0 ? (
+                receivedInvites.map(renderReceivedInvite)
+              ) : (
+                <View style={styles.emptyState}>
+                  <Gamepad2 color="#6b7280" size={48} />
+                  <Text style={styles.emptyStateText}>No received invites</Text>
+                  <Text style={styles.emptyStateSubtext}>
+                    When friends invite you to play games, they'll appear here
+                  </Text>
+                </View>
+              )}
+            </View>
           ) : (
-            <View style={styles.emptyState}>
-              <Gamepad2 color="#6b7280" size={48} />
-              <Text style={styles.emptyStateText}>No game invites</Text>
-              <Text style={styles.emptyStateSubtext}>
-                When friends invite you to play games, they'll appear here
-              </Text>
+            <View style={styles.invitesSection}>
+              {sentInvites.length > 0 ? (
+                sentInvites.map(renderSentInvite)
+              ) : (
+                <View style={styles.emptyState}>
+                  <Gamepad2 color="#6b7280" size={48} />
+                  <Text style={styles.emptyStateText}>No sent invites</Text>
+                  <Text style={styles.emptyStateSubtext}>
+                    Game invites you send will appear here
+                  </Text>
+                </View>
+              )}
             </View>
           )}
-        </View>
 
         {/* Info Section */}
         <View style={styles.infoSection}>
@@ -404,6 +590,31 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
   },
 
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#1f2937',
+    marginHorizontal: 16,
+    marginTop: 8,
+    borderRadius: 25,
+    padding: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 20,
+  },
+  activeTab: {
+    backgroundColor: '#22c55e',
+  },
+  tabText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+    color: '#6b7280',
+  },
+  activeTabText: {
+    color: '#ffffff',
+  },
   content: {
     paddingHorizontal: 16,
   },
@@ -419,10 +630,13 @@ const styles = StyleSheet.create({
   inviteCard: {
     backgroundColor: '#1f2937',
     borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
+    padding: 10,
+    paddingBottom: 40,
+    marginBottom: 6,
     borderWidth: 1,
     borderColor: 'rgba(34, 197, 94, 0.1)',
+    position: 'relative',
+    minHeight: 70,
   },
   expiringCard: {
     borderColor: '#ef4444',
@@ -443,36 +657,42 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
-    fontSize: 12,
+    fontSize: 16,
     fontFamily: 'Inter-Bold',
     color: '#ffffff',
   },
   onlineIndicator: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    bottom: 2,
+    right: 2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: '#22c55e',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#1f2937',
   },
   userDetails: {
-    marginLeft: 8,
+    marginLeft: 12,
     flex: 1,
   },
   userName: {
     fontSize: 12,
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
+  },
+  userUsername: {
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
+    color: '#6b7280',
+    marginTop: 2,
   },
   headerRight: {
     flexDirection: 'row',
@@ -502,6 +722,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 3,
     borderRadius: 12,
+    marginTop: 4,
+  },
+  pendingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  pendingText: {
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
+    color: '#f59e0b',
+    marginLeft: 4,
   },
   expiringCountdown: {
     backgroundColor: '#7f1d1d',
@@ -516,39 +748,49 @@ const styles = StyleSheet.create({
     color: '#ef4444',
   },
   gameInfo: {
-    marginBottom: 12,
+    marginTop: 4,
   },
   gameDetails: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  gameType: {
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
-    color: '#ffffff',
-    marginLeft: 6,
-    flex: 1,
+    gap: 6,
   },
 
+
+  timerContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
   actionButtons: {
     flexDirection: 'row',
-    gap: 2,
+    gap: 8,
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+  },
+  sentActionButtons: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
   },
   acceptButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#22C55E00',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
   },
   declineButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#EF444400',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  cancelButton: {
+    backgroundColor: '#6E1515FF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
   },
   emptyState: {
     alignItems: 'center',
@@ -559,14 +801,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     color: '#6b7280',
     marginTop: 24,
+    paddingHorizontal: 32,
+  },
   emptyStateSubtext: {
     fontSize: 10,
     fontFamily: 'Inter-Regular',
     color: '#6b7280',
     textAlign: 'center',
     marginTop: 6,
-  },
-    paddingHorizontal: 32,
   },
   infoSection: {
     marginTop: 24,
