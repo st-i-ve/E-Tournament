@@ -212,7 +212,11 @@ export default function FriendsPage() {
               <View style={styles.emptyStateActions}>
                 <TouchableOpacity 
                 style={styles.primaryButton}
-                onPress={() => setShowAddFriendModal(true)}
+                onPress={() => {
+                  console.log('Primary button pressed');
+                  setShowAddFriendModal(true);
+                }}
+                activeOpacity={0.8}
               >
                 <Text style={styles.primaryButtonText}>Add Friend</Text>
               </TouchableOpacity>
@@ -227,7 +231,11 @@ export default function FriendsPage() {
       {/* floating add friend button */}
       <TouchableOpacity 
         style={styles.floatingButton}
-        onPress={() => setShowAddFriendModal(true)}
+        onPress={() => {
+          console.log('Floating button pressed');
+          setShowAddFriendModal(true);
+        }}
+        activeOpacity={0.8}
       >
         <UserPlus size={24} color="#ffffff" />
       </TouchableOpacity>
@@ -449,7 +457,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#22c55e',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 8,
+    elevation: 10,
+    zIndex: 1000,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

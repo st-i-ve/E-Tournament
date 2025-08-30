@@ -160,20 +160,7 @@ export default function HomeTab() {
                 onPress={handleJoinTournament}
                 variant="secondary"
               />
-              <QuickActionButton
-                icon={Trophy}
-                title="Leaderboards"
-                description="Check rankings"
-                onPress={() => {}}
-                variant="secondary"
-              />
-              <QuickActionButton
-                icon={Calendar}
-                title="Fixtures"
-                description="View matches"
-                onPress={() => {}}
-                variant="secondary"
-              />
+             
             </View>
           </View>
 
