@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Gamepad2, Trophy, Users, Send } from 'lucide-react-native';
+import { Gamepad2, Trophy, Users, Send, ChevronLeft } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { FriendUser } from '@/types/firebase';
 
@@ -323,8 +323,28 @@ export default function InviteModal() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Progress Indicator */}
-      <View style={styles.progressContainer}>
+      {/* Background Elements */}
+      <View style={styles.backgroundElements}>
+        <View style={[styles.triangle, { top: 60, left: 30, width: 20, height: 20 }]} />
+        <View style={[styles.circle, { top: 120, right: 40, width: 16, height: 16 }]} />
+        <View style={[styles.rectangle, { top: 200, left: 20, width: 24, height: 12 }]} />
+        <View style={[styles.verticalLine, { left: '25%' }]} />
+        <View style={[styles.horizontalLine, { top: '30%' }]} />
+      </View>
+
+      <ScrollView style={styles.scrollView}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={handleClose}>
+            <ChevronLeft color="#ffffff" size={24} />
+          </TouchableOpacity>
+          <View style={styles.headerContent}>
+            <Text style={styles.headerTitle}>Invite Friends</Text>
+          </View>
+        </View>
+
+        {/* Progress Indicator */}
+        <View style={styles.progressContainer}>
         <View style={styles.progressBar}>
           <View style={[styles.progressStep, styles.activeStep]} />
           <View
@@ -339,12 +359,13 @@ export default function InviteModal() {
         </View>
       </View>
 
-      {/* Content */}
-      <View style={styles.content}>
-        {step === 'friends' && renderFriendSelection()}
-        {step === 'game' && renderGameSelection()}
-        {step === 'type' && renderTypeSelection()}
-      </View>
+        {/* Content */}
+        <View style={styles.content}>
+          {step === 'friends' && renderFriendSelection()}
+          {step === 'game' && renderGameSelection()}
+          {step === 'type' && renderTypeSelection()}
+        </View>
+      </ScrollView>
 
       {/* Footer */}
       <View style={styles.footer}>
@@ -385,7 +406,71 @@ export default function InviteModal() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0a0a0a',
+  },
+  backgroundElements: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    pointerEvents: 'none',
+  },
+  triangle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+    transform: [{ rotate: '45deg' }],
+  },
+  circle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+    borderRadius: 50,
+  },
+  rectangle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+  },
+  verticalLine: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.05)',
+  },
+  horizontalLine: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.05)',
+  },
+  scrollView: {
+    flex: 1,
+    zIndex: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    paddingBottom: 8,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 8,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
+  },
+  headerTitle: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontFamily: 'Inter-Bold',
   },
 
   progressContainer: {
@@ -410,16 +495,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   stepTitle: {
-    fontSize: 24,
+    fontSize: 16,
     fontFamily: 'Inter-Bold',
     color: '#ffffff',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   stepSubtitle: {
-    fontSize: 16,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#9ca3af',
-    marginBottom: 24,
+    marginBottom: 16,
   },
   friendsList: {
     flex: 1,
@@ -429,15 +514,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#1f2937',
-    padding: 16,
+    padding: 12,
     borderRadius: 12,
-    marginBottom: 12,
-    borderWidth: 2,
-    borderColor: 'transparent',
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
   },
   selectedFriendCard: {
     borderColor: '#22c55e',
-    backgroundColor: '#0f1f0f',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
   },
   friendInfo: {
     flexDirection: 'row',
@@ -448,54 +533,54 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
-    fontSize: 18,
+    fontSize: 12,
     fontFamily: 'Inter-Bold',
     color: '#ffffff',
   },
   onlineIndicator: {
     position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    bottom: 1,
+    right: 1,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: '#22c55e',
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#1f2937',
   },
   friendDetails: {
-    marginLeft: 12,
+    marginLeft: 8,
     flex: 1,
   },
   friendName: {
-    fontSize: 16,
+    fontSize: 12,
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
   },
   friendUsername: {
-    fontSize: 14,
+    fontSize: 10,
     fontFamily: 'Inter-Regular',
     color: '#6b7280',
-    marginTop: 2,
+    marginTop: 1,
   },
   friendStats: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Inter-Regular',
     color: '#9ca3af',
-    marginTop: 4,
+    marginTop: 2,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1,
     borderColor: '#6b7280',
     justifyContent: 'center',
     alignItems: 'center',
@@ -506,7 +591,7 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     color: '#ffffff',
-    fontSize: 14,
+    fontSize: 10,
     fontFamily: 'Inter-Bold',
   },
   gamesList: {
@@ -516,31 +601,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#1f2937',
-    padding: 16,
+    padding: 12,
     borderRadius: 12,
-    marginBottom: 12,
-    borderWidth: 2,
-    borderColor: 'transparent',
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
   },
   selectedGameCard: {
     borderColor: '#22c55e',
-    backgroundColor: '#0f1f0f',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
   },
   gameText: {
-    fontSize: 16,
+    fontSize: 12,
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
-    marginLeft: 12,
+    marginLeft: 8,
     flex: 1,
   },
   selectedGameText: {
     color: '#ffffff',
   },
   radioButton: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 1,
     borderColor: '#6b7280',
     justifyContent: 'center',
     alignItems: 'center',
@@ -549,9 +634,9 @@ const styles = StyleSheet.create({
     borderColor: '#22c55e',
   },
   radioDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: '#22c55e',
   },
   typeOptions: {
@@ -559,30 +644,30 @@ const styles = StyleSheet.create({
   },
   typeCard: {
     backgroundColor: '#1f2937',
-    padding: 24,
+    padding: 16,
     borderRadius: 12,
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
   },
   selectedTypeCard: {
     borderColor: '#22c55e',
-    backgroundColor: '#0f1f0f',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
   },
   typeTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
-    marginTop: 12,
+    marginTop: 8,
   },
   selectedTypeTitle: {
     color: '#ffffff',
   },
   typeDescription: {
-    fontSize: 14,
+    fontSize: 10,
     fontFamily: 'Inter-Regular',
     color: '#9ca3af',
-    marginTop: 8,
+    marginTop: 4,
     textAlign: 'center',
   },
   selectedTypeDescription: {
@@ -595,15 +680,15 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     backgroundColor: '#22c55e',
-    paddingVertical: 16,
-    borderRadius: 12,
+    paddingVertical: 12,
+    borderRadius: 20,
     alignItems: 'center',
   },
   disabledButton: {
     backgroundColor: '#374151',
   },
   nextButtonText: {
-    fontSize: 16,
+    fontSize: 12,
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
   },
@@ -612,13 +697,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#22c55e',
-    paddingVertical: 16,
-    borderRadius: 12,
+    paddingVertical: 12,
+    borderRadius: 20,
   },
   sendButtonText: {
-    fontSize: 16,
+    fontSize: 12,
     fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
-    marginLeft: 8,
+    marginLeft: 6,
   },
 });
