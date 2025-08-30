@@ -22,21 +22,37 @@ export default function LeaderboardTab() {
       />
       
       <ScrollView showsVerticalScrollIndicator={false}>
+
+        
         {/* Header */}
         <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <View style={styles.leaderboardIcon}>
+              <View style={styles.xShape}>
+                <View style={styles.xLine1} />
+                <View style={styles.xLine2} />
+              </View>
+              <View style={styles.oShape} />
+            </View>
+            <View style={styles.headerInfo}>
+              <Text style={styles.headerTitle}>Leaderboard</Text>
+              <Text style={styles.headerSubtitle}>See who's the best</Text>
+            </View>
+          </View>
+          <View style={styles.headerActions}>
+            <TouchableOpacity style={styles.actionButton}>
+              <Info color="#9ca3af" size={20} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* League Selector */}
+        <View style={styles.selectorContainer}>
           <TouchableOpacity style={styles.leagueSelector}>
             <Trophy color="#22c55e" size={16} />
             <Text style={styles.leagueName}>{selectedLeague}</Text>
             <ChevronDown color="#9ca3af" size={16} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.infoButton}>
-            <Info color="#9ca3af" size={16} />
-          </TouchableOpacity>
-        </View>
-
-        {/* League Table Title */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.tableTitle}>League Table.</Text>
         </View>
 
         {/* Enhanced Leaderboard Table */}
@@ -81,7 +97,79 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    paddingBottom: 8,
+    paddingBottom: 12,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  leaderboardIcon: {
+    width: 40,
+    height: 40,
+    marginRight: 12,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  xShape: {
+    position: 'absolute',
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  xLine1: {
+    position: 'absolute',
+    width: 20,
+    height: 2,
+    backgroundColor: '#22c55e',
+    transform: [{ rotate: '45deg' }],
+    right: 0,
+  },
+  xLine2: {
+    position: 'absolute',
+    width: 20,
+    height: 2,
+    backgroundColor: '#22c55e',
+    transform: [{ rotate: '-45deg' }],
+    right: 0,
+  },
+  oShape: {
+    position: 'absolute',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#22c55e',
+    backgroundColor: 'transparent',
+    left: 0,
+  },
+  headerInfo: {
+    flex: 1,
+  },
+  headerTitle: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontFamily: 'Inter-Bold',
+  },
+  headerSubtitle: {
+    color: '#9ca3af',
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    marginTop: 2,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    padding: 8,
+    backgroundColor: 'transparent',
+  },
+  selectorContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
   },
   leagueSelector: {
     backgroundColor: '#1f2937',
@@ -90,8 +178,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 10,
-    flex: 1,
-    marginRight: 10,
     borderWidth: 1,
     borderColor: '#374151',
   },
@@ -102,18 +188,6 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     marginRight: 6,
     flex: 1,
-  },
-  infoButton: {
-    padding: 6,
-  },
-  titleContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-  },
-  tableTitle: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontFamily: 'Inter-Bold',
   },
   tableSection: {
     paddingHorizontal: 16,
