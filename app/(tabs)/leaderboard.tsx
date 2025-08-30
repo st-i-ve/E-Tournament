@@ -36,7 +36,7 @@ export default function LeaderboardTab() {
             </View>
             <View style={styles.headerInfo}>
               <Text style={styles.headerTitle}>Leaderboard</Text>
-              <Text style={styles.headerSubtitle}>See who's the best</Text>
+              <Text style={styles.headerSubtitle}>Track your ranking and tournament performance</Text>
             </View>
           </View>
           <View style={styles.headerActions}>
@@ -95,19 +95,21 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     padding: 16,
-    paddingBottom: 12,
+    paddingBottom: 30,
+    zIndex: 10,
   },
   headerLeft: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flex: 1,
+    gap: 16,
   },
   leaderboardIcon: {
-    width: 40,
-    height: 40,
-    marginRight: 12,
+    width: 32,
+    height: 32,
+    marginTop: 4,
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
@@ -118,46 +120,47 @@ const styles = StyleSheet.create({
     height: 24,
     justifyContent: 'center',
     alignItems: 'center',
+    left: 0,
   },
   xLine1: {
     position: 'absolute',
-    width: 20,
+    width: 24,
     height: 2,
     backgroundColor: '#22c55e',
     transform: [{ rotate: '45deg' }],
-    right: 0,
   },
   xLine2: {
     position: 'absolute',
-    width: 20,
+    width: 24,
     height: 2,
     backgroundColor: '#22c55e',
     transform: [{ rotate: '-45deg' }],
-    right: 0,
   },
   oShape: {
     position: 'absolute',
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: '#22c55e',
     backgroundColor: 'transparent',
-    left: 0,
+    left: 16,
   },
   headerInfo: {
     flex: 1,
   },
   headerTitle: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'Inter-Bold',
+    lineHeight: 20,
   },
   headerSubtitle: {
-    color: '#9ca3af',
-    fontSize: 12,
+    color: '#6b7280',
+    fontSize: 10,
     fontFamily: 'Inter-Regular',
     marginTop: 2,
+    lineHeight: 14,
   },
   headerActions: {
     flexDirection: 'row',
@@ -170,6 +173,7 @@ const styles = StyleSheet.create({
   selectorContainer: {
     paddingHorizontal: 16,
     paddingBottom: 12,
+    marginTop: 20,
   },
   leagueSelector: {
     backgroundColor: '#1f2937',
