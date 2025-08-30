@@ -100,7 +100,7 @@ export default function FriendsPage() {
   const handleInviteFriend = (friendId: string) => {
     // TODO: firebase - open invite modal with friend data
     router.push({
-      pathname: '/(tabs)/profile/invite-modal',
+      pathname: '/(tabs)/friends/invite-modal',
       params: { friendId }
     });
   };
