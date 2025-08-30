@@ -22,7 +22,7 @@ export default function ProfileLayout() {
         name="pending-actions" 
         options={{ 
           title: 'Pending Actions',
-          headerShown: true,
+          headerShown: false,
           headerStyle: {
             backgroundColor: '#0a0a0a',
           },
@@ -39,7 +39,7 @@ export default function ProfileLayout() {
         name="requests" 
         options={{ 
           title: 'Friend Requests',
-          headerShown: true,
+          headerShown: false,
           headerStyle: {
             backgroundColor: '#0a0a0a',
           },
@@ -56,7 +56,7 @@ export default function ProfileLayout() {
         name="invites" 
         options={{ 
           title: 'Game Invites',
-          headerShown: true,
+          headerShown: false,
           headerStyle: {
             backgroundColor: '#0a0a0a',
           },
@@ -77,6 +77,7 @@ export default function ProfileLayout() {
             backgroundColor: '#0a0a0a',
           },
           headerTintColor: '#ffffff',
+          headerShown:false,
           headerTitleStyle: {
             fontFamily: 'Inter-Medium',
             fontSize: 18,
@@ -89,7 +90,7 @@ export default function ProfileLayout() {
         name="settings" 
         options={{ 
           title: 'Settings',
-          headerShown: true,
+          headerShown: false,
           headerStyle: {
             backgroundColor: '#0a0a0a',
           },
