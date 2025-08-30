@@ -17,22 +17,15 @@ export default function FriendsLayout() {
         }} 
       />
       
-      {/* add friend page */}
+      {/* game invites page */}
       <Stack.Screen 
-        name="add-friend" 
+        name="invites" 
         options={{ 
-          title: 'Add Friend',
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: '#0a0a0a',
-          },
-          headerTintColor: '#ffffff',
-          headerTitleStyle: {
-            fontFamily: 'Inter-Medium',
-            fontSize: 18,
-          },
+          title: 'Game Invites',
+          headerShown: false,
         }} 
       />
+      
     </Stack>
   );
 }

@@ -68,23 +68,7 @@ export default function ProfileLayout() {
         }} 
       />
       
-      {/* invite screen */}
-      <Stack.Screen 
-        name="invite-modal" 
-        options={{ 
-          title: 'Send Game Invite',
-          headerStyle: {
-            backgroundColor: '#0a0a0a',
-          },
-          headerTintColor: '#ffffff',
-          headerShown:false,
-          headerTitleStyle: {
-            fontFamily: 'Inter-Medium',
-            fontSize: 18,
-          },
-        }} 
-      />
-      
+  
       {/* settings page */}
       <Stack.Screen 
         name="settings" 
