@@ -832,7 +832,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 24,
     backgroundColor: 'rgba(31, 41, 55, 0.5)',
-    borderRadius: 12,
+    borderRadius: 25,
     padding: 4,
   },
   tab: {
@@ -841,7 +841,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 25,
     gap: 8,
   },
   activeTab: {
