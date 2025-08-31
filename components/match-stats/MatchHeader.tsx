@@ -29,16 +29,7 @@ export const MatchHeader: React.FC<MatchHeaderProps> = ({
         },
       ]}
     >
-      <View style={styles.headerTop}>
-        <TouchableOpacity style={styles.backButton}>
-          <ChevronLeft size={24} color="#ffffff" />
-        </TouchableOpacity>
-
-        <View style={styles.tournamentInfo}>
-          <Trophy size={16} color="#22c55e" />
-          <Text style={styles.tournamentText}>{tournament}</Text>
-        </View>
-      </View>
+      
 
       <View style={styles.matchInfo}>
         <View style={styles.teamSection}>
@@ -82,8 +73,8 @@ const styles = StyleSheet.create({
   },
   tournamentText: {
     color: '#ffffff',
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
   },
   matchInfo: {
     flexDirection: 'row',
@@ -96,15 +87,15 @@ const styles = StyleSheet.create({
   },
   teamName: {
     color: '#ffffff',
-    fontSize: 16,
-    fontFamily: 'Inter-Bold',
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
     textAlign: 'center',
     marginBottom: 8,
   },
   score: {
     color: '#22c55e',
-    fontSize: 32,
-    fontFamily: 'Inter-Black',
+    fontSize: 24,
+    fontFamily: 'Inter-Bold',
   },
   vsSection: {
     alignItems: 'center',
@@ -112,13 +103,13 @@ const styles = StyleSheet.create({
   },
   vsText: {
     color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
     marginBottom: 4,
   },
   dateText: {
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: 'Inter-Regular',
   },
 });

@@ -64,10 +64,11 @@ const styles = StyleSheet.create({
   statRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 5,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent:'center'
   },
   statLeft: {
     flex: 1,
@@ -86,12 +87,12 @@ const styles = StyleSheet.create({
   },
   statValue: {
     color: '#ffffff',
-    fontSize: 16,
-    fontFamily: 'Inter-Bold',
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
   },
   statLabel: {
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
   },
 });

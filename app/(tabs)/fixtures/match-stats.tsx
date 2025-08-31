@@ -12,7 +12,6 @@ import {
   MatchHeader,
   TeamLegend,
   TabNavigation,
-  GeometricBackground,
   type MatchStats
 } from '@/components/match-stats';
 
@@ -89,9 +88,42 @@ export default function MatchStatsPage() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GeometricBackground />
+      {/* Geometric background elements */}
+      <View style={styles.backgroundElements}>
+        {/* Triangles */}
+        <View style={[styles.triangle, { top: 80, left: 40 }]} />
+        <View style={[styles.triangle, { top: 200, right: 80, transform: [{ rotate: '12deg' }] }]} />
+        <View style={[styles.triangle, { bottom: 200, left: 100 }]} />
+        
+        {/* Circles */}
+        <View style={[styles.circle, { top: 150, left: 120, width: 48, height: 48 }]} />
+        <View style={[styles.circle, { bottom: 250, right: 100, width: 32, height: 32 }]} />
+        <View style={[styles.circle, { top: 400, left: 80, width: 24, height: 24 }]} />
+        
+        {/* Rectangles */}
+        <View style={[styles.rectangle, { top: 300, right: 40, width: 48, height: 32 }]} />
+        <View style={[styles.rectangle, { bottom: 80, left: 200, width: 32, height: 48 }]} />
+        
+        {/* Lines */}
+        <View style={[styles.verticalLine, { left: '25%' }]} />
+        <View style={[styles.horizontalLine, { top: '33%' }]} />
+        <View style={[styles.horizontalLine, { top: '66%' }]} />
+      </View>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <ChevronLeft color="#22c55e" size={20} />
+          </TouchableOpacity>
+          <View style={styles.headerContent}>
+            <Text style={styles.headerTitle}>Match Statistics</Text>
+          </View>
+        </View>
+
         <MatchHeader
           homeTeam={mockMatchStats.homeTeam}
           awayTeam={mockMatchStats.awayTeam}
@@ -163,11 +195,74 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0a0a0a',
   },
+  backgroundElements: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    pointerEvents: 'none',
+  },
+  triangle: {
+    position: 'absolute',
+    width: 24,
+    height: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+    transform: [{ rotate: '45deg' }],
+  },
+  circle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+    borderRadius: 50,
+  },
+  rectangle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.1)',
+  },
+  verticalLine: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.05)',
+  },
+  horizontalLine: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.05)',
+  },
   scrollView: {
     flex: 1,
     zIndex: 10,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    paddingBottom: 8,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 8,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
+  },
+  headerTitle: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontFamily: 'Inter-Bold',
+  },
   section: {
+    margin:39,
     paddingHorizontal: 16,
     marginBottom: 32,
   },

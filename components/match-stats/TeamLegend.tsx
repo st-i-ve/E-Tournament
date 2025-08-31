@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     color: '#ffffff',
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
   },
 });

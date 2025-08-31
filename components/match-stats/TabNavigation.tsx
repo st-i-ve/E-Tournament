@@ -43,27 +43,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 25,
-    padding: 4,
+    height: 40,
+    padding: 5,
     marginHorizontal: 20,
     marginVertical: 16,
+    justifyContent:'center',
+    alignItems:'center',
+  
   },
   tab: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
     borderRadius: 20,
     alignItems: 'center',
+    height: 30,
+    justifyContent:'center'
   },
   activeTab: {
     backgroundColor: '#22c55e',
   },
   tabText: {
     color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
   },
   activeTabText: {
     color: '#ffffff',
+    fontSize: 12,
     fontFamily: 'Inter-SemiBold',
   },
 });

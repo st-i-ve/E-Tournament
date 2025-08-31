@@ -154,13 +154,13 @@ const styles = StyleSheet.create({
   },
   possessionTitle: {
     color: '#ffffff',
-    fontSize: 16,
-    fontFamily: 'Inter-Bold',
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
   },
   possessionSubtitle: {
     color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
   },
   possessionLegend: {
     flexDirection: 'row',
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     color: '#ffffff',
-    fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
   },
 });
