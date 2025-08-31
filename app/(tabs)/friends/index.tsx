@@ -181,8 +181,7 @@ export default function FriendsPage() {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <View style={styles.friendsIcon}>
-              <View style={styles.pierceCircle} />
-              <View style={styles.pierceTriangle} />
+              <Gamepad2 color="#22c55e" size={24} />
             </View>
             <View style={styles.headerInfo}>
               <Text style={styles.headerTitle}>Friends</Text>
@@ -204,9 +203,7 @@ export default function FriendsPage() {
             >
               <Gamepad2 color="#9ca3af" size={18} />
               {pendingInvites > 0 && (
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.badgeText}>{pendingInvites}</Text>
-                </View>
+                <View style={styles.glowingDot} />
               )}
             </TouchableOpacity>
           </View>
@@ -348,27 +345,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  pierceCircle: {
-    position: 'absolute',
-    width: 24,
-    height: 24,
-    borderWidth: 2,
-    borderColor: '#22c55e',
-    borderRadius: 12,
-  },
-  pierceTriangle: {
-    position: 'absolute',
-    width: 1,
-    height: 10,
-    borderLeftWidth: 10,
-    borderRightWidth: 10,
-    borderBottomWidth: 10,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: '#22c55e',
-    top: 20,
-    left: 6,
-  },
   headerInfo: {
     flex: 1,
   },
@@ -397,21 +373,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 0,
   },
-  notificationBadge: {
+  glowingDot: {
     position: 'absolute',
-    top: 2,
-    right: 2,
-    backgroundColor: '#ef4444',
-    borderRadius: 8,
-    minWidth: 16,
-    height: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeText: {
-    color: '#ffffff',
-    fontSize: 9,
-    fontFamily: 'Inter-Bold',
+    top: 4,
+    right: 4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#22c55e',
+    shadowColor: '#22c55e',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 8,
   },
 
   content: {

@@ -129,9 +129,9 @@ export default function ProfileTab() {
             <Link href="/(tabs)/profile/requests" asChild>
               <TouchableOpacity style={styles.actionButton}>
                 <UserPlus color="#9ca3af" size={18} />
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.badgeText}>3</Text>
-                </View>
+                {pendingCount > 0 && (
+                  <View style={styles.glowingDot} />
+                )}
               </TouchableOpacity>
             </Link>
             
@@ -139,9 +139,9 @@ export default function ProfileTab() {
               <TouchableOpacity
                 style={styles.actionButton}            >
                 <Bell color="#9ca3af" size={18} />
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.badgeText}>{pendingCount}</Text>
-                </View>
+                {pendingCount > 0 && (
+                  <View style={styles.glowingDot} />
+                )}
               </TouchableOpacity>
             </Link>
             
@@ -448,21 +448,22 @@ const styles = StyleSheet.create({
     position: 'relative',
     padding: 8,
   },
-  notificationBadge: {
+  glowingDot: {
     position: 'absolute',
-    top: 2,
-    right: 2,
-    backgroundColor: '#ef4444',
-    borderRadius: 8,
-    minWidth: 16,
-    height: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeText: {
-    color: '#ffffff',
-    fontSize: 9,
-    fontFamily: 'Inter-Bold',
+    top: 4,
+    right: 4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#22c55e',
+    shadowColor: '#22c55e',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 8,
   },
   userSection: {
     flexDirection: 'row',
