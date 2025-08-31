@@ -280,7 +280,21 @@ export default function InvitesPage() {
             )}
           </View>
 
-          <View style={styles.userDetails}>
+          <TouchableOpacity 
+            style={styles.userDetails}
+            onPress={() => {
+              router.push({
+                pathname: '/profile/friend-profile',
+                params: {
+                  friendId: invite.fromUser.uid,
+                  friendData: JSON.stringify({
+                    ...invite.fromUser,
+                    teamName: 'FC Barcelona' // i added mock team data for consistency
+                  })
+                }
+              });
+            }}
+          >
             <Text style={styles.userName}>{invite.fromUser.displayName}</Text>
             <Text style={styles.userUsername}>@{invite.fromUser.username}</Text>
             <View style={styles.gameInfo}>
@@ -292,7 +306,7 @@ export default function InvitesPage() {
                 )}
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
          </View>
 
          <View style={styles.timerContainer}>
@@ -364,7 +378,21 @@ export default function InvitesPage() {
             {invite.toUser!.isOnline && <View style={styles.onlineIndicator} />}
           </View>
 
-          <View style={styles.userDetails}>
+          <TouchableOpacity 
+            style={styles.userDetails}
+            onPress={() => {
+              router.push({
+                pathname: '/profile/friend-profile',
+                params: {
+                  friendId: invite.toUser!.uid,
+                  friendData: JSON.stringify({
+                    ...invite.toUser!,
+                    teamName: 'Real Madrid' // i added mock team data for consistency
+                  })
+                }
+              });
+            }}
+          >
             <Text style={styles.userName}>{invite.toUser!.displayName}</Text>
             <Text style={styles.userUsername}>@{invite.toUser!.username}</Text>
             <View style={styles.gameInfo}>
@@ -376,7 +404,7 @@ export default function InvitesPage() {
                 )}
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.timerContainer}>

@@ -110,8 +110,24 @@ export default function FriendsPage() {
     const { user, canInvite } = item;
     const statusColor = user.isOnline ? '#22c55e' : '#6b7280';
 
+    const handleFriendPress = () => {
+      router.push({
+        pathname: '/profile/friend-profile',
+        params: {
+          friendId: user.uid,
+          friendData: JSON.stringify({
+            id: user.uid,
+            displayName: user.displayName,
+            username: user.username,
+            isOnline: user.isOnline,
+            teamName: 'Manchester United', // mock data
+          })
+        }
+      });
+    };
+
     return (
-      <TouchableOpacity style={styles.friendItem}>
+      <TouchableOpacity style={styles.friendItem} onPress={handleFriendPress}>
         <View style={styles.friendInfo}>
           {/* avatar */}
           <View style={styles.avatar}>
