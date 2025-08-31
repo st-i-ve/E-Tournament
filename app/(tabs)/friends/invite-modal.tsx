@@ -85,7 +85,11 @@ const gameTypes = [
   'Valorant',
 ];
 
-export default function InviteModal() {
+interface InviteModalProps {
+  onClose?: () => void;
+}
+
+export default function InviteModal({ onClose }: InviteModalProps = {}) {
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const [selectedGame, setSelectedGame] = useState<string>('');
   const [inviteType, setInviteType] = useState<'casual' | 'tournament'>(
@@ -325,9 +329,24 @@ export default function InviteModal() {
     <SafeAreaView style={styles.container}>
       {/* Background Elements */}
       <View style={styles.backgroundElements}>
-        <View style={[styles.triangle, { top: 60, left: 30, width: 20, height: 20 }]} />
-        <View style={[styles.circle, { top: 120, right: 40, width: 16, height: 16 }]} />
-        <View style={[styles.rectangle, { top: 200, left: 20, width: 24, height: 12 }]} />
+        <View
+          style={[
+            styles.triangle,
+            { top: 60, left: 30, width: 20, height: 20 },
+          ]}
+        />
+        <View
+          style={[
+            styles.circle,
+            { top: 120, right: 40, width: 16, height: 16 },
+          ]}
+        />
+        <View
+          style={[
+            styles.rectangle,
+            { top: 200, left: 20, width: 24, height: 12 },
+          ]}
+        />
         <View style={[styles.verticalLine, { left: '25%' }]} />
         <View style={[styles.horizontalLine, { top: '30%' }]} />
       </View>
@@ -336,7 +355,7 @@ export default function InviteModal() {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={handleClose}>
-            <ChevronLeft color="#ffffff" size={24} />
+            <ChevronLeft color="#22c55e" size={24} />
           </TouchableOpacity>
           <View style={styles.headerContent}>
             <Text style={styles.headerTitle}>Invite Friends</Text>
@@ -345,19 +364,22 @@ export default function InviteModal() {
 
         {/* Progress Indicator */}
         <View style={styles.progressContainer}>
-        <View style={styles.progressBar}>
-          <View style={[styles.progressStep, styles.activeStep]} />
-          <View
-            style={[
-              styles.progressStep,
-              step !== 'friends' && styles.activeStep,
-            ]}
-          />
-          <View
-            style={[styles.progressStep, step === 'type' && styles.activeStep]}
-          />
+          <View style={styles.progressBar}>
+            <View style={[styles.progressStep, styles.activeStep]} />
+            <View
+              style={[
+                styles.progressStep,
+                step !== 'friends' && styles.activeStep,
+              ]}
+            />
+            <View
+              style={[
+                styles.progressStep,
+                step === 'type' && styles.activeStep,
+              ]}
+            />
+          </View>
         </View>
-      </View>
 
         {/* Content */}
         <View style={styles.content}>
@@ -454,6 +476,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 20,
     padding: 16,
     paddingBottom: 8,
   },

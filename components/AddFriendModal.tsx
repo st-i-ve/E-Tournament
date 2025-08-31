@@ -85,19 +85,20 @@ export function AddFriendModal({ visible, onClose }: AddFriendModalProps) {
     <Modal
       visible={visible}
       animationType="slide"
-      presentationStyle="pageSheet"
+      transparent={true}
       onRequestClose={handleClose}
     >
       <View style={styles.container}>
-        {/* header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Add Friend</Text>
-          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-            <X size={24} color="#ffffff" />
-          </TouchableOpacity>
-        </View>
+        <View style={styles.modalContent}>
+          {/* header */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Add Friend</Text>
+            <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+              <X size={24} color="#ffffff" />
+            </TouchableOpacity>
+          </View>
 
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* search section */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Search by Username</Text>
@@ -176,7 +177,8 @@ export function AddFriendModal({ visible, onClose }: AddFriendModalProps) {
               </Text>
             </View>
           </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
       </View>
     </Modal>
   );
@@ -185,34 +187,33 @@ export function AddFriendModal({ visible, onClose }: AddFriendModalProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#1f2937',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '80%',
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
+    alignItems: 'center',
+    padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(34, 197, 94, 0.1)',
+    borderBottomColor: '#374151',
   },
   title: {
     fontSize: 16,
-    fontFamily: 'Inter-Bold',
+    fontFamily: 'Inter-SemiBold',
     color: '#ffffff',
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#1f2937',
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 4,
   },
   content: {
-    flex: 1,
-    paddingHorizontal: 20,
+    padding: 20,
   },
   section: {
     marginTop: 24,

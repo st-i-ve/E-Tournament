@@ -8,9 +8,10 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Check, Timer, Gamepad2, Trophy, Users, X, ChevronLeft, UserMinus } from 'lucide-react-native';
+import { Check, Timer, Gamepad2, Trophy, Users, X, ChevronLeft, UserMinus, Info } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { GameInviteWithUser } from '@/types/firebase';
+import { GameInviteModalInfo } from '../../../components/GameInviteModalInfo';
 
 // TODO: Firebase - Replace with real game invites data
 const mockReceivedInvites: GameInviteWithUser[] = [
@@ -179,6 +180,7 @@ export default function InvitesPage() {
   const [sentInvites, setSentInvites] = useState(mockSentInvites);
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // update timer every second
   useEffect(() => {
@@ -359,9 +361,7 @@ export default function InvitesPage() {
                 {invite.toUser!.displayName.charAt(0).toUpperCase()}
               </Text>
             </View>
-            {invite.toUser!.isOnline && (
-              <View style={styles.onlineIndicator} />
-            )}
+            {invite.toUser!.isOnline && <View style={styles.onlineIndicator} />}
           </View>
 
           <View style={styles.userDetails}>
@@ -376,21 +376,34 @@ export default function InvitesPage() {
                 )}
               </View>
             </View>
-            <View style={styles.pendingContainer}>
-              <Timer color="#f59e0b" size={12} />
-              <Text style={styles.pendingText}>
-                Pending • {formatCountdown(invite.expiresAt)}
-              </Text>
-            </View>
           </View>
         </View>
 
-        <View style={styles.sentActionButtons}>
+        <View style={styles.timerContainer}>
+          <View
+            style={[
+              styles.countdownContainer,
+              isExpiring && styles.expiringCountdown,
+            ]}
+          >
+            <Timer color={isExpiring ? '#ef4444' : '#f59e0b'} size={12} />
+            <Text
+              style={[
+                styles.countdownText,
+                isExpiring && styles.expiringCountdownText,
+              ]}
+            >
+              {formatCountdown(invite.expiresAt)}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.actionButtons}>
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={() => handleCancelInvite(invite.id)}
           >
-            <X color="#ef4444" size={18} />
+            <X color="#FF5F5FFF" size={18} />
           </TouchableOpacity>
         </View>
       </View>
@@ -433,6 +446,12 @@ export default function InvitesPage() {
           <View style={styles.headerContent}>
             <Text style={styles.headerTitle}>Game Invites</Text>
           </View>
+          <TouchableOpacity 
+            style={styles.infoButton}
+            onPress={() => setShowInfoModal(true)}
+          >
+            <Info color="#22c55e" size={20} />
+          </TouchableOpacity>
         </View>
 
         {/* Tab Selector */}
@@ -496,24 +515,14 @@ export default function InvitesPage() {
             </View>
           )}
 
-        {/* Info Section */}
-        <View style={styles.infoSection}>
-          <Text style={styles.sectionTitle}>How it works</Text>
-          <View style={styles.infoCard}>
-            <Text style={styles.infoText}>
-              • Game invites expire after 10 minutes
-            </Text>
-            <Text style={styles.infoText}>
-              • Accept invites to start playing immediately
-            </Text>
-            <Text style={styles.infoText}>
-              • Tournament invites give you ranking points
-            </Text>
-            <Text style={styles.infoText}>• Casual games are just for fun</Text>
-          </View>
-        </View>
+
         </View>
       </ScrollView>
+      
+      <GameInviteModalInfo 
+        visible={showInfoModal}
+        onClose={() => setShowInfoModal(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -571,6 +580,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 20,
     padding: 16,
     paddingBottom: 8,
   },
@@ -756,7 +766,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
 
-
   timerContainer: {
     position: 'absolute',
     top: 10,
@@ -787,7 +796,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   cancelButton: {
-    backgroundColor: '#6E1515FF',
+    backgroundColor: 'transparent',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -809,20 +818,5 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
     marginTop: 6,
-  },
-  infoSection: {
-    marginTop: 24,
-    marginBottom: 32,
-  },
-  infoCard: {
-    backgroundColor: '#1f2937',
-    padding: 16,
-    borderRadius: 12,
-  },
-  infoText: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    color: '#9ca3af',
-    marginBottom: 8,
   },
 });
