@@ -7,9 +7,9 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Trophy } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
 import GeoBackground from '@/components/GeoBackground';
@@ -80,21 +80,29 @@ export default function LoginScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Logo or App Name */}
         <View style={styles.logoContainer}>
-          <View style={styles.logoCircle}>
-            <Trophy color="#25D366" size={48} />
-          </View>
-          
+          <Image
+            source={require('@/assets/images/icon.png')}
+            style={styles.logoIcon}
+            resizeMode="contain"
+          />
+
           <Text style={styles.subtitle}>Lets climb the ranks</Text>
         </View>
 
         {/* OAuth Login Buttons */}
         <View style={styles.form}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.oauthButton}
             onPress={handleGoogleLogin}
             disabled={isGoogleLoading || isFacebookLoading}
           >
-            <View style={[styles.buttonContent, styles.googleButton, isGoogleLoading && styles.buttonDisabled]}>
+            <View
+              style={[
+                styles.buttonContent,
+                styles.googleButton,
+                isGoogleLoading && styles.buttonDisabled,
+              ]}
+            >
               {isGoogleLoading ? (
                 <ActivityIndicator color="#ffffff" size="small" />
               ) : (
@@ -102,18 +110,26 @@ export default function LoginScreen() {
                   <View style={styles.googleIcon}>
                     <Text style={styles.googleIconText}>G</Text>
                   </View>
-                  <Text style={styles.oauthButtonText}>Continue with Google</Text>
+                  <Text style={styles.oauthButtonText}>
+                    Continue with Google
+                  </Text>
                 </>
               )}
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.oauthButton}
             onPress={handleFacebookLogin}
             disabled={isGoogleLoading || isFacebookLoading}
           >
-            <View style={[styles.buttonContent, styles.facebookButton, isFacebookLoading && styles.buttonDisabled]}>
+            <View
+              style={[
+                styles.buttonContent,
+                styles.facebookButton,
+                isFacebookLoading && styles.buttonDisabled,
+              ]}
+            >
               {isFacebookLoading ? (
                 <ActivityIndicator color="#ffffff" size="small" />
               ) : (
@@ -121,7 +137,9 @@ export default function LoginScreen() {
                   <View style={styles.facebookIcon}>
                     <Text style={styles.facebookIconText}>f</Text>
                   </View>
-                  <Text style={styles.oauthButtonText}>Continue with Facebook</Text>
+                  <Text style={styles.oauthButtonText}>
+                    Continue with Facebook
+                  </Text>
                 </>
               )}
             </View>
@@ -129,7 +147,9 @@ export default function LoginScreen() {
 
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>Choose your preferred login method</Text>
+            <Text style={styles.dividerText}>
+              Choose your preferred login method
+            </Text>
             <View style={styles.dividerLine} />
           </View>
         </View>
@@ -162,6 +182,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 2,
     borderColor: '#25D366',
+  },
+  logoIcon: {
+    width: 48,
+    height: 48,
   },
   appName: {
     color: '#ffffff',
