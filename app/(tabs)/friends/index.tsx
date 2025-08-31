@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { 
@@ -15,6 +15,62 @@ import { QuickActionButton } from '@/components/QuickActionButton';
 import { Separator } from '@/components/ui/separator';
 import { AddFriendModal } from '@/components/AddFriendModal';
 import type { FriendUser, FriendListItem } from '@/types/firebase';
+
+const PulsingDot = () => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const opacityAnim = useRef(new Animated.Value(0.6)).current;
+
+  useEffect(() => {
+    const createPulseAnimation = () => {
+      return Animated.parallel([
+        Animated.sequence([
+          Animated.timing(scaleAnim, {
+            toValue: 1.3,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.sequence([
+          Animated.timing(opacityAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacityAnim, {
+            toValue: 0.6,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]);
+    };
+
+    const runAnimation = () => {
+      createPulseAnimation().start(() => {
+        runAnimation();
+      });
+    };
+
+    runAnimation();
+  }, [scaleAnim, opacityAnim]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.glowingDot,
+        {
+          transform: [{ scale: scaleAnim }],
+          opacity: opacityAnim,
+        },
+      ]}
+    />
+  );
+};
 
 export default function FriendsPage() {
   const [friends, setFriends] = useState<FriendListItem[]>([]);
@@ -203,7 +259,7 @@ export default function FriendsPage() {
             >
               <Gamepad2 color="#9ca3af" size={18} />
               {pendingInvites > 0 && (
-                <View style={styles.glowingDot} />
+                <PulsingDot />
               )}
             </TouchableOpacity>
           </View>

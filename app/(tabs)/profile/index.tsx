@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { User, Settings, Bell, Target, Trophy, TrendingUp, Award, ChevronRight, UserPlus } from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,61 @@ import CountUp from '@/components/CountUp';
 import { router } from 'expo-router';
 import { Link } from 'expo-router';
 
+// i created this pulsing dot component to animate the notification indicators
+const PulsingDot = () => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const opacityAnim = useRef(new Animated.Value(0.6)).current;
+
+  useEffect(() => {
+    const createPulseAnimation = () => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.parallel([
+            Animated.timing(scaleAnim, {
+              toValue: 1.3,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(opacityAnim, {
+              toValue: 1,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.parallel([
+            Animated.timing(scaleAnim, {
+              toValue: 1,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(opacityAnim, {
+              toValue: 0.6,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+          ]),
+        ])
+      );
+    };
+
+    const animation = createPulseAnimation();
+    animation.start();
+
+    return () => animation.stop();
+  }, [scaleAnim, opacityAnim]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.glowingDot,
+        {
+          transform: [{ scale: scaleAnim }],
+          opacity: opacityAnim,
+        },
+      ]}
+    />
+  );
+};
 
 export default function ProfileTab() {
   // Mock data for demonstration
@@ -130,7 +185,7 @@ export default function ProfileTab() {
               <TouchableOpacity style={styles.actionButton}>
                 <UserPlus color="#9ca3af" size={18} />
                 {pendingCount > 0 && (
-                  <View style={styles.glowingDot} />
+                  <PulsingDot />
                 )}
               </TouchableOpacity>
             </Link>
@@ -140,7 +195,7 @@ export default function ProfileTab() {
                 style={styles.actionButton}            >
                 <Bell color="#9ca3af" size={18} />
                 {pendingCount > 0 && (
-                  <View style={styles.glowingDot} />
+                  <PulsingDot />
                 )}
               </TouchableOpacity>
             </Link>
