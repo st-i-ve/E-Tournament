@@ -1,17 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Trophy, ChevronDown, Info } from 'lucide-react-native';
-import { LeaderboardTable } from '@/components/LeaderboardTable';
+import { LeaderboardTable } from '@/components/Leaderboard/Leaguetable';
+import { KnockoutTournament } from '@/components/Leaderboard/knockout';
 import { Background } from '@/components/Background';
 
 export default function LeaderboardTab() {
-  const [selectedLeague, setSelectedLeague] = useState('Premier League Champions');
+  const [selectedTournament, setSelectedTournament] = useState('League Table');
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  
+  const tournamentOptions = [
+    { id: 'league', label: 'League Table' },
+    { id: 'knockout', label: 'Knockout Tournament' },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Geometric background elements */}
-      <Background 
+      <Background
         triangleCount={2}
         circleCount={3}
         rectangleCount={2}
@@ -20,10 +34,8 @@ export default function LeaderboardTab() {
         color="#22c55e"
         seed={42} // Fixed seed for consistent layout
       />
-      
-      <ScrollView showsVerticalScrollIndicator={false}>
 
-        
+      <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -37,7 +49,9 @@ export default function LeaderboardTab() {
             <View style={styles.headerInfo}>
               <Text style={styles.headerTitle}>Leaderboard</Text>
               <Text style={styles.headerSubtitle}>Track your ranking </Text>
-              <Text style={styles.headerSubtitle}>and tournament performance</Text>
+              <Text style={styles.headerSubtitle}>
+                and tournament performance
+              </Text>
             </View>
           </View>
           <View style={styles.headerActions}>
@@ -47,43 +61,102 @@ export default function LeaderboardTab() {
           </View>
         </View>
 
-        {/* League Selector */}
+        {/* Tournament Type Selector */}
         <View style={styles.selectorContainer}>
-          <TouchableOpacity style={styles.leagueSelector}>
+          <TouchableOpacity 
+            style={styles.leagueSelector}
+            onPress={() => setDropdownVisible(true)}
+          >
             <Trophy color="#22c55e" size={16} />
-            <Text style={styles.leagueName}>{selectedLeague}</Text>
+            <Text style={styles.leagueName}>{selectedTournament}</Text>
             <ChevronDown color="#9ca3af" size={16} />
           </TouchableOpacity>
         </View>
 
-        {/* Enhanced Leaderboard Table */}
+        {/* Tournament Content */}
         <View style={styles.tableSection}>
-          <LeaderboardTable />
+          {selectedTournament === 'League Table' ? (
+            <LeaderboardTable />
+          ) : (
+            <KnockoutTournament />
+          )}
         </View>
 
-        {/* Legend */}
-        <View style={styles.legend}>
-          <Text style={styles.legendTitle}>Competition Qualification</Text>
-          <View style={styles.legendItems}>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: '#ffd700' }]} />
-              <Text style={styles.legendText}>1st - Champion</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: '#22c55e' }]} />
-              <Text style={styles.legendText}>2-4 - Champions League</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: '#f97316' }]} />
-              <Text style={styles.legendText}>5-6 - Europa League</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: '#ef4444' }]} />
-              <Text style={styles.legendText}>7-8 - Relegation</Text>
+        {/* Legend - only show for League Table */}
+        {selectedTournament === 'League Table' && (
+          <View style={styles.legend}>
+            <Text style={styles.legendTitle}>Competition Qualification</Text>
+            <View style={styles.legendItems}>
+              <View style={styles.legendItem}>
+                <View
+                  style={[styles.legendColor, { backgroundColor: '#ffd700' }]}
+                />
+                <Text style={styles.legendText}>1st - Champion</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View
+                  style={[styles.legendColor, { backgroundColor: '#22c55e' }]}
+                />
+                <Text style={styles.legendText}>2-4 - Champions League</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View
+                  style={[styles.legendColor, { backgroundColor: '#f97316' }]}
+                />
+                <Text style={styles.legendText}>5-6 - Europa League</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View
+                  style={[styles.legendColor, { backgroundColor: '#ef4444' }]}
+                />
+                <Text style={styles.legendText}>7-8 - Relegation</Text>
+              </View>
             </View>
           </View>
-        </View>
+        )}
       </ScrollView>
+      
+      {/* Dropdown Modal */}
+      <Modal
+        visible={dropdownVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setDropdownVisible(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setDropdownVisible(false)}
+        >
+          <View style={styles.dropdownContainer}>
+             {tournamentOptions.map((option, index) => (
+               <TouchableOpacity
+                 key={option.id}
+                 style={[
+                   styles.dropdownItem,
+                   selectedTournament === option.label && styles.selectedDropdownItem,
+                   index === tournamentOptions.length - 1 && styles.lastDropdownItem
+                 ]}
+                 onPress={() => {
+                   setSelectedTournament(option.label);
+                   setDropdownVisible(false);
+                 }}
+               >
+                 <Trophy 
+                   color={selectedTournament === option.label ? "#22c55e" : "#9ca3af"} 
+                   size={16} 
+                 />
+                 <Text style={[
+                   styles.dropdownText,
+                   selectedTournament === option.label && styles.selectedDropdownText
+                 ]}>
+                   {option.label}
+                 </Text>
+               </TouchableOpacity>
+             ))}
+           </View>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -225,5 +298,45 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     fontSize: 10,
     fontFamily: 'Inter-Regular',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownContainer: {
+    backgroundColor: '#1f2937',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#374151',
+    minWidth: 200,
+    maxWidth: 280,
+    marginHorizontal: 20,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(75, 85, 99, 0.3)',
+  },
+  selectedDropdownItem: {
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+  },
+  lastDropdownItem: {
+    borderBottomWidth: 0,
+  },
+  dropdownText: {
+    color: '#e5e7eb',
+    fontSize: 13,
+    fontFamily: 'Inter-Medium',
+    marginLeft: 8,
+    flex: 1,
+  },
+  selectedDropdownText: {
+    color: '#22c55e',
+    fontFamily: 'Inter-SemiBold',
   },
 });

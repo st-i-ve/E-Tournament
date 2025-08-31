@@ -7,15 +7,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './ui/table';
-import { ScrollArea } from './ui/scroll-area';
+} from '../ui/table';
+import { ScrollArea } from '../ui/scroll-area';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
-} from './ui/tooltip';
-import { GameResultIcon } from './GameResultIcon';
+} from '../ui/tooltip';
+import { GameResultIcon } from '../GameResultIcon';
 
 // Mock data for the leaderboard
 const teams = [

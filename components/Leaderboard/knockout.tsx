@@ -1,14 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { ScrollArea } from './ui/scroll-area';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from './ui/tooltip';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
-// Mock tournament data
+// Mock tournament data - i updated to show group stages without final winner
 const tournamentData = {
   round16: [
     {
@@ -116,27 +109,21 @@ const tournamentData = {
       id: 13,
       team1: 'Manchester City',
       team2: 'Dortmund',
-      score1: 4,
-      score2: 1,
-      winner: 'team1',
+      // i removed scores to show pending matches
     },
     {
       id: 14,
       team1: 'Inter Milan',
       team2: 'Napoli',
-      score1: 3,
-      score2: 0,
-      winner: 'team1',
+      // i removed scores to show pending matches
     },
   ],
   final: [
     {
       id: 15,
-      team1: 'Manchester City',
-      team2: 'Inter Milan',
-      score1: 1,
-      score2: 0,
-      winner: 'team1',
+      team1: 'TBD',
+      team2: 'TBD',
+      // i set teams as TBD since semifinals haven't been decided
     },
   ],
 };
@@ -149,113 +136,84 @@ const truncateName = (name, maxLength = 12) => {
 const MatchCard = ({ match, isSmall = false }) => {
   const team1Won = match.winner === 'team1';
   const team2Won = match.winner === 'team2';
-  const isDraw = !match.winner;
+  const isPending = !match.score1 && !match.score2 && match.score1 !== 0 && match.score2 !== 0;
 
   return (
-    <TooltipProvider>
-      <View style={[styles.matchCard, isSmall && styles.matchCardSmall]}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <TouchableOpacity style={styles.matchContent}>
-              <View style={styles.teamRow}>
-                <Text
-                  style={[
-                    styles.teamName,
-                    team1Won && styles.winnerText,
-                    team2Won && styles.loserText,
-                    isSmall && styles.teamNameSmall,
-                  ]}
-                >
-                  {truncateName(match.team1, isSmall ? 8 : 12)}
-                </Text>
-                <View style={styles.scoreContainer}>
-                  <Text
-                    style={[
-                      styles.score,
-                      team1Won && styles.winnerScore,
-                      team2Won && styles.loserScore,
-                      isSmall && styles.scoreSmall,
-                    ]}
-                  >
-                    {match.score1 !== undefined ? match.score1 : '-'}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.vsContainer}>
-                <Text style={[styles.vsText, isSmall && styles.vsTextSmall]}>
-                  vs
-                </Text>
-              </View>
-
-              <View style={styles.teamRow}>
-                <Text
-                  style={[
-                    styles.teamName,
-                    team2Won && styles.winnerText,
-                    team1Won && styles.loserText,
-                    isSmall && styles.teamNameSmall,
-                  ]}
-                >
-                  {truncateName(match.team2, isSmall ? 8 : 12)}
-                </Text>
-                <View style={styles.scoreContainer}>
-                  <Text
-                    style={[
-                      styles.score,
-                      team2Won && styles.winnerScore,
-                      team1Won && styles.loserScore,
-                      isSmall && styles.scoreSmall,
-                    ]}
-                  >
-                    {match.score2 !== undefined ? match.score2 : '-'}
-                  </Text>
-                </View>
-              </View>
-
-              {match.aggregate && (
-                <View style={styles.aggregateContainer}>
-                  <Text style={styles.aggregateText}>
-                    Agg: {match.aggregate}
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </TooltipTrigger>
-          <TooltipContent>
-            <Text style={styles.tooltipText}>
-              {match.team1} vs {match.team2}
-              {match.score1 !== undefined &&
-                ` (${match.score1}-${match.score2})`}
-            </Text>
-          </TooltipContent>
-        </Tooltip>
+    <View style={[styles.matchCard, isSmall && styles.matchCardSmall]}>
+      <View style={styles.teamContainer}>
+        <View style={[styles.teamBox, team1Won && styles.winnerBox, isPending && styles.pendingBox]}>
+          <Text style={[styles.teamName, team1Won && styles.winnerText, isPending && styles.pendingText]}>
+            {truncateName(match.team1, isSmall ? 8 : 10)}
+          </Text>
+          <Text style={[styles.score, team1Won && styles.winnerScore]}>
+            {match.score1 !== undefined ? match.score1 : ''}
+          </Text>
+        </View>
+        <View style={[styles.teamBox, styles.lastTeamBox, team2Won && styles.winnerBox, isPending && styles.pendingBox]}>
+          <Text style={[styles.teamName, team2Won && styles.winnerText, isPending && styles.pendingText]}>
+            {truncateName(match.team2, isSmall ? 8 : 10)}
+          </Text>
+          <Text style={[styles.score, team2Won && styles.winnerScore]}>
+            {match.score2 !== undefined ? match.score2 : ''}
+          </Text>
+        </View>
       </View>
-    </TooltipProvider>
+    </View>
   );
 };
 
-const BracketConnector = ({ height = 60, isVertical = false }) => (
-  <View
-    style={[
-      styles.connector,
-      isVertical ? { height, width: 2 } : { width: 20, height: 2 },
-    ]}
-  />
+const BracketLine = ({ style }) => (
+  <View style={[styles.bracketLine, style]} />
 );
 
+const ConnectorGroup = ({ matches, nextMatches }) => {
+  const matchHeight = 80; // i adjusted for match card height plus spacing
+  const titleOffset = 52; // i added offset for round title height
+  
+  return (
+    <View style={styles.connectorContainer}>
+      {nextMatches && nextMatches.map((_, pairIndex) => {
+        const topMatchIndex = pairIndex * 2;
+        const bottomMatchIndex = topMatchIndex + 1;
+        const topPosition = titleOffset + (topMatchIndex * matchHeight) + 35; // i centered on match cards
+        const bottomPosition = titleOffset + (bottomMatchIndex * matchHeight) + 35;
+        const middlePosition = (topPosition + bottomPosition) / 2;
+        
+        return (
+          <View key={pairIndex}>
+            {/* horizontal line from top match */}
+            <BracketLine style={[styles.horizontalLine, { top: topPosition }]} />
+            {/* horizontal line from bottom match */}
+            <BracketLine style={[styles.horizontalLine, { top: bottomPosition }]} />
+            {/* vertical connecting line */}
+            <BracketLine style={[styles.verticalLine, { 
+              top: topPosition, 
+              height: bottomPosition - topPosition 
+            }]} />
+            {/* horizontal line to next round */}
+            <BracketLine style={[styles.horizontalLine, { 
+              top: middlePosition, 
+              left: 0, 
+              width: 30 
+            }]} />
+          </View>
+        );
+      })}
+    </View>
+  );
+};
+
 const RoundColumn = ({ title, matches, isSmall = false }) => (
-  <View style={styles.roundColumn}>
+  <View style={[styles.roundColumn, { position: 'relative' }]}>
     <Text style={[styles.roundTitle, isSmall && styles.roundTitleSmall]}>
       {title}
     </Text>
     <View style={styles.matchesContainer}>
       {matches.map((match, index) => (
-        <View key={match.id} style={styles.matchWrapper}>
+        <View key={match.id} style={[styles.matchWrapper, { 
+          marginBottom: 10 // i added consistent spacing between matches
+        }]}>
           <MatchCard match={match} isSmall={isSmall} />
-          {index < matches.length - 1 && title !== 'Final' && (
-            <View style={styles.matchSpacer} />
-          )}
         </View>
       ))}
     </View>
@@ -265,66 +223,56 @@ const RoundColumn = ({ title, matches, isSmall = false }) => (
 export const KnockoutTournament = () => {
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Champions League Knockout</Text>
-        <Text style={styles.headerSubtitle}>Tournament Bracket</Text>
-      </View>
-
-      <ScrollArea horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.bracketContainer}>
-          <RoundColumn
-            title="Round of 16"
-            matches={tournamentData.round16}
+          {/* Round of 16 */}
+          <View style={{ position: 'relative' }}>
+            <RoundColumn
+              title="Round of 16"
+              matches={tournamentData.round16}
+              isSmall={true}
+            />
+            {/* Connectors to Quarter Finals */}
+            <ConnectorGroup 
+              matches={tournamentData.round16} 
+              nextMatches={tournamentData.quarterfinals}
+            />
+          </View>
+          
+          {/* Quarter Finals */}
+          <View style={{ position: 'relative' }}>
+            <RoundColumn
+              title="Quarter Finals"
+              matches={tournamentData.quarterfinals}
+            />
+            {/* Connectors to Semi Finals */}
+            <ConnectorGroup 
+              matches={tournamentData.quarterfinals} 
+              nextMatches={tournamentData.semifinals}
+            />
+          </View>
+          
+          {/* Semi Finals */}
+          <View style={{ position: 'relative' }}>
+            <RoundColumn
+              title="Semi Finals"
+              matches={tournamentData.semifinals}
+            />
+            {/* Connectors to Final */}
+            <ConnectorGroup 
+              matches={tournamentData.semifinals} 
+              nextMatches={tournamentData.final}
+            />
+          </View>
+          
+          {/* Final */}
+          <RoundColumn 
+            title="Final" 
+            matches={tournamentData.final} 
             isSmall={true}
           />
-
-          <View style={styles.connectorColumn}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <View key={i} style={styles.connectorGroup}>
-                <BracketConnector />
-                <View style={styles.connectorVertical} />
-                <BracketConnector />
-              </View>
-            ))}
-          </View>
-
-          <RoundColumn
-            title="Quarter Finals"
-            matches={tournamentData.quarterfinals}
-          />
-
-          <View style={styles.connectorColumn}>
-            {Array.from({ length: 2 }).map((_, i) => (
-              <View key={i} style={styles.connectorGroup}>
-                <BracketConnector />
-                <View style={styles.connectorVertical} />
-                <BracketConnector />
-              </View>
-            ))}
-          </View>
-
-          <RoundColumn
-            title="Semi Finals"
-            matches={tournamentData.semifinals}
-          />
-
-          <View style={styles.connectorColumn}>
-            <View style={styles.connectorGroup}>
-              <BracketConnector />
-              <View style={styles.connectorVertical} />
-              <BracketConnector />
-            </View>
-          </View>
-
-          <RoundColumn title="Final" matches={tournamentData.final} />
         </View>
-      </ScrollArea>
-
-      {/* Champion Section */}
-      <View style={styles.championSection}>
-        <Text style={styles.championTitle}>🏆 Champion</Text>
-        <Text style={styles.championName}>Manchester City</Text>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -332,181 +280,147 @@ export const KnockoutTournament = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(31, 41, 55, 0.5)',
-    borderRadius: 12,
-    padding: 16,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontFamily: 'Inter-Bold',
-    color: '#ffffff',
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
-    color: '#9ca3af',
+    backgroundColor: '#ffffff',
+    padding: 20,
   },
   bracketContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: 20,
-    minHeight: 400,
+    minHeight: 600,
   },
   roundColumn: {
     alignItems: 'center',
-    marginHorizontal: 8,
+    marginHorizontal: 15,
   },
   roundTitle: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Inter-SemiBold',
-    color: '#22c55e',
-    marginBottom: 16,
+    color: '#000000',
+    marginBottom: 20,
     textAlign: 'center',
-    minWidth: 100,
+    minWidth: 120,
   },
   roundTitleSmall: {
-    fontSize: 12,
-    minWidth: 80,
+    fontSize: 10,
+    minWidth: 100,
   },
   matchesContainer: {
     alignItems: 'center',
-    justifyContent: 'space-around',
-    flex: 1,
+    position: 'relative',
   },
   matchWrapper: {
     alignItems: 'center',
+    marginBottom: 10,
   },
   matchCard: {
-    backgroundColor: 'rgba(55, 65, 81, 0.8)',
-    borderRadius: 8,
-    padding: 12,
-    marginVertical: 4,
-    minWidth: 120,
+    backgroundColor: '#ffffff',
+    borderRadius: 4,
     borderWidth: 1,
-    borderColor: 'rgba(75, 85, 99, 0.5)',
+    borderColor: '#000000',
+    minWidth: 120,
+    overflow: 'hidden',
   },
   matchCardSmall: {
-    padding: 8,
     minWidth: 100,
   },
-  matchContent: {
-    alignItems: 'center',
+  teamContainer: {
+    flexDirection: 'column',
   },
-  teamRow: {
+  teamBox: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
-    marginVertical: 2,
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#000000',
+  },
+  lastTeamBox: {
+    borderBottomWidth: 0,
+  },
+  winnerBox: {
+    backgroundColor: '#f0f0f0',
+  },
+  pendingBox: {
+    backgroundColor: '#f8f8f8',
+    opacity: 0.7,
+  },
+  pendingText: {
+    color: '#666666',
+    fontStyle: 'italic',
   },
   teamName: {
-    fontSize: 11,
-    fontFamily: 'Inter-Medium',
-    color: '#e5e7eb',
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
+    color: '#000000',
     flex: 1,
   },
-  teamNameSmall: {
-    fontSize: 9,
-  },
-  scoreContainer: {
-    marginLeft: 8,
-    minWidth: 20,
-    alignItems: 'center',
-  },
   score: {
-    fontSize: 12,
-    fontFamily: 'Inter-SemiBold',
-    color: '#e5e7eb',
-  },
-  scoreSmall: {
     fontSize: 10,
-  },
-  winnerText: {
-    color: '#22c55e',
-  },
-  loserText: {
-    color: '#9ca3af',
-  },
-  winnerScore: {
-    color: '#22c55e',
-    fontFamily: 'Inter-Bold',
-  },
-  loserScore: {
-    color: '#ef4444',
-  },
-  vsContainer: {
-    marginVertical: 2,
-  },
-  vsText: {
-    fontSize: 8,
-    fontFamily: 'Inter-Regular',
-    color: '#6b7280',
-  },
-  vsTextSmall: {
-    fontSize: 7,
-  },
-  aggregateContainer: {
-    marginTop: 4,
-    paddingTop: 4,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(75, 85, 99, 0.3)',
-  },
-  aggregateText: {
-    fontSize: 8,
-    fontFamily: 'Inter-Regular',
-    color: '#9ca3af',
+    fontFamily: 'Inter-SemiBold',
+    color: '#000000',
+    marginLeft: 8,
+    minWidth: 15,
     textAlign: 'center',
   },
-  matchSpacer: {
-    height: 20,
-  },
-  connectorColumn: {
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: '100%',
-    marginHorizontal: 4,
-  },
-  connectorGroup: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 120,
-  },
-  connector: {
-    backgroundColor: '#6b7280',
-  },
-  connectorVertical: {
-    width: 2,
-    height: 40,
-    backgroundColor: '#6b7280',
-  },
-  championSection: {
-    alignItems: 'center',
-    marginTop: 24,
-    padding: 16,
-    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.3)',
-  },
-  championTitle: {
-    fontSize: 16,
+  winnerText: {
     fontFamily: 'Inter-SemiBold',
-    color: '#22c55e',
-    marginBottom: 8,
   },
-  championName: {
-    fontSize: 18,
+  winnerScore: {
     fontFamily: 'Inter-Bold',
-    color: '#ffffff',
   },
-  tooltipText: {
-    color: '#ffffff',
+  // i created connector styles to match traditional bracket layout
+  connectorContainer: {
+    position: 'absolute',
+    right: -30,
+    top: 0,
+    width: 30,
+    height: '100%',
+    zIndex: 1,
+  },
+  bracketLine: {
+    backgroundColor: '#000000',
+    position: 'absolute',
+  },
+  horizontalLine: {
+    height: 2,
+    width: 15,
+    right: 0,
+  },
+  verticalLine: {
+    width: 2,
+    right: 15,
+  },
+  // i added winner column styles for the champion display
+  winnerColumn: {
+    alignItems: 'center',
+    marginHorizontal: 15,
+    marginTop: 40,
+  },
+  winnerTitle: {
     fontSize: 12,
-    fontFamily: 'Inter-Regular',
+    fontFamily: 'Inter-SemiBold',
+    color: '#000000',
+    marginBottom: 20,
+  },
+  winnerCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#000000',
+    padding: 15,
+    alignItems: 'center',
+    minWidth: 120,
+  },
+  winnerName: {
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#000000',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  championIcon: {
+    fontSize: 20,
   },
 });
