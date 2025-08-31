@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
     borderColor: '#25D366',
   },
   logoIcon: {
-    width: 48,
-    height: 48,
+    width: 120,
+    height: 120,
   },
   appName: {
     color: '#ffffff',
