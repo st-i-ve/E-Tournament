@@ -81,8 +81,8 @@ export default function LoginScreen() {
           <View style={styles.logoCircle}>
             <Trophy color="#25D366" size={48} />
           </View>
-          <Text style={styles.appName}>E-Tournament</Text>
-          <Text style={styles.subtitle}>Level up your gaming experience</Text>
+          
+          <Text style={styles.subtitle}>Lets climb the ranks</Text>
         </View>
 
         {/* OAuth Login Buttons */}
@@ -180,6 +180,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonContent: {
+    height: 55,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#111',
     borderWidth: 1,
     borderColor: '#333',
-    borderRadius: 12,
+    borderRadius: 120,
     gap: 12,
   },
   googleButton: {

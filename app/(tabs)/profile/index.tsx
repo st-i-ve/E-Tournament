@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { User, Settings, Bell, Target, Trophy, TrendingUp, Award, ChevronRight, UserPlus } from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
@@ -8,62 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import CountUp from '@/components/CountUp';
 import { router } from 'expo-router';
 import { Link } from 'expo-router';
-
-// i created this pulsing dot component to animate the notification indicators
-const PulsingDot = () => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const opacityAnim = useRef(new Animated.Value(0.6)).current;
-
-  useEffect(() => {
-    const createPulseAnimation = () => {
-      return Animated.loop(
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(scaleAnim, {
-              toValue: 1.3,
-              duration: 1000,
-              useNativeDriver: true,
-            }),
-            Animated.timing(opacityAnim, {
-              toValue: 1,
-              duration: 1000,
-              useNativeDriver: true,
-            }),
-          ]),
-          Animated.parallel([
-            Animated.timing(scaleAnim, {
-              toValue: 1,
-              duration: 1000,
-              useNativeDriver: true,
-            }),
-            Animated.timing(opacityAnim, {
-              toValue: 0.6,
-              duration: 1000,
-              useNativeDriver: true,
-            }),
-          ]),
-        ])
-      );
-    };
-
-    const animation = createPulseAnimation();
-    animation.start();
-
-    return () => animation.stop();
-  }, [scaleAnim, opacityAnim]);
-
-  return (
-    <Animated.View
-      style={[
-        styles.glowingDot,
-        {
-          transform: [{ scale: scaleAnim }],
-          opacity: opacityAnim,
-        },
-      ]}
-    />
-  );
-};
+import PulsingDot from '@/components/PulsingDot';
 
 export default function ProfileTab() {
   // Mock data for demonstration
@@ -503,23 +448,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     padding: 8,
   },
-  glowingDot: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#22c55e',
-    shadowColor: '#22c55e',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 12,
-  },
+
   userSection: {
     flexDirection: 'row',
     alignItems: 'center',
