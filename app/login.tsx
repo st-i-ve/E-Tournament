@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Trophy } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
+import GeoBackground from '@/components/GeoBackground';
 
 export default function LoginScreen() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -75,6 +76,7 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <GeoBackground />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Logo or App Name */}
         <View style={styles.logoContainer}>
