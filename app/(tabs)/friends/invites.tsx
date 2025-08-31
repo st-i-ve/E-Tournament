@@ -284,7 +284,7 @@ export default function InvitesPage() {
             style={styles.userDetails}
             onPress={() => {
               router.push({
-                pathname: '/profile/friend-profile',
+                pathname: '/friends/friend-profile',
                 params: {
                   friendId: invite.fromUser.uid,
                   friendData: JSON.stringify({
@@ -382,7 +382,7 @@ export default function InvitesPage() {
             style={styles.userDetails}
             onPress={() => {
               router.push({
-                pathname: '/profile/friend-profile',
+                pathname: '/friends/friend-profile',
                 params: {
                   friendId: invite.toUser!.uid,
                   friendData: JSON.stringify({

@@ -26,6 +26,15 @@ export default function FriendsLayout() {
         }} 
       />
       
+      {/* friend profile page */}
+      <Stack.Screen 
+        name="friend-profile" 
+        options={{ 
+          title: 'Friend Profile',
+          headerShown: false,
+        }} 
+      />
+      
     </Stack>
   );
 }

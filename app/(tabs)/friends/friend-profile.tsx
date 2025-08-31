@@ -19,7 +19,6 @@ import {
   UserPlus,
   Star,
   Gamepad2,
-  MessageCircle,
 } from 'lucide-react-native';
 import { Badge } from '@/components/ui/badge';
 import CountUp from '@/components/CountUp';
@@ -106,16 +105,7 @@ export default function FriendProfilePage() {
     );
   };
 
-  const handleSendMessage = () => {
-    Alert.alert(
-      'Message',
-      `Start a conversation with ${friend.displayName}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Send Message', onPress: () => {} },
-      ]
-    );
-  };
+
 
   const renderStarRating = (rating: number) => {
     const stars = [];
@@ -201,12 +191,7 @@ export default function FriendProfilePage() {
             <Text style={styles.headerTitle}>{friend.displayName}</Text>
             <Text style={styles.headerSubtitle}>@{friend.username}</Text>
           </View>
-          <TouchableOpacity
-            style={styles.messageButton}
-            onPress={handleSendMessage}
-          >
-            <MessageCircle color="#22c55e" size={20} />
-          </TouchableOpacity>
+
         </View>
 
         {/* user info */}
@@ -574,9 +559,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     marginTop: 2,
   },
-  messageButton: {
-    padding: 8,
-  },
+
   userSection: {
     flexDirection: 'row',
     alignItems: 'center',

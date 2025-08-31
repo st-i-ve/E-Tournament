@@ -112,7 +112,7 @@ export default function FriendsPage() {
 
     const handleFriendPress = () => {
       router.push({
-        pathname: '/profile/friend-profile',
+        pathname: '/friends/friend-profile',
         params: {
           friendId: user.uid,
           friendData: JSON.stringify({
