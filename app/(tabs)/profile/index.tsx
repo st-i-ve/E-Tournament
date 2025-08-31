@@ -461,9 +461,9 @@ const styles = StyleSheet.create({
       width: 0,
       height: 0,
     },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-    elevation: 8,
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 12,
   },
   userSection: {
     flexDirection: 'row',
