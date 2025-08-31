@@ -101,7 +101,7 @@ export function AddFriendModal({ visible, onClose }: AddFriendModalProps) {
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* search section */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Search by Username</Text>
+            <Text style={styles.sectionTitle}>Search by UserID</Text>
             <View style={styles.searchContainer}>
               <Search size={20} color="#6b7280" />
               <TextInput

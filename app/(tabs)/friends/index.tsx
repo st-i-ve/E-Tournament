@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { 
   Users, 
-  UserPlus, 
+  Plus, 
   Mail, 
   Gamepad2, 
   MessageSquare,
@@ -264,7 +264,7 @@ export default function FriendsPage() {
         }}
         activeOpacity={0.8}
       >
-        <UserPlus size={24} color="#ffffff" />
+        <Plus size={24} color="#ffffff" />
       </TouchableOpacity>
 
       {/* add friend modal */}
