@@ -13,45 +13,47 @@ export const MatchHeader: React.FC<MatchHeaderProps> = ({
   animation 
 }) => {
   return (
-    <Animated.View 
+    <Animated.View
       style={[
         styles.header,
         {
           opacity: animation,
-          transform: [{
-            scale: animation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.9, 1],
-            })
-          }]
-        }
+          transform: [
+            {
+              scale: animation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.9, 1],
+              }),
+            },
+          ],
+        },
       ]}
     >
       <View style={styles.headerTop}>
         <TouchableOpacity style={styles.backButton}>
           <ChevronLeft size={24} color="#ffffff" />
         </TouchableOpacity>
-        
+
         <View style={styles.tournamentInfo}>
           <Trophy size={16} color="#22c55e" />
           <Text style={styles.tournamentText}>{tournament}</Text>
         </View>
       </View>
-      
+
       <View style={styles.matchInfo}>
         <View style={styles.teamSection}>
           <Text style={styles.teamName}>{homeTeam}</Text>
           <Text style={styles.score}>{homeScore}</Text>
         </View>
-        
+
         <View style={styles.vsSection}>
           <Text style={styles.vsText}>VS</Text>
           <Text style={styles.dateText}>{date}</Text>
         </View>
-        
+
         <View style={styles.teamSection}>
-          <Text style={styles.score}>{awayScore}</Text>
           <Text style={styles.teamName}>{awayTeam}</Text>
+          <Text style={styles.score}>{awayScore}</Text>
         </View>
       </View>
     </Animated.View>
