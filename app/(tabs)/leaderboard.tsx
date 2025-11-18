@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Trophy, ChevronDown, Info } from 'lucide-react-native';
 import { LeaderboardTable } from '@/components/Leaderboard/Leaguetable';
-import { KnockoutTournament } from '@/components/Leaderboard/knockout';
+import { Tournament } from '@/components/Leaderboard/Tournament';
 import { Background } from '@/components/Background';
 
 export default function LeaderboardTab() {
@@ -78,7 +78,7 @@ export default function LeaderboardTab() {
           {selectedTournament === 'League Table' ? (
             <LeaderboardTable />
           ) : (
-            <KnockoutTournament />
+            <Tournament />
           )}
         </View>
 
