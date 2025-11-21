@@ -9,7 +9,8 @@ import {
   Gamepad2, 
   MessageSquare,
   QrCode,
-  Search
+  Search,
+  Send
 } from 'lucide-react-native';
 import { QuickActionButton } from '@/components/QuickActionButton';
 import { Separator } from '@/components/ui/separator';
@@ -156,7 +157,7 @@ export default function FriendsPage() {
             onPress={() => canInvite && handleInviteFriend(user.id)}
             disabled={!canInvite}
           >
-            <Gamepad2 size={18} color={canInvite ? '#22c55e' : '#6b7280'} />
+            <Send size={18} color={canInvite ? '#22c55e' : '#6b7280'} />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -198,7 +199,12 @@ export default function FriendsPage() {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <View style={styles.friendsIcon}>
-              <Gamepad2 color="#22c55e" size={24} />
+              <View style={styles.circleShape} />
+              <View style={styles.triangleShape}>
+                <View style={styles.triangleLine1} />
+                <View style={styles.triangleLine2} />
+                <View style={styles.triangleLine3} />
+              </View>
             </View>
             <View style={styles.headerInfo}>
               <Text style={styles.headerTitle}>Friends</Text>
@@ -219,9 +225,7 @@ export default function FriendsPage() {
               }}
             >
               <Gamepad2 color="#9ca3af" size={18} />
-              {pendingInvites > 0 && (
-                <PulsingDot />
-              )}
+              {pendingInvites > 0 && <PulsingDot />}
             </TouchableOpacity>
           </View>
         </View>
@@ -362,6 +366,49 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  circleShape: {
+    position: 'absolute',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#22c55e',
+    backgroundColor: 'transparent',
+    right: -5,
+  },
+  triangleShape: {
+    position: 'absolute',
+    width: 16,
+    height: 16,
+    left: 2,
+  },
+  triangleLine1: {
+    position: 'absolute',
+    width: 18,
+    height: 2,
+    backgroundColor: '#22c55e',
+    transform: [{ rotate: '30deg' }],
+    top: 3,
+    left: 3,
+  },
+  triangleLine2: {
+    position: 'absolute',
+    width: 18,
+    height: 2,
+    backgroundColor: '#22c55e',
+    transform: [{ rotate: '-30deg' }],
+    top: 11,
+    left: 3,
+  },
+  triangleLine3: {
+    position: 'absolute',
+    width: 12,
+    height: 2,
+    backgroundColor: '#22c55e',
+    top: 6,
+    left: -1,
+    transform: [{ rotate: '90deg' }],
+  },
   headerInfo: {
     flex: 1,
   },
@@ -390,7 +437,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 0,
   },
-
 
   content: {
     padding: 16,

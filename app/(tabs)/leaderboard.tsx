@@ -212,8 +212,8 @@ const styles = StyleSheet.create({
   },
   oShape: {
     position: 'absolute',
-    width: 20,
-    height: 20,
+    width: 24,
+    height: 24,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: '#22c55e',
