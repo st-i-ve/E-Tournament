@@ -149,7 +149,7 @@ export default function FriendsPage() {
         {/* action buttons */}
         <View style={styles.friendActions}>
           <TouchableOpacity style={styles.actionButton}>
-            <MessageSquare size={18} color="#9ca3af" />
+            <MessageSquare size={18} color="#979DA7FF" />
           </TouchableOpacity>
           
           <TouchableOpacity 
